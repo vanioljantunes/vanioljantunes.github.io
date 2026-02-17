@@ -4,12 +4,64 @@
   <meta charset="UTF-8">
   <title>Teaching — Vanio Antunes</title>
   <style>
-    body { font-family: Georgia, serif; max-width: 900px; margin: 60px auto; padding: 0 20px; line-height: 1.6; color:#111; }
-    a { color:#000; }
+    body {
+      font-family: Georgia, serif;
+      max-width: 900px;
+      margin: 60px auto;
+      padding: 0 20px;
+      line-height: 1.6;
+      color: #111;
+      background: #fff;
+    }
+
+    a { color: #000; }
+
     .nav { margin-bottom: 22px; }
-    .box { border:1px solid #ddd; padding:22px; margin-bottom:22px; }
+
+    .box {
+      border: 1px solid #ddd;
+      padding: 22px;
+      margin-bottom: 22px;
+    }
+
     h1 { margin: 0 0 6px 0; }
-    .small { color:#444; }
+
+    .small { color: #444; margin-bottom: 16px; }
+
+    .section-title {
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin: 0 0 10px 0;
+      font-size: 14px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    @media (max-width: 720px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    .pill {
+      display: inline-block;
+      border: 1px solid #111;
+      padding: 6px 10px;
+      font-size: 13px;
+      margin-right: 8px;
+      margin-top: 6px;
+    }
+
+    ul { margin: 0; padding-left: 18px; }
+
+    .mini {
+      color: #444;
+      font-size: 14px;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
@@ -19,22 +71,120 @@
   </div>
 
   <h1>Teaching & Program Building</h1>
-  <div class="small">Training systems, tutoring operations, and content production pipeline.</div>
+  <div class="small">
+    Bilingual curriculum delivery (EN/PT) + production infrastructure for systematic review and meta-analysis training.
+  </div>
 
+  <!-- Tier A: WHAT YOU DELIVERED -->
   <div class="box">
+    <div class="section-title">Delivered Curriculum</div>
+
+    <p style="margin: 0 0 10px 0;">
+      <strong>20+ hours</strong> of recorded teaching on <strong>Systematic Review & Meta-Analysis</strong> (EN/PT), delivered to an international audience.
+    </p>
+
     <ul>
-      <li>MetaHub — research training initiative</li>
-      <li>79+ recorded advanced sessions</li>
-      <li>Ongoing tutoring and WhatsApp support operations</li>
-      <li>Production pipeline: ClickUp → Canva → OBS → distribution</li>
+      <li>Methodology aligned with the <strong>Cochrane Handbook</strong></li>
+      <li>Statistical implementation in <strong>R</strong> (with the <strong>meta</strong> package as a core reference workflow)</li>
+      <li>End-to-end structure: topic viability → protocol logic → screening/extraction → synthesis/reporting</li>
+    </ul>
+
+    <div style="margin-top: 12px;">
+      <span class="pill">EN/PT delivery</span>
+      <span class="pill">Cochrane-aligned</span>
+      <span class="pill">R implementation</span>
+      <span class="pill">International audience</span>
+    </div>
+
+    <p class="mini">
+      Access: member library (not fully public). Evidence and updates are tracked inside the program.
+    </p>
+  </div>
+
+  <!-- Tier A/B: PROGRESSIVE SYSTEM -->
+  <div class="box">
+    <div class="section-title">Progressive System & Evaluation</div>
+
+    <ul>
+      <li>Progressive learning path designed for long-term skill growth (not one-off lectures)</li>
+      <li>Structured evaluation checkpoints to guide progression over time</li>
+      <li>Reusable templates and standardized outputs to reduce friction and increase consistency</li>
+    </ul>
+
+    <p class="mini">
+      Goal: move learners from viability and study design → to reproducible R-based synthesis.
+    </p>
+  </div>
+
+  <!-- Tier B: SYSTEM -->
+  <div class="box">
+    <div class="section-title">Production System</div>
+
+    <ul>
+      <li>End-to-end pipeline: <strong>planning → slide production → recording → editing → hosting → distribution</strong></li>
+      <li>Operational layer: standardized templates, asset/version organization, consistent exports</li>
+      <li>Google environment mastery for coordination and delivery (docs, links, shared assets)</li>
+    </ul>
+
+    <p style="margin: 12px 0 0 0;">
+      Toolchain: ClickUp + Canva + OBS + DaVinci Resolve + Hotmart + Google Workspace
+    </p>
+  </div>
+
+  <!-- Tier B: TOOL BOXES -->
+  <div class="grid">
+
+    <div class="box">
+      <div class="section-title">Canva</div>
+      <ul>
+        <li>Template system: layout rules, reusable components, consistent typography</li>
+        <li>Export discipline for recording-ready decks</li>
+        <li>Outputs: standardized slide sets across a multi-hour curriculum</li>
+      </ul>
+    </div>
+
+    <div class="box">
+      <div class="section-title">OBS Studio</div>
+      <ul>
+        <li>Recording configuration: scenes, sources, audio routing</li>
+        <li>Template switching for consistent production</li>
+        <li>Outputs: clean recordings optimized for editing</li>
+      </ul>
+    </div>
+
+    <div class="box">
+      <div class="section-title">DaVinci Resolve</div>
+      <ul>
+        <li>Editing pipeline: cut, pacing, audio cleanup, delivery formats</li>
+        <li>Consistency across many videos</li>
+        <li>Outputs: final files prepared for hosting</li>
+      </ul>
+    </div>
+
+    <div class="box">
+      <div class="section-title">Hotmart</div>
+      <ul>
+        <li>Hosting operations: modules, lesson organization, controlled access</li>
+        <li>Delivery logistics for a video library</li>
+        <li>Outputs: structured member curriculum</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- Lower priority -->
+  <div class="box">
+    <div class="section-title">Teaching Operations</div>
+    <ul>
+      <li>Ongoing tutoring sessions and learner support as part of MetaHub delivery</li>
     </ul>
   </div>
 
   <div class="box">
-    <p><strong>Public links</strong></p>
-    <ul>
-      <li>MetaHub link: <a href="YOUR_METAHUB_LINK" target="_blank">Open</a></li>
-    </ul>
+    <div class="section-title">Public link</div>
+    <p style="margin: 0;">
+      MetaHub: <a href="YOUR_METAHUB_LINK" target="_blank">Open</a>
+    </p>
   </div>
 
 </body>
