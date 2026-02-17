@@ -2,7 +2,8 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Vânio Antunes</title>
+  <title>Vanio Antunes</title>
+
   <style>
     body {
       font-family: Georgia, serif;
@@ -16,13 +17,13 @@
 
     h1 {
       font-size: 36px;
-      margin-bottom: 5px;
+      margin: 0;
     }
 
     .subtitle {
       font-size: 18px;
-      margin-bottom: 40px;
       color: #444;
+      margin-top: 6px;
     }
 
     .box {
@@ -54,16 +55,35 @@
 
 <body>
 
-<h1>Vânio Antunes</h1>
-<div class="subtitle">
-Medical Research | Statistical Modeling | Research Systems
+<!-- HEADER WITH PHOTO -->
+<div style="display: flex; align-items: center; gap: 30px; margin-bottom: 50px;">
+
+  <img src="profile.jpg" alt="Vanio Antunes"
+       style="width: 160px; height: 160px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;">
+
+  <div>
+    <h1>Vanio Antunes</h1>
+
+    <div class="subtitle">
+      Medical Student — Federal University of Health Sciences of Porto Alegre (UFCSPA), Brazil
+    </div>
+
+    <div class="subtitle">
+      Medical Research | Statistical Modeling | Research Systems
+    </div>
+  </div>
+
 </div>
 
+<!-- RESEARCH OUTPUT -->
 <div class="box">
   <div class="section-title">Research Output</div>
+
   <p><strong>28</strong> PubMed-indexed publications</p>
   <p><strong>200+</strong> citations</p>
-  <p>Selected journals:</p>
+
+  <p style="margin-top: 15px;">Selected journals:</p>
+
   <ul>
     <li>Hepatology</li>
     <li>Journal of the American College of Cardiology (JACC)</li>
@@ -71,11 +91,18 @@ Medical Research | Statistical Modeling | Research Systems
     <li>Heart Rhythm</li>
     <li>Alimentary Pharmacology & Therapeutics</li>
   </ul>
-  <p><a href="YOUR_GOOGLE_SCHOLAR_LINK" target="_blank">View Google Scholar Profile</a></p>
+
+  <p style="margin-top: 15px;">
+    <a href="YOUR_GOOGLE_SCHOLAR_LINK" target="_blank">
+      View Google Scholar Profile
+    </a>
+  </p>
 </div>
 
+<!-- STATISTICAL CONTRIBUTION -->
 <div class="box">
   <div class="section-title">Statistical Contribution</div>
+
   <ul>
     <li>Diagnostic Test Accuracy Meta-Analysis</li>
     <li>GLMM & HSROC Modeling</li>
@@ -84,10 +111,12 @@ Medical Research | Statistical Modeling | Research Systems
   </ul>
 </div>
 
+<!-- PROGRAM BUILDING -->
 <div class="box">
   <div class="section-title">Program Building</div>
+
   <ul>
-    <li>MetaHub – Research Training Initiative</li>
+    <li>MetaHub — Research Training Initiative</li>
     <li>79+ Recorded Advanced Sessions</li>
     <li>Structured Tutoring & Continuous Academic Support</li>
     <li>Pipeline-Based Class Production System</li>
