@@ -15,113 +15,155 @@
       line-height: 1.6;
     }
 
-    h1 {
-      font-size: 36px;
-      margin: 0;
+    a { color: #000; text-decoration: underline; }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 26px;
+      margin-bottom: 22px;
     }
 
+    .photo {
+      width: 130px;
+      height: 130px;
+      object-fit: cover;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+
+    h1 { font-size: 34px; margin: 0; }
+
     .subtitle {
-      font-size: 18px;
+      font-size: 16px;
       color: #444;
       margin-top: 6px;
     }
 
+    /* Top nav */
+    .nav {
+      border: 1px solid #ddd;
+      padding: 10px 14px;
+      margin: 18px 0 36px 0;
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .nav a { text-decoration: none; border-bottom: 1px solid #000; padding-bottom: 1px; }
+
+    /* Boxes */
     .box {
       border: 1px solid #ddd;
-      padding: 25px;
-      margin-bottom: 30px;
+      padding: 22px;
+      margin-bottom: 22px;
+    }
+
+    .box-top {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
     }
 
     .section-title {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: bold;
-      margin-bottom: 15px;
       text-transform: uppercase;
       letter-spacing: 1px;
-    }
-
-    ul {
-      padding-left: 20px;
       margin: 0;
     }
 
-    a {
-      color: #000;
-      text-decoration: underline;
+    .metric {
+      font-size: 15px;
+      color: #222;
+      white-space: nowrap;
     }
 
+    .one-liner {
+      margin: 8px 0 14px 0;
+      color: #333;
+      font-size: 15px;
+    }
+
+    .btn {
+      display: inline-block;
+      border: 1px solid #111;
+      padding: 8px 12px;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .btn:hover { background: #f5f5f5; }
+
+    .footer-links {
+      margin-top: 34px;
+      font-size: 14px;
+      color: #444;
+    }
   </style>
 </head>
 
 <body>
 
-<!-- HEADER WITH PHOTO -->
-<div style="display: flex; align-items: center; gap: 30px; margin-bottom: 50px;">
-
-  <img src="profile.jpg" alt="Vanio Antunes"
-       style="width: 160px; height: 160px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;">
-
-  <div>
-    <h1>Vanio Antunes</h1>
-
-    <div class="subtitle">
-      Medical Student — Federal University of Health Sciences of Porto Alegre (UFCSPA), Brazil
-    </div>
-
-    <div class="subtitle">
-      Medical Research | Statistical Modeling | Research Systems
+  <div class="header">
+    <img class="photo" src="profile.jpg" alt="Vanio Antunes">
+    <div>
+      <h1>Vanio Antunes</h1>
+      <div class="subtitle">
+        Medical Student — Federal University of Health Sciences of Porto Alegre (UFCSPA), Brazil
+      </div>
+      <div class="subtitle">
+        Medical Research | Statistical Modeling | Research Systems
+      </div>
     </div>
   </div>
 
-</div>
+  <div class="nav">
+    <a href="research.html">Research</a>
+    <a href="stats.html">Statistical Work</a>
+    <a href="teaching.html">Teaching & Program Building</a>
+    <a href="contact.html">Contact</a>
+  </div>
 
-<!-- RESEARCH OUTPUT -->
-<div class="box">
-  <div class="section-title">Research Output</div>
+  <div class="box">
+    <div class="box-top">
+      <p class="section-title">Research Output</p>
+      <div class="metric"><strong>28</strong> PubMed papers · <strong>200+</strong> citations</div>
+    </div>
+    <div class="one-liner">
+      Selected journals: Hepatology · JACC · GIE · Heart Rhythm · Alimentary Pharmacology & Therapeutics
+    </div>
+    <a class="btn" href="research.html">View research →</a>
+  </div>
 
-  <p><strong>28</strong> PubMed-indexed publications</p>
-  <p><strong>200+</strong> citations</p>
+  <div class="box">
+    <div class="box-top">
+      <p class="section-title">Statistical Contribution</p>
+      <div class="metric">DTA · GLMM/HSROC · Bayesian constraints</div>
+    </div>
+    <div class="one-liner">
+      Evidence synthesis and diagnostic modeling with reproducible workflows (R + WinBUGS).
+    </div>
+    <a class="btn" href="stats.html">View statistical work →</a>
+  </div>
 
-  <p style="margin-top: 15px;">Selected journals:</p>
+  <div class="box">
+    <div class="box-top">
+      <p class="section-title">Teaching & Program Building</p>
+      <div class="metric"><strong>79+</strong> recorded sessions</div>
+    </div>
+    <div class="one-liner">
+      MetaHub training initiative + tutoring operations + class production pipeline (ClickUp, Canva, OBS).
+    </div>
+    <a class="btn" href="teaching.html">View teaching →</a>
+  </div>
 
-  <ul>
-    <li>Hepatology</li>
-    <li>Journal of the American College of Cardiology (JACC)</li>
-    <li>Gastrointestinal Endoscopy (GIE)</li>
-    <li>Heart Rhythm</li>
-    <li>Alimentary Pharmacology & Therapeutics</li>
-  </ul>
-
-  <p style="margin-top: 15px;">
-    <a href="YOUR_GOOGLE_SCHOLAR_LINK" target="_blank">
-      View Google Scholar Profile
-    </a>
-  </p>
-</div>
-
-<!-- STATISTICAL CONTRIBUTION -->
-<div class="box">
-  <div class="section-title">Statistical Contribution</div>
-
-  <ul>
-    <li>Diagnostic Test Accuracy Meta-Analysis</li>
-    <li>GLMM & HSROC Modeling</li>
-    <li>Bayesian Threshold-Constrained Models</li>
-    <li>Research Pipeline Design (R + WinBUGS)</li>
-  </ul>
-</div>
-
-<!-- PROGRAM BUILDING -->
-<div class="box">
-  <div class="section-title">Program Building</div>
-
-  <ul>
-    <li>MetaHub — Research Training Initiative</li>
-    <li>79+ Recorded Advanced Sessions</li>
-    <li>Structured Tutoring & Continuous Academic Support</li>
-    <li>Pipeline-Based Class Production System</li>
-  </ul>
-</div>
+  <div class="footer-links">
+    External: <a href="YOUR_GOOGLE_SCHOLAR_LINK" target="_blank">Google Scholar</a>
+  </div>
 
 </body>
 </html>
