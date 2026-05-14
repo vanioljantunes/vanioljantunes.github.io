@@ -1,0 +1,180 @@
+/* style.css — shared stylesheet for vanioljantunes.github.io */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: Georgia, 'Times New Roman', serif;
+  background: #fff;
+  color: #111;
+  max-width: 900px;
+  margin: 60px auto;
+  padding: 0 20px;
+  line-height: 1.65;
+}
+
+a { color: #000; }
+
+/* ── Header ── */
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: 26px;
+  margin-bottom: 22px;
+}
+.photo {
+  width: 130px;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  flex-shrink: 0;
+}
+h1 { font-size: 34px; margin: 0; }
+.subtitle { font-size: 16px; color: #444; margin-top: 6px; }
+
+/* ── Navigation ── */
+.nav {
+  border: 1px solid #ddd;
+  padding: 10px 14px;
+  margin: 18px 0 36px 0;
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.nav a { text-decoration: none; border-bottom: 1px solid #000; padding-bottom: 1px; }
+.back-nav { margin-bottom: 22px; font-size: 14px; }
+
+/* ── Sections ── */
+.section { margin: 2.5rem 0; border-top: 1px solid #ddd; padding-top: 1.5rem; }
+.section-title {
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: #555;
+  margin: 0 0 1rem 0;
+}
+h2 { font-size: 20px; margin: 0 0 0.5rem 0; }
+
+/* ── Boxes ── */
+.box { border: 1px solid #ddd; padding: 22px; margin-bottom: 22px; }
+.box-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.box .section-title {
+  font-size: 13px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #111;
+  margin: 0 0 10px 0;
+}
+
+/* ── Buttons ── */
+.btn {
+  display: inline-block;
+  border: 1px solid #111;
+  padding: 8px 12px;
+  text-decoration: none;
+  font-size: 13px;
+}
+.btn:hover { background: #f5f5f5; }
+
+/* ── Experience timeline ── */
+.exp-item { margin-bottom: 1.6rem; }
+.exp-role { font-weight: bold; font-size: 15px; margin: 0; }
+.exp-org { color: #444; font-size: 14px; margin: 3px 0; }
+.exp-period { font-size: 13px; color: #777; margin: 0; font-style: italic; }
+.exp-desc { font-size: 14px; color: #333; margin: 6px 0 0 0; }
+
+/* ── R packages ── */
+.pkg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.pkg-card { border: 1px solid #ddd; padding: 20px; }
+.pkg-name {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0 0 6px 0;
+}
+.pkg-desc { font-size: 14px; color: #333; margin: 0 0 14px 0; line-height: 1.5; }
+
+/* ── Publications carousel ── */
+.pub-carousel {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  gap: 0;
+  margin: 0 -20px;
+  padding: 0 20px 12px 20px;
+  scrollbar-width: thin;
+  scrollbar-color: #ccc #f0f0f0;
+}
+.pub-carousel::-webkit-scrollbar { height: 4px; }
+.pub-carousel::-webkit-scrollbar-track { background: #f0f0f0; }
+.pub-carousel::-webkit-scrollbar-thumb { background: #ccc; border-radius: 2px; }
+
+.pub-card {
+  scroll-snap-align: start;
+  flex: 0 0 260px;
+  border: 1px solid #ddd;
+  border-right: none;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 160px;
+}
+.pub-card:last-child { border-right: 1px solid #ddd; }
+.pub-meta { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+.pub-title { font-size: 13px; line-height: 1.55; flex: 1; }
+.pub-link {
+  font-size: 12px;
+  text-decoration: none;
+  border-bottom: 1px solid #000;
+  padding-bottom: 1px;
+  align-self: flex-start;
+  margin-top: 4px;
+}
+.pub-cta { text-align: right; margin-top: 12px; font-size: 13px; }
+
+/* ── Teaching / grid utilities ── */
+.grid-2, .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.pill {
+  display: inline-block;
+  border: 1px solid #111;
+  padding: 6px 10px;
+  font-size: 13px;
+  margin-right: 8px;
+  margin-top: 6px;
+}
+ul { margin: 0; padding-left: 18px; }
+.mini, .small { color: #444; font-size: 14px; margin-top: 10px; }
+.metric { font-size: 15px; color: #222; white-space: nowrap; }
+.one-liner { margin: 8px 0 14px 0; color: #333; font-size: 15px; }
+
+/* ── Footer ── */
+.footer-links {
+  margin-top: 34px;
+  font-size: 14px;
+  color: #444;
+  border-top: 1px solid #ddd;
+  padding-top: 18px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  body { margin: 30px auto; }
+  .header { flex-direction: column; }
+  .photo { width: 90px; height: 90px; }
+  h1 { font-size: 26px; }
+  .pkg-grid { grid-template-columns: 1fr; }
+  .grid-2, .grid { grid-template-columns: 1fr; }
+  .pub-card { flex: 0 0 220px; }
+}
+@media (max-width: 720px) {
+  .grid-2, .grid { grid-template-columns: 1fr; }
+}

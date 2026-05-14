@@ -1,123 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vanio Antunes</title>
-
-  <style>
-    body {
-      font-family: Georgia, serif;
-      background-color: #ffffff;
-      color: #111;
-      max-width: 900px;
-      margin: 60px auto;
-      padding: 0 20px;
-      line-height: 1.6;
-    }
-
-    a { color: #000; text-decoration: underline; }
-
-    /* Header */
-    .header {
-      display: flex;
-      align-items: center;
-      gap: 26px;
-      margin-bottom: 22px;
-    }
-
-    .photo {
-      width: 130px;
-      height: 130px;
-      object-fit: cover;
-      border-radius: 4px;
-      border: 1px solid #ddd;
-    }
-
-    h1 { font-size: 34px; margin: 0; }
-
-    .subtitle {
-      font-size: 16px;
-      color: #444;
-      margin-top: 6px;
-    }
-
-    /* Top nav */
-    .nav {
-      border: 1px solid #ddd;
-      padding: 10px 14px;
-      margin: 18px 0 36px 0;
-      display: flex;
-      gap: 18px;
-      flex-wrap: wrap;
-    }
-
-    .nav a { text-decoration: none; border-bottom: 1px solid #000; padding-bottom: 1px; }
-
-    /* Boxes */
-    .box {
-      border: 1px solid #ddd;
-      padding: 22px;
-      margin-bottom: 22px;
-    }
-
-    .box-top {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 10px;
-    }
-
-    .section-title {
-      font-size: 16px;
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin: 0;
-    }
-
-    .metric {
-      font-size: 15px;
-      color: #222;
-      white-space: nowrap;
-    }
-
-    .one-liner {
-      margin: 8px 0 14px 0;
-      color: #333;
-      font-size: 15px;
-    }
-
-    .btn {
-      display: inline-block;
-      border: 1px solid #111;
-      padding: 8px 12px;
-      text-decoration: none;
-      font-size: 14px;
-    }
-
-    .btn:hover { background: #f5f5f5; }
-
-    .footer-links {
-      margin-top: 34px;
-      font-size: 14px;
-      color: #444;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
   <div class="header">
     <img class="photo" src="profile.jpg" alt="Vanio Antunes">
     <div>
       <h1>Vanio Antunes</h1>
-      <div class="subtitle">
-        Medical Student — Federal University of Health Sciences of Porto Alegre (UFCSPA), Brazil
-      </div>
-      <div class="subtitle">
-        Medical Research | Statistical Modeling | Research Systems
-      </div>
+      <div class="subtitle">Medical Student — <a href="https://www.ufcspa.edu.br" target="_blank">UFCSPA</a>, Porto Alegre, Brazil</div>
+      <div class="subtitle">Evidence Synthesis · Statistical Modeling · Research Systems</div>
     </div>
   </div>
 
@@ -128,41 +24,271 @@
     <a href="contact.html">Contact</a>
   </div>
 
-  <div class="box">
-    <div class="box-top">
-      <p class="section-title">Research Output</p>
-      <div class="metric"><strong>28</strong> PubMed papers · <strong>200+</strong> citations</div>
-    </div>
-    <div class="one-liner">
-      Selected journals: Hepatology · JACC · GIE · Heart Rhythm · Alimentary Pharmacology & Therapeutics
-    </div>
-    <a class="btn" href="research.html">View research →</a>
+  <!-- About -->
+  <div class="section">
+    <p class="section-title">About</p>
+    <p>
+      I am a medical student at the Federal University of Health Sciences of Porto Alegre
+      (<a href="https://www.ufcspa.edu.br" target="_blank">UFCSPA</a>), Brazil, with a research
+      focus in evidence synthesis and clinical epidemiology. My work spans 28 PubMed-indexed
+      publications across cardiology, hepatology, and neurology — with more than 200 citations —
+      including contributions to diagnostic test accuracy modeling, network meta-analysis, and
+      Bayesian approaches to evidence synthesis. I coordinate MetaHub, a bilingual (EN/PT) training
+      program in systematic review methodology, and develop open-source R packages to support
+      reproducible meta-analytic workflows.
+    </p>
   </div>
 
-  <div class="box">
-    <div class="box-top">
-      <p class="section-title">Statistical Contribution</p>
-      <div class="metric">DTA · GLMM/HSROC · Bayesian constraints</div>
+  <!-- Education -->
+  <div class="section">
+    <p class="section-title">Education</p>
+    <div class="exp-item">
+      <p class="exp-role">MD Candidate — Medicine</p>
+      <p class="exp-org"><a href="https://www.ufcspa.edu.br" target="_blank">Federal University of Health Sciences of Porto Alegre (UFCSPA)</a> — Porto Alegre, Brazil</p>
+      <p class="exp-period">2020 – present</p>
     </div>
-    <div class="one-liner">
-      Evidence synthesis and diagnostic modeling with reproducible workflows (R + WinBUGS).
-    </div>
-    <a class="btn" href="stats.html">View statistical work →</a>
   </div>
 
-  <div class="box">
-    <div class="box-top">
-      <p class="section-title">Teaching & Program Building</p>
-      <div class="metric"><strong>79+</strong> recorded sessions</div>
+  <!-- Experience -->
+  <div class="section">
+    <p class="section-title">Experience</p>
+
+    <div class="exp-item">
+      <p class="exp-role">Coordinator & Lead Instructor</p>
+      <p class="exp-org">MetaHub — Bilingual Systematic Review Training Program</p>
+      <p class="exp-period">2022 – present</p>
+      <p class="exp-desc">
+        End-to-end curriculum in systematic review and meta-analysis, delivered bilingually (EN/PT)
+        to an international audience. 79+ recorded sessions spanning protocol design, statistical
+        synthesis, and reporting. Production pipeline built on ClickUp, Canva, OBS, and DaVinci Resolve.
+      </p>
     </div>
-    <div class="one-liner">
-      MetaHub training initiative + tutoring operations + class production pipeline (ClickUp, Canva, OBS).
+
+    <div class="exp-item">
+      <p class="exp-role">Researcher & Meta-Analyst</p>
+      <p class="exp-org">Independent — collaborative academic research</p>
+      <p class="exp-period">2021 – present</p>
+      <p class="exp-desc">
+        28 PubMed-indexed publications across cardiology, hepatology, gastroenterology, and neurology.
+        Specialization in diagnostic test accuracy (GLMM/HSROC), network meta-analysis, and
+        Bayesian evidence synthesis. Over 200 citations.
+      </p>
     </div>
-    <a class="btn" href="teaching.html">View teaching →</a>
+
+    <div class="exp-item">
+      <p class="exp-role">R Package Developer</p>
+      <p class="exp-org">Open source — <a href="https://github.com/vanioljantunes" target="_blank">github.com/vanioljantunes</a></p>
+      <p class="exp-period">2023 – present</p>
+      <p class="exp-desc">
+        Author of <code>meta3l</code> (three-level meta-analysis) and <code>easydta</code>
+        (diagnostic test accuracy meta-analysis) — R packages for reproducible evidence synthesis.
+      </p>
+    </div>
+  </div>
+
+  <!-- R Projects -->
+  <div class="section">
+    <p class="section-title">R Packages</p>
+    <div class="pkg-grid">
+
+      <div class="pkg-card">
+        <p class="pkg-name">meta3l</p>
+        <p class="pkg-desc">Three-level meta-analysis in R. Handles clustered and hierarchical study structures common in systematic reviews.</p>
+        <a class="btn" href="https://github.com/vanioljantunes/meta3l" target="_blank">GitHub →</a>
+      </div>
+
+      <div class="pkg-card">
+        <p class="pkg-name">easydta</p>
+        <p class="pkg-desc">Easy diagnostic test accuracy meta-analysis. Implements GLMM and HSROC models with a user-friendly interface.</p>
+        <a class="btn" href="https://github.com/vanioljantunes/easydta" target="_blank">GitHub →</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Publications carousel -->
+  <div class="section">
+    <p class="section-title">Selected Publications</p>
+    <div class="pub-carousel">
+
+      <div class="pub-card">
+        <div class="pub-meta">Hepatology · 2025</div>
+        <div class="pub-title">Comparison of pharmacological therapies in metabolic dysfunction-associated steatohepatitis for fibrosis regression and resolution</div>
+        <a class="pub-link" href="https://pubmed.ncbi.nlm.nih.gov/39903735/" target="_blank">PubMed →</a>
+      </div>
+
+      <div class="pub-card">
+        <div class="pub-meta">Heart Rhythm · 2025</div>
+        <div class="pub-title">Cardioneuroablation in patients with vasovagal syncope: updated systematic review and meta-analysis</div>
+        <a class="pub-link" href="https://pubmed.ncbi.nlm.nih.gov/39067734/" target="_blank">PubMed →</a>
+      </div>
+
+      <div class="pub-card">
+        <div class="pub-meta">Heart Rhythm · 2024</div>
+        <div class="pub-title">Catheter ablation versus medical therapy for atrial fibrillation in patients with heart failure with preserved ejection fraction</div>
+        <a class="pub-link" href="https://pubmed.ncbi.nlm.nih.gov/38621498/" target="_blank">PubMed →</a>
+      </div>
+
+      <div class="pub-card">
+        <div class="pub-meta">Gastrointest Endosc · 2025</div>
+        <div class="pub-title">EUS-guided coiling plus glue injection compared with endoscopic glue injection alone for gastric varices</div>
+        <a class="pub-link" href="https://pubmed.ncbi.nlm.nih.gov/39389435/" target="_blank">PubMed →</a>
+      </div>
+
+      <div class="pub-card">
+        <div class="pub-meta">Aliment Pharmacol Ther · 2026</div>
+        <div class="pub-title">Network Meta-Analysis: Comparison of Pharmacological Therapies in Compensated Metabolic Dysfunction-Associated Steatohepatitis Cirrhosis</div>
+        <a class="pub-link" href="https://pubmed.ncbi.nlm.nih.gov/41645601/" target="_blank">PubMed →</a>
+      </div>
+
+      <div class="pub-card">
+        <div class="pub-meta">JACC Cardiovasc Interv · 2026</div>
+        <div class="pub-title">IVUS, OCT, or Angiography as Guidance for PCI in Complex Coronary Artery Lesions</div>
+        <a class="pub-link" href="https://pubmed.ncbi.nlm.nih.gov/41534986/" target="_blank">PubMed →</a>
+      </div>
+
+      <div class="pub-card">
+        <div class="pub-meta">Heart Rhythm · 2025</div>
+        <div class="pub-title">DOACs versus vitamin K antagonists in patients with atrial fibrillation and chronic kidney disease undergoing hemodialysis</div>
+        <a class="pub-link" href="https://pubmed.ncbi.nlm.nih.gov/39923948/" target="_blank">PubMed →</a>
+      </div>
+
+      <div class="pub-card">
+        <div class="pub-meta">J Interv Card Electrophysiol · 2026</div>
+        <div class="pub-title">Artificial intelligence ECGs performance in the diagnosis of Brugada Syndrome</div>
+        <a class="pub-link" href="https://pubmed.ncbi.nlm.nih.gov/40461897/" target="_blank">PubMed →</a>
+      </div>
+
+      <div class="pub-card">
+        <div class="pub-meta">J Interv Card Electrophysiol · 2025</div>
+        <div class="pub-title">Pulsed field ablation for paroxysmal supraventricular tachycardia</div>
+        <a class="pub-link" href="https://pubmed.ncbi.nlm.nih.gov/41269503/" target="_blank">PubMed →</a>
+      </div>
+
+      <div class="pub-card">
+        <div class="pub-meta">J Interv Card Electrophysiol · 2025</div>
+        <div class="pub-title">Pulsed field ablation with very high-power and high-power short-duration radiofrequency ablation for atrial fibrillation</div>
+        <a class="pub-link" href="https://pubmed.ncbi.nlm.nih.gov/39738811/" target="_blank">PubMed →</a>
+      </div>
+
+      <div class="pub-card">
+        <div class="pub-meta">J Interv Card Electrophysiol · 2024</div>
+        <div class="pub-title">Catheter ablation versus medical therapy on mental health and quality of life in patients with atrial fibrillation</div>
+        <a class="pub-link" href="https://pubmed.ncbi.nlm.nih.gov/38980445/" target="_blank">PubMed →</a>
+      </div>
+
+      <div class="pub-card">
+        <div class="pub-meta">Gastrointest Endosc · 2024</div>
+        <div class="pub-title">Endoscopic sphincterotomy combined with biliary stent placement and its impact on the risk of adverse events</div>
+        <a class="pub-link" href="https://pubmed.ncbi.nlm.nih.gov/38782136/" target="_blank">PubMed →</a>
+      </div>
+
+      <div class="pub-card">
+        <div class="pub-meta">Surg Endosc · 2025</div>
+        <div class="pub-title">EUS-guided hepaticogastrostomy combined with antegrade stenting for malignant biliary obstruction</div>
+        <a class="pub-link" href="https://pubmed.ncbi.nlm.nih.gov/40325242/" target="_blank">PubMed →</a>
+      </div>
+
+      <div class="pub-card">
+        <div class="pub-meta">J Vasc Interv Radiol · 2025</div>
+        <div class="pub-title">Effectiveness of Transjugular Intrahepatic Portosystemic Shunt Creation for the Treatment of Hepatopulmonary Syndrome</div>
+        <a class="pub-link" href="https://pubmed.ncbi.nlm.nih.gov/40562306/" target="_blank">PubMed →</a>
+      </div>
+
+      <div class="pub-card">
+        <div class="pub-meta">Eur J Gastroenterol Hepatol · 2024</div>
+        <div class="pub-title">Vedolizumab versus ustekinumab in Crohn's disease with prior anti-tumor necrosis factor failure</div>
+        <a class="pub-link" href="https://pubmed.ncbi.nlm.nih.gov/38973525/" target="_blank">PubMed →</a>
+      </div>
+
+      <div class="pub-card">
+        <div class="pub-meta">Gastroenterol Hepatol Bed Bench · 2024</div>
+        <div class="pub-title">Somatostatin analogs in the treatment of gastrointestinal angiodysplasia bleeding</div>
+        <a class="pub-link" href="https://pubmed.ncbi.nlm.nih.gov/40406436/" target="_blank">PubMed →</a>
+      </div>
+
+      <div class="pub-card">
+        <div class="pub-meta">Transplantation · 2025</div>
+        <div class="pub-title">Combined Heart and Liver Transplantation in the Failing Fontan</div>
+        <a class="pub-link" href="https://pubmed.ncbi.nlm.nih.gov/40320589/" target="_blank">PubMed →</a>
+      </div>
+
+      <div class="pub-card">
+        <div class="pub-meta">Arq Neuropsiquiatr · 2025</div>
+        <div class="pub-title">Glucagon-like peptide 1 agonists for Parkinson's disease</div>
+        <a class="pub-link" href="https://pubmed.ncbi.nlm.nih.gov/40288416/" target="_blank">PubMed →</a>
+      </div>
+
+      <div class="pub-card">
+        <div class="pub-meta">Mov Disord Clin Pract · 2025</div>
+        <div class="pub-title">Long-Term Quality of Life Trend after Subthalamic Stimulation for Parkinson's Disease</div>
+        <a class="pub-link" href="https://pubmed.ncbi.nlm.nih.gov/40042113/" target="_blank">PubMed →</a>
+      </div>
+
+      <div class="pub-card">
+        <div class="pub-meta">Brain Imaging Behav · 2026</div>
+        <div class="pub-title">Resting-state functional connectivity alterations in dementia with Lewy bodies</div>
+        <a class="pub-link" href="https://pubmed.ncbi.nlm.nih.gov/41912857/" target="_blank">PubMed →</a>
+      </div>
+
+      <div class="pub-card">
+        <div class="pub-meta">BMC Cardiovasc Disord · 2025</div>
+        <div class="pub-title">Specific therapies for cardiac Transthyretin-mediated amyloidosis</div>
+        <a class="pub-link" href="https://pubmed.ncbi.nlm.nih.gov/40251502/" target="_blank">PubMed →</a>
+      </div>
+
+      <div class="pub-card">
+        <div class="pub-meta">Curr Probl Cardiol · 2025</div>
+        <div class="pub-title">Artificially sweetened beverages and associated risk of cardiovascular events</div>
+        <a class="pub-link" href="https://pubmed.ncbi.nlm.nih.gov/39557594/" target="_blank">PubMed →</a>
+      </div>
+
+      <div class="pub-card">
+        <div class="pub-meta">Coron Artery Dis · 2025</div>
+        <div class="pub-title">Culprit vessel revascularization prior to complete angiography in primary percutaneous coronary intervention</div>
+        <a class="pub-link" href="https://pubmed.ncbi.nlm.nih.gov/39475832/" target="_blank">PubMed →</a>
+      </div>
+
+      <div class="pub-card">
+        <div class="pub-meta">Eur J Haematol · 2024</div>
+        <div class="pub-title">Cardiotoxic effects of CAR-T cell therapy</div>
+        <a class="pub-link" href="https://pubmed.ncbi.nlm.nih.gov/39171519/" target="_blank">PubMed →</a>
+      </div>
+
+      <div class="pub-card">
+        <div class="pub-meta">Pancreatology · 2025</div>
+        <div class="pub-title">Association between ABO blood groups and pancreatic cancer outcomes</div>
+        <a class="pub-link" href="https://pubmed.ncbi.nlm.nih.gov/40500625/" target="_blank">PubMed →</a>
+      </div>
+
+      <div class="pub-card">
+        <div class="pub-meta">Surg Neurol Int · 2024</div>
+        <div class="pub-title">Delayed cerebral ischemia incidence after treatment for aneurysmal subarachnoid hemorrhage in young adults</div>
+        <a class="pub-link" href="https://pubmed.ncbi.nlm.nih.gov/39777177/" target="_blank">PubMed →</a>
+      </div>
+
+      <div class="pub-card">
+        <div class="pub-meta">Gastroenterol Hepatol Bed Bench · 2025</div>
+        <div class="pub-title">Comparative analysis of supraglottic airway vs. infraglottic airway in endoscopic retrograde cholangiopancreatography</div>
+        <a class="pub-link" href="https://pubmed.ncbi.nlm.nih.gov/40734815/" target="_blank">PubMed →</a>
+      </div>
+
+      <div class="pub-card">
+        <div class="pub-meta">Pediatr Dermatol · 2026</div>
+        <div class="pub-title">Clinical Features and Treatment of Eosinophilic Pustular Folliculitis in Childhood</div>
+        <a class="pub-link" href="https://pubmed.ncbi.nlm.nih.gov/41321086/" target="_blank">PubMed →</a>
+      </div>
+
+    </div>
+    <p class="pub-cta">
+      <a href="https://scholar.google.com/citations?user=JOZkTg0AAAAJ&hl=en" target="_blank">View all on Google Scholar →</a>
+    </p>
   </div>
 
   <div class="footer-links">
-    External: <a href="YOUR_GOOGLE_SCHOLAR_LINK" target="_blank">Google Scholar</a>
+    <a href="https://scholar.google.com/citations?user=JOZkTg0AAAAJ&hl=en" target="_blank">Google Scholar</a> ·
+    <a href="https://github.com/vanioljantunes" target="_blank">GitHub</a> ·
+    <a href="contact.html">Contact</a>
   </div>
 
 </body>
