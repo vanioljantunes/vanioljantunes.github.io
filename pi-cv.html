@@ -1895,15 +1895,21 @@
       '#contact .contact-card'
     ];
 
-    const stagedRevealItems = stagedRevealSelectors.flatMap(selector =>
-      Array.from(document.querySelectorAll(selector))
-    );
-    [...new Set(stagedRevealItems)].forEach((el, index) => {
-      el.classList.add('reveal-item');
-      el.style.setProperty('--reveal-delay', `${Math.min(index % 6, 5) * 70}ms`);
+    /* Per-section stagger: reset delay counter for each section */
+    document.querySelectorAll('#hero, .sect').forEach(section => {
+      const seen = new Set();
+      stagedRevealSelectors.forEach(sel => {
+        section.querySelectorAll(sel).forEach(el => seen.add(el));
+      });
+      [...seen].forEach((el, i) => {
+        el.classList.add('reveal-item');
+        el.style.setProperty('--reveal-delay', `${Math.min(i, 5) * 70}ms`);
+      });
     });
 
     const scrollWrapper = document.querySelector('.scroll-wrapper');
+    /* rootMargin: exclude nav height at top (58px), small buffer at bottom only.
+       Previous -20% top margin put hero content (at ~138px) inside the dead zone. */
     const revealObs = new IntersectionObserver(entries => {
       entries.forEach(e => {
         if (e.isIntersecting) {
@@ -1912,9 +1918,10 @@
           e.target.classList.remove('visible');
         }
       });
-    }, { 
+    }, {
       root: scrollWrapper,
-      rootMargin: '-20% 0px -20% 0px' 
+      threshold: 0.05,
+      rootMargin: '-58px 0px -5% 0px'
     });
 
     document.querySelectorAll('.reveal-item').forEach(el => revealObs.observe(el));
