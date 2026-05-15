@@ -105,7 +105,7 @@
 
     /* ---- HERO ---- */
     #hero {
-      padding: 48px 0 64px;
+      padding: 18px 0 20px;
       border-bottom: var(--bw) solid var(--border);
       background: linear-gradient(160deg, oklch(100% 0 0) 0%, var(--accent-dim) 100%);
       position: relative; overflow: hidden;
@@ -117,53 +117,53 @@
       background: radial-gradient(circle, color-mix(in srgb, var(--accent) 28.000000000000004%, transparent) 0%, transparent 70%);
       pointer-events: none;
     }
-    .hero-grid { display: grid; grid-template-columns: 1fr 340px; gap: 72px; align-items: center; position: relative; z-index: 1; }
+    .hero-grid { display: grid; grid-template-columns: 1fr 300px; gap: 40px; align-items: center; position: relative; z-index: 1; }
 
     /* role pill */
     .hero-role-pill {
       display: inline-flex; align-items: center; gap: 7px;
-      padding: 6px 14px; border-radius: 100px;
+      padding: 5px 12px; border-radius: 100px;
       background: var(--accent-dim); border: var(--bw) solid var(--border);
-      font-size: 12px; font-weight: 600; color: var(--accent-txt);
-      margin-bottom: 20px;
+      font-size: 11px; font-weight: 600; color: var(--accent-txt);
+      margin-bottom: 10px;
     }
     .hero-role-pill::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
 
     .hero-name {
-      font-size: clamp(48px, 7vw, 88px); font-weight: 900;
+      font-size: clamp(32px, 4.5vw, 58px); font-weight: 900;
       letter-spacing: -0.05em; line-height: 0.95;
-      color: var(--navy); margin-bottom: 20px;
+      color: var(--navy); margin-bottom: 10px;
     }
 
     /* location row */
     .hero-location {
       display: flex; align-items: center; gap: 6px;
-      font-size: 13px; color: var(--muted); margin-bottom: 18px;
+      font-size: 12px; color: var(--muted); margin-bottom: 10px;
     }
     .hero-location svg { width: 13px; height: 13px; flex-shrink: 0; }
 
     /* expertise chips */
-    .hero-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 22px; }
+    .hero-chips { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 12px; }
     .hero-chip {
       display: inline-flex; align-items: center;
-      padding: 5px 13px; border-radius: 100px;
+      padding: 4px 10px; border-radius: 100px;
       border: var(--bw) solid var(--border); background: var(--surface);
-      font-size: 12px; font-weight: 500; color: var(--fg);
+      font-size: 11px; font-weight: 500; color: var(--fg);
       transition: border-color 0.15s, background 0.15s;
     }
     .hero-chip:hover { border-color: var(--accent); background: var(--accent-dim); color: var(--accent-txt); }
 
-    .hero-bio { font-size: 18px; line-height: 1.78; color: oklch(38% 0.02 250); max-width: 58ch; margin-bottom: 32px; text-align: justify; text-align-last: left; hyphens: auto; }
+    .hero-bio { font-size: 14px; line-height: 1.6; color: oklch(38% 0.02 250); max-width: 58ch; margin-bottom: 14px; text-align: justify; text-align-last: left; hyphens: auto; }
     .hero-bio strong { font-weight: 800; color: var(--navy); }
-    .hero-chip svg { width: 14px; height: 14px; margin-right: 5px; vertical-align: middle; flex-shrink: 0; }
+    .hero-chip svg { width: 12px; height: 12px; margin-right: 4px; vertical-align: middle; flex-shrink: 0; }
 
     /* CTA buttons */
-    .hero-ctas { display: flex; gap: 10px; flex-wrap: nowrap; align-items: center; margin-bottom: 32px; }
+    .hero-ctas { display: flex; gap: 8px; flex-wrap: nowrap; align-items: center; margin-bottom: 14px; }
     .cta-primary {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 14px 28px; border-radius: 12px;
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 10px 20px; border-radius: 10px;
       background: var(--accent); color: #fff;
-      font-size: 16px; font-weight: 700;
+      font-size: 14px; font-weight: 700;
       border: none; cursor: pointer;
       transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
       box-shadow: 0 4px 18px color-mix(in srgb, var(--accent) 28.000000000000004%, transparent);
@@ -173,9 +173,9 @@
     .cta-primary:hover { background: var(--navy); transform: translateY(-2px); box-shadow: 0 6px 24px color-mix(in srgb, var(--accent) 32%, transparent); }
     .cta-secondary {
       display: inline-flex; align-items: center; gap: 6px;
-      padding: 14px 28px; border-radius: 12px;
+      padding: 10px 18px; border-radius: 10px;
       background: var(--surface); color: var(--fg);
-      font-size: 16px; font-weight: 600;
+      font-size: 14px; font-weight: 600;
       border: var(--bw) solid var(--border); cursor: pointer;
       box-shadow: 0 1px 4px oklch(0% 0 0 / 0.06);
       transition: border-color 0.15s, background 0.15s, color 0.15s;
@@ -187,59 +187,59 @@
     /* social strip — card layout */
     .hero-social-strip {
       display: grid; grid-template-columns: repeat(4, 1fr);
-      gap: 10px; margin-bottom: 0;
+      gap: 7px; margin-bottom: 0;
     }
     .social-link {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 12px; border-radius: 10px;
+      display: flex; align-items: center; gap: 8px;
+      padding: 7px 10px; border-radius: 8px;
       border: var(--bw) solid var(--border); background: color-mix(in srgb, var(--surface) 80%, transparent);
       backdrop-filter: blur(4px); transition: border-color 0.15s;
       overflow: hidden; text-decoration: none;
     }
     .social-link:hover { border-color: var(--accent); }
     .social-icon-box {
-      width: 36px; height: 36px; flex-shrink: 0;
+      width: 28px; height: 28px; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
-      border: var(--bw) solid var(--border); border-radius: 8px;
+      border: var(--bw) solid var(--border); border-radius: 6px;
       background: var(--surface);
     }
-    .social-icon-box svg { width: 16px; height: 16px; }
-    .social-link-text { font-size: 12px; font-weight: 500; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .social-icon-box svg { width: 14px; height: 14px; }
+    .social-link-text { font-size: 11px; font-weight: 500; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
     /* stats — metric cards */
     .hero-stats {
-      margin-top: 32px;
+      margin-top: 8px;
       display: grid; grid-template-columns: repeat(4, 1fr);
-      border: var(--bw) solid var(--border); border-radius: 16px;
+      border: var(--bw) solid var(--border); border-radius: 12px;
       background: oklch(99.5% 0 0 / 0.85);
       backdrop-filter: blur(8px);
       box-shadow: 0 1px 8px oklch(0% 0 0 / 0.05);
       overflow: hidden;
     }
     .stat-item {
-      padding: 28px 24px; border-right: var(--bw) solid var(--border);
-      display: flex; align-items: center; gap: 16px;
+      padding: 14px 16px; border-right: var(--bw) solid var(--border);
+      display: flex; align-items: center; gap: 10px;
     }
     .stat-item:last-child { border-right: none; }
     .stat-icon {
-      width: 56px; height: 56px; flex-shrink: 0; border-radius: 50%;
+      width: 38px; height: 38px; flex-shrink: 0; border-radius: 50%;
       background: var(--accent-dim); display: flex; align-items: center; justify-content: center;
     }
-    .stat-icon svg { width: 26px; height: 26px; color: var(--accent); }
-    .stat-icon-r { font-size: 24px; font-weight: 900; color: var(--accent); line-height: 1; }
+    .stat-icon svg { width: 18px; height: 18px; color: var(--accent); }
+    .stat-icon-r { font-size: 17px; font-weight: 900; color: var(--accent); line-height: 1; }
     .stat-text {}
     .stat-num {
-      font-size: 36px; font-weight: 900; letter-spacing: -0.04em; line-height: 1;
+      font-size: 24px; font-weight: 900; letter-spacing: -0.04em; line-height: 1;
       color: var(--accent); font-variant-numeric: tabular-nums;
     }
-    .stat-lbl { font-size: 13px; font-weight: 600; color: var(--fg); margin-top: 3px; }
-    .stat-sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
+    .stat-lbl { font-size: 11px; font-weight: 600; color: var(--fg); margin-top: 2px; }
+    .stat-sub { font-size: 10px; color: var(--muted); margin-top: 1px; }
 
     /* photo card right */
     .hero-photo-col {
       display: flex; flex-direction: column; gap: 0;
       position: relative;
-      min-height: 500px;
+      min-height: 380px;
       justify-content: center;
     }
     .hero-photo-col::before {
@@ -288,7 +288,7 @@
     }
     .hero-photo {
       width: 100%;
-      aspect-ratio: 4/5.2;
+      aspect-ratio: 4/4.6;
       object-fit: cover;
       object-position: 50% 18%;
       display: block;
@@ -1063,9 +1063,7 @@
           </div>
 
           <!-- bio -->
-          <p class="hero-bio">
-            Medical student in its last graduation year with a 28-paper PubMed portfolio, two open-source R packages, and 79+ recorded teaching sessions on meta-analysis methodology. I combine clinical training with graduate-level statistical methods and production-grade programming.  I search for research positions where workflows productions are needed to be developed.
-          </p>
+          <p class="hero-bio">Medical student in its last graduation year with a 30 paper PubMed portfolio, two open-source R packages, and 79+ recorded teaching sessions on meta-analysis methodology. I combine clinical training with graduate-level statistical methods and production-grade programming. I search for research positions where workflows productions are needed to be developed.</p>
 
           <!-- CTAs -->
           <div class="hero-ctas">
@@ -1088,7 +1086,7 @@
       </div><!-- end hero-grid -->
 
       <!-- FULL WIDTH: social strip — card layout -->
-      <div class="hero-social-strip" style="margin-top:32px;">
+      <div class="hero-social-strip" style="margin-top:10px;">
             <a class="social-link" href="https://scholar.google.com/citations?user=JOZkTg0AAAAJ&amp;hl=en" target="_blank">
               <div class="social-icon-box">
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269zM12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z" fill="#4285F4"></path></svg>
@@ -2041,119 +2039,6 @@
 
   </script>
 
-  <script>
-    /* ELEMENT INSPECTOR — Ctrl+click any element → copies to clipboard for Claude Code */
-    (function() {
-      let toast;
 
-      function makeToast() {
-        const t = document.createElement('div');
-        t.id = 'inspector-toast';
-        Object.assign(t.style, {
-          position: 'fixed', bottom: '24px', right: '24px', zIndex: '99999',
-          background: 'oklch(22% 0.04 260)', color: '#fff',
-          padding: '10px 18px', borderRadius: '10px',
-          fontSize: '13px', fontFamily: 'system-ui, sans-serif',
-          fontWeight: '600', opacity: '0',
-          transition: 'opacity 0.2s', pointerEvents: 'none',
-          boxShadow: '0 4px 18px rgba(0,0,0,0.22)'
-        });
-        document.body.appendChild(t);
-        return t;
-      }
-
-      function showToast(msg) {
-        if (!toast) toast = makeToast();
-        toast.textContent = msg;
-        toast.style.opacity = '1';
-        clearTimeout(toast._t);
-        toast._t = setTimeout(() => { toast.style.opacity = '0'; }, 2200);
-      }
-
-      function serializeElement(el) {
-        const tag = el.tagName.toLowerCase();
-        const id = el.id ? `#${el.id}` : '';
-        const cls = el.className && typeof el.className === 'string'
-          ? '.' + el.className.trim().split(/\s+/).join('.') : '';
-        const rect = el.getBoundingClientRect();
-        const cs = getComputedStyle(el);
-
-        const relevantStyles = [
-          'display','position','width','height','margin','padding',
-          'font-size','font-weight','color','background','border',
-          'border-radius','gap','grid-template-columns','flex-direction',
-          'align-items','justify-content','opacity','transform'
-        ].map(p => `  ${p}: ${cs.getPropertyValue(p)}`).join('\n');
-
-        const html = el.outerHTML.length > 800
-          ? el.outerHTML.substring(0, 800) + '…' : el.outerHTML;
-
-        return [
-          `ELEMENT: ${tag}${id}${cls}`,
-          `SIZE: ${Math.round(rect.width)}×${Math.round(rect.height)}px`,
-          ``,
-          `COMPUTED STYLES:`,
-          relevantStyles,
-          ``,
-          `HTML:`,
-          html
-        ].join('\n');
-      }
-
-      document.addEventListener('click', function(e) {
-        if (!e.ctrlKey && !e.metaKey) return;
-        e.preventDefault();
-        e.stopPropagation();
-
-        /* Ctrl+Shift+click → open in VS Code at source line */
-        if (e.shiftKey) {
-          const html = e.target.outerHTML.substring(0, 600);
-          fetch('http://127.0.0.1:9997', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ html })
-          }).then(r => r.json())
-            .then(d => showToast(`Opened pi-cv.html:${d.line}`))
-            .catch(() => showToast('Bridge not running — start "Element Bridge" task'));
-          return;
-        }
-
-        /* Ctrl+click → copy to clipboard */
-        const text = serializeElement(e.target);
-        navigator.clipboard.writeText(text).then(() => {
-          showToast('Element copied — paste into Claude Code');
-        }).catch(() => {
-          const ta = document.createElement('textarea');
-          ta.value = text;
-          ta.style.position = 'fixed'; ta.style.opacity = '0';
-          document.body.appendChild(ta);
-          ta.select(); document.execCommand('copy');
-          document.body.removeChild(ta);
-          showToast('Element copied — paste into Claude Code');
-        });
-      }, true);
-
-      /* visual hover highlight */
-      let lastHL;
-      document.addEventListener('mouseover', function(e) {
-        if (!e.ctrlKey && !e.metaKey) return;
-        if (lastHL) lastHL.style.outline = '';
-        lastHL = e.target;
-        lastHL.style.outline = '2px solid oklch(55% 0.18 145)';
-      });
-      document.addEventListener('mouseout', function(e) {
-        if (lastHL) { lastHL.style.outline = ''; lastHL = null; }
-      });
-      document.addEventListener('keydown', function(e) {
-        if ((e.ctrlKey || e.metaKey) && lastHL)
-          lastHL.style.outline = '2px solid oklch(55% 0.18 145)';
-      });
-      document.addEventListener('keyup', function(e) {
-        if (!e.ctrlKey && !e.metaKey && lastHL) {
-          lastHL.style.outline = ''; lastHL = null;
-        }
-      });
-    })();
-  </script>
-
+<script src="http://127.0.0.1:9997/inspector.js"></script>
 </body></html>
