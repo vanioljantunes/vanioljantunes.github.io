@@ -411,24 +411,24 @@
       position: relative;
       display: grid;
       grid-template-columns: 1fr;
-      gap: 22px;
-      max-width: 980px;
-      padding-top: 10px;
+      gap: 16px;
+      max-width: 920px;
+      padding-top: 4px;
     }
     .about-timeline::before {
       content: '';
       position: absolute;
       left: 19px;
-      top: 28px;
-      bottom: 34px;
+      top: 22px;
+      bottom: 28px;
       width: 1px;
       background: linear-gradient(180deg, transparent, var(--border), transparent);
     }
     .timeline-step {
       position: relative;
       display: grid;
-      grid-template-columns: 40px minmax(180px, 240px) minmax(0, 1fr);
-      column-gap: 24px;
+      grid-template-columns: 36px minmax(160px, 220px) minmax(0, 1fr);
+      column-gap: 20px;
       align-items: center;
       justify-items: stretch;
       text-align: left;
@@ -440,18 +440,18 @@
       grid-column: 1;
       display: grid;
       place-items: center;
-      width: 40px;
-      height: 40px;
+      width: 36px;
+      height: 36px;
       border: 1px solid var(--border);
       border-radius: 50%;
       background: color-mix(in oklch, var(--surface) 86%, var(--accent-dim));
       color: var(--accent-txt);
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 800;
       box-shadow: 0 10px 26px oklch(22% 0.02 240 / 0.06);
     }
-    .timeline-step.is-active .timeline-num {
+    .timeline-step:last-child.is-active .timeline-num {
       background: var(--navy);
       border-color: var(--navy);
       color: white;
@@ -462,13 +462,13 @@
       align-self: center;
       max-width: 100%;
       color: var(--navy);
-      font-size: clamp(17px, 1.45vw, 20px);
+      font-size: clamp(15px, 1.25vw, 18px);
       font-weight: 900;
       letter-spacing: -0.04em;
       line-height: 1.14;
       margin: 0;
       text-align: center;
-      transform: translateY(-28px);
+      transform: translateY(-23px);
     }
     .timeline-connector {
       grid-column: 2;
@@ -483,8 +483,8 @@
     .timeline-connector::before {
       content: '';
       position: absolute;
-      left: -24px;
-      right: -24px;
+      left: -20px;
+      right: -20px;
       top: 50%;
       height: 1px;
       transform: translateY(-50%);
@@ -493,7 +493,7 @@
     .timeline-connector::after {
       content: '';
       position: absolute;
-      right: -25px;
+      right: -21px;
       top: 50%;
       width: 9px;
       height: 9px;
@@ -507,13 +507,13 @@
       position: relative;
       width: 100%;
       min-height: 0;
-      padding: 22px 28px 22px 82px;
+      padding: 17px 22px 17px 70px;
       border: var(--bw) solid var(--border);
-      border-radius: 22px;
+      border-radius: 18px;
       background: color-mix(in oklch, var(--surface) 90%, transparent);
-      box-shadow: 0 24px 55px oklch(22% 0.02 240 / 0.07);
+      box-shadow: 0 16px 38px oklch(22% 0.02 240 / 0.055);
     }
-    .timeline-step.is-active .timeline-card {
+    .timeline-step:last-child.is-active .timeline-card {
       transform: scale(1.02);
       transform-origin: left center;
       z-index: 10;
@@ -525,7 +525,7 @@
         0 30px 70px color-mix(in srgb, var(--accent) 18%, transparent),
         0 0 0 6px color-mix(in srgb, var(--accent) 55.00000000000001%, transparent);
     }
-    .timeline-step.is-active .timeline-card::before {
+    .timeline-step:last-child.is-active .timeline-card::before {
       content: 'Actively seeking';
       position: absolute;
       top: -14px;
@@ -542,13 +542,13 @@
       text-transform: uppercase;
       box-shadow: 0 10px 24px color-mix(in srgb, var(--accent) 18%, transparent);
     }
-    .timeline-step.is-active .timeline-icon {
+    .timeline-step:last-child.is-active .timeline-icon {
       background: var(--accent);
       border-color: var(--accent);
       color: white;
       box-shadow: 0 10px 24px color-mix(in srgb, var(--accent) 20%, transparent);
     }
-    .timeline-step.is-active .timeline-body strong {
+    .timeline-step:last-child.is-active .timeline-body strong {
       color: var(--navy);
       background: color-mix(in srgb, var(--accent) 70%, transparent);
       border-radius: 8px;
@@ -559,12 +559,12 @@
     .timeline-icon {
       position: absolute;
       top: 50%;
-      left: 22px;
+      left: 18px;
       transform: translateY(-50%);
       display: grid;
       place-items: center;
-      width: 44px;
-      height: 44px;
+      width: 38px;
+      height: 38px;
       border: 1px solid var(--border);
       border-radius: 50%;
       background: color-mix(in oklch, var(--surface) 90%, var(--accent-dim));
@@ -572,8 +572,8 @@
       box-shadow: 0 14px 30px oklch(22% 0.02 240 / 0.06);
     }
     .timeline-icon svg {
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
     }
     .timeline-body {
       margin: 0;
@@ -582,8 +582,8 @@
       border: 0;
       border-radius: 0;
       color: oklch(33% 0.05 245);
-      font-size: 15px;
-      line-height: 1.65;
+      font-size: 14px;
+      line-height: 1.52;
       background: transparent;
     }
     .timeline-body strong {
@@ -806,20 +806,30 @@
     .scholar-cta { margin-top: 24px; text-align: center; }
 
     /* ---- R PACKAGES ---- */
-    #packages .pkg-grid { display: grid; grid-template-columns: 1fr; gap: 40px; }
-    .pkg-card { border: var(--bw) solid var(--border); border-radius: var(--r); background: var(--surface); overflow: hidden; }
-    .pkg-head { padding: 20px 24px 16px; border-bottom: var(--bw) solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    #packages .pkg-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+    .pkg-card { border: var(--bw) solid var(--border); border-radius: var(--r); background: var(--surface); overflow: hidden; display: flex; flex-direction: column; }
+    .pkg-head { padding: 16px 18px 12px; border-bottom: var(--bw) solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
     .pkg-name { font-family: var(--font-mono); font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
     .pkg-version { font-family: var(--font-mono); font-size: 10px; color: var(--muted); margin-top: 4px; }
     .pkg-badge { padding: 3px 10px; background: var(--accent-dim); border: var(--bw) solid var(--border); border-radius: var(--r); font-family: var(--font-mono); font-size: 10px; color: var(--accent-txt); font-weight: 600; white-space: nowrap; }
-    .pkg-body { padding: 20px 24px; }
-    .pkg-desc { font-size: 14px; line-height: 1.65; margin-bottom: 16px; }
-    .pkg-methods { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 20px; }
+    .pkg-body { padding: 16px 18px; flex: 1; }
+    .pkg-desc { font-size: 13px; line-height: 1.55; margin-bottom: 12px; }
+    .pkg-methods { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+    .pkg-plot {
+      width: 100%;
+      max-height: 170px;
+      object-fit: contain;
+      margin-bottom: 12px;
+      border: var(--bw) solid var(--border);
+      border-radius: 8px;
+      background: white;
+      padding: 6px;
+    }
     .pkg-install { display: flex; align-items: center; border: var(--bw) solid var(--border); border-radius: var(--r); overflow: hidden; background: var(--bg); }
     .pkg-install code { flex: 1; padding: 8px 12px; font-family: var(--font-mono); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .copy-btn { padding: 8px 12px; border: none; border-left: var(--bw) solid var(--border); background: var(--surface); cursor: pointer; font-family: var(--font-mono); font-size: 11px; color: var(--muted); transition: all 0.15s; }
     .copy-btn:hover { background: var(--border); color: var(--fg); }
-    .pkg-footer { padding: 12px 24px; border-top: var(--bw) solid var(--border); }
+    .pkg-footer { padding: 10px 18px; border-top: var(--bw) solid var(--border); }
 
     /* ---- METHODS ---- */
     #methods .methods-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--bw); border: var(--bw) solid var(--border); border-radius: var(--r); overflow: hidden; background: var(--border); }
@@ -868,7 +878,7 @@
       overflow-y: scroll;
       scroll-snap-type: y mandatory;
       scroll-behavior: smooth;
-      scroll-padding-top: 58px; /* Nav height */
+      scroll-padding-top: 0;
     }
 
     /* ---- REVEAL ---- */
@@ -886,6 +896,9 @@
     .reveal-item.visible {
       opacity: 1;
       transform: translateY(0);
+    }
+    .scroll-wrapper.is-sequencing {
+      scroll-snap-type: none;
     }
 
     #hero,
@@ -940,7 +953,7 @@
         grid-column: 2;
         grid-row: 2;
       }
-      .timeline-step.is-active .timeline-card::before {
+      .timeline-step:last-child.is-active .timeline-card::before {
         left: 66px;
       }
       .skills-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -958,7 +971,7 @@
       .hero-photo-col { display: none; }
       .hero-social-strip { grid-template-columns: 1fr 1fr; }
       .hero-stats { grid-template-columns: repeat(2, 1fr); }
-      .about-timeline { grid-template-columns: 1fr; gap: 34px; padding-top: 10px; }
+      .about-timeline { grid-template-columns: 1fr; gap: 24px; padding-top: 6px; }
       .timeline-step {
         grid-template-columns: 40px 1fr;
         grid-template-rows: auto auto;
@@ -969,8 +982,8 @@
       .timeline-num { grid-row: 1 / 3; margin-top: 2px; }
       .timeline-title { margin-top: 0; max-width: none; text-align: left; transform: none; }
       .timeline-connector { display: none; }
-      .timeline-card { grid-column: 2; width: 100%; min-height: 0; padding: 18px 18px 18px 68px; border-radius: 18px; }
-      .timeline-icon { left: 16px; transform: translateY(-50%); width: 40px; height: 40px; top: 50%; }
+      .timeline-card { grid-column: 2; width: 100%; min-height: 0; padding: 16px 16px 16px 62px; border-radius: 16px; }
+      .timeline-icon { left: 14px; transform: translateY(-50%); width: 36px; height: 36px; top: 50%; }
       .timeline-body { max-width: none; text-align: left; }
       .skills-grid { grid-template-columns: 1fr; }
       .skill-card { padding: 14px; border-radius: 16px; }
@@ -979,7 +992,7 @@
       .pub-card { flex-basis: 100%; }
       .pub-carousel { padding-inline: 42px; }
       .pub-nav-btn { width: 36px; height: 36px; font-size: 19px; }
-      /* #packages .pkg-grid { grid-template-columns: 1fr; } */
+      #packages .pkg-grid { grid-template-columns: 1fr; }
       .methods-grid { grid-template-columns: repeat(2, 1fr); }
       .teach-hero { grid-template-columns: 1fr; }
       .teach-grid { grid-template-columns: 1fr; }
@@ -1560,7 +1573,7 @@
               <span class="tag">Forest plots</span>
               <span class="tag">Heterogeneity I²</span>
             </div>
-            <img src="meta3l_forest.png" alt="meta3l forest plot example" style="width: 100%; max-height: 450px; object-fit: contain; margin-bottom: 20px; border: var(--bw) solid var(--border); border-radius: 8px; background: white; padding: 10px;">
+            <img class="pkg-plot" src="meta3l_forest.png" alt="meta3l forest plot example">
             <div class="pkg-install">
               <code id="meta3l-cmd">devtools::install_github("vanioljantunes/meta3l")</code>
               <button class="copy-btn" onclick="copyCmd('meta3l-cmd', this)">Copy</button>
@@ -1586,7 +1599,7 @@
               <span class="tag">ROC space plots</span>
               <span class="tag">Sensitivity/Specificity</span>
             </div>
-            <img src="easydta_sroc.png" alt="easydta sROC plot example" style="width: 100%; max-height: 450px; object-fit: contain; margin-bottom: 20px; border: var(--bw) solid var(--border); border-radius: 8px; background: white; padding: 10px;">
+            <img class="pkg-plot" src="easydta_sroc.png" alt="easydta sROC plot example">
             <div class="pkg-install">
               <code id="easydta-cmd">devtools::install_github("vanioljantunes/easydta")</code>
               <button class="copy-btn" onclick="copyCmd('easydta-cmd', this)">Copy</button>
@@ -1930,6 +1943,7 @@
       '.sect-h',
       '.sect-sub',
       '.timeline-step',
+      '.about-text',
       '.stack-panel',
       '.skill-card',
       '.filter-row',
@@ -1946,7 +1960,7 @@
       '.contact-card'
     ];
 
-    /* Per-section stagger */
+    /* Per-section staged targets */
     document.querySelectorAll('#hero, .sect').forEach(section => {
       const elements = [];
       stagedRevealSelectors.forEach(sel => {
@@ -1958,7 +1972,7 @@
       });
       elements.forEach((el, i) => {
         el.classList.add('reveal-item');
-        el.style.transitionDelay = `${i * 60}ms`;
+        el.style.transitionDelay = '0ms';
       });
     });
 
@@ -1986,11 +2000,12 @@
       rootMargin: '-58px 0px -20% 0px' 
     });
 
-    document.querySelectorAll('section[id], .timeline-step').forEach(el => activeObs.observe(el));
+    document.querySelectorAll('section[id]').forEach(el => activeObs.observe(el));
 
     /* REVEAL ON SCROLL */
     const revealObs = new IntersectionObserver(entries => {
       entries.forEach(e => {
+        if (e.target.closest('.sequenced-section')) return;
         if (e.isIntersecting) {
           e.target.classList.add('visible');
           
@@ -2021,17 +2036,251 @@
     const revealItems = document.querySelectorAll('.reveal-item');
     revealItems.forEach(el => revealObs.observe(el));
 
-    // Safety fallback
-    setTimeout(() => {
-      revealItems.forEach(el => {
-        if (!el.classList.contains('visible')) {
-          const rect = el.getBoundingClientRect();
-          if (rect.top < window.innerHeight && rect.bottom > 0) {
-            el.classList.add('visible');
+    /* SEQUENCED SECTION SCROLL */
+    const sequencingEnabled = window.matchMedia('(min-width: 768px)');
+    const sections = Array.from(document.querySelectorAll('#hero, .sect'));
+    const sequencedSections = sections.filter(section => section.id !== 'hero');
+    const sectionState = new Map();
+    let activeSection = null;
+    let isProgrammaticScroll = false;
+    let lastWheelTime = 0;
+    let lastScrollTop = scrollWrapper.scrollTop || 0;
+    let currentScrollDirection = 1;
+
+    function getSequenceGroups(section) {
+      const groups = [];
+      const header = Array.from(section.querySelectorAll(':scope > .wrap > .sect-label, :scope > .wrap > .sect-h, :scope > .wrap > .sect-sub'));
+      if (header.length) groups.push(header);
+
+      if (section.id === 'about') {
+        section.querySelectorAll('.timeline-step').forEach(step => groups.push([step]));
+        const aboutText = section.querySelector('.about-text');
+        if (aboutText) groups.push([aboutText]);
+        return groups;
+      }
+
+      const selectors = [
+        '.stack-panel',
+        '.skill-card',
+        '.filter-row',
+        '.pub-carousel',
+        '.pub-pagination',
+        '.scholar-cta',
+        '.pkg-card',
+        '.methods-grid',
+        '.method-cell',
+        '.teach-hero',
+        '.teach-stat',
+        '.teach-card',
+        '.toolchain-row',
+        '.contact-card'
+      ];
+
+      const seen = new Set(header);
+      selectors.forEach(selector => {
+        section.querySelectorAll(selector).forEach(el => {
+          if (!seen.has(el)) {
+            seen.add(el);
+            groups.push([el]);
+          }
+        });
+      });
+      return groups;
+    }
+
+    function resetSection(section) {
+      const state = sectionState.get(section);
+      if (!state) return;
+      state.index = -1;
+      state.groups.flat().forEach(el => {
+        el.classList.remove('visible');
+        if (el.classList.contains('timeline-step')) el.classList.remove('is-active');
+      });
+      state.groups.flat().forEach(el => {
+        el.querySelectorAll('.count-up').forEach(counter => {
+          counter.classList.remove('count-visible');
+          counter.dataset.counted = '';
+          resetCountUp(counter);
+        });
+      });
+    }
+
+    function showAllGroups(section) {
+      const state = sectionState.get(section);
+      if (!state) return;
+      state.groups.forEach((group, index) => showGroup(section, index));
+      state.index = state.groups.length - 1;
+    }
+
+    function showGroup(section, index) {
+      const state = sectionState.get(section);
+      if (!state || !state.groups[index]) return;
+      state.groups[index].forEach(el => {
+        el.classList.add('visible');
+        if (el.classList.contains('timeline-step')) el.classList.add('is-active');
+        el.querySelectorAll('.count-up').forEach(counter => {
+          if (!counter.dataset.counted) {
+            counter.classList.add('count-visible');
+            counter.dataset.counted = 'true';
+            startCountUp(counter);
+          }
+        });
+      });
+      state.index = Math.max(state.index, index);
+    }
+
+    function hideGroup(section, index) {
+      const state = sectionState.get(section);
+      if (!state || !state.groups[index]) return;
+      state.groups[index].forEach(el => {
+        el.classList.remove('visible');
+        if (el.classList.contains('timeline-step')) el.classList.remove('is-active');
+        el.querySelectorAll('.count-up').forEach(counter => {
+          counter.classList.remove('count-visible');
+          counter.dataset.counted = '';
+          resetCountUp(counter);
+        });
+      });
+      state.index = Math.min(state.index, index - 1);
+    }
+
+    function activateSection(section) {
+      if (!sequencingEnabled.matches || !section || !sectionState.has(section)) return;
+      if (activeSection !== section) {
+        activeSection = section;
+        section.classList.add('sequenced-section');
+        const state = sectionState.get(section);
+        if (state.index < 0) {
+          if (currentScrollDirection < 0) {
+            showAllGroups(section);
+          } else {
+            showGroup(section, 0);
           }
         }
+      }
+    }
+
+    function scrollToSection(section, direction = 1) {
+      if (!section) return;
+      isProgrammaticScroll = true;
+      scrollWrapper.classList.remove('is-sequencing');
+      if (sectionState.has(section)) {
+        if (direction < 0) {
+          showAllGroups(section);
+          activeSection = section;
+        } else {
+          resetSection(section);
+          activeSection = null;
+        }
+      }
+      scrollWrapper.scrollTo({ top: section.offsetTop, behavior: 'smooth' });
+      window.setTimeout(() => {
+        isProgrammaticScroll = false;
+        if (sectionState.has(section)) {
+          activeSection = section;
+          const state = sectionState.get(section);
+          if (direction > 0 && state.index < 0) showGroup(section, 0);
+        }
+      }, 720);
+    }
+
+    sequencedSections.forEach(section => {
+      section.classList.add('sequenced-section');
+      sectionState.set(section, { groups: getSequenceGroups(section), index: -1 });
+      resetSection(section);
+    });
+
+    const sectionObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          activateSection(entry.target);
+        } else if (sectionState.has(entry.target)) {
+          if (activeSection === entry.target) activeSection = null;
+          resetSection(entry.target);
+        }
       });
-    }, 1500);
+    }, {
+      root: scrollWrapper === document.body ? null : scrollWrapper,
+      threshold: 0.6
+    });
+
+    sequencedSections.forEach(section => sectionObserver.observe(section));
+
+    function nearestSection() {
+      const top = scrollWrapper.scrollTop;
+      return sections.reduce((closest, section) => {
+        return Math.abs(section.offsetTop - top) < Math.abs(closest.offsetTop - top) ? section : closest;
+      }, sections[0]);
+    }
+
+    scrollWrapper.addEventListener('scroll', () => {
+      const top = scrollWrapper.scrollTop || 0;
+      if (Math.abs(top - lastScrollTop) > 2) {
+        currentScrollDirection = top > lastScrollTop ? 1 : -1;
+        lastScrollTop = top;
+      }
+    }, { passive: true });
+
+    scrollWrapper.addEventListener('wheel', event => {
+      if (!sequencingEnabled.matches || isProgrammaticScroll) return;
+      const now = performance.now();
+      if (now - lastWheelTime < 260) {
+        event.preventDefault();
+        return;
+      }
+
+      const direction = Math.sign(event.deltaY);
+      currentScrollDirection = direction || currentScrollDirection;
+
+      const section = activeSection || nearestSection();
+      const state = section ? sectionState.get(section) : null;
+      if (!section || !state || !state.groups.length) {
+        const currentIndex = sections.indexOf(section);
+        if (direction < 0 && currentIndex > 0 && section?.id !== 'hero') {
+          const previous = sections[currentIndex - 1];
+          if (sectionState.has(previous)) showAllGroups(previous);
+        }
+        return;
+      }
+
+      if (direction > 0 && state.index < state.groups.length - 1) {
+        event.preventDefault();
+        scrollWrapper.classList.add('is-sequencing');
+        showGroup(section, state.index + 1);
+        lastWheelTime = now;
+        return;
+      }
+
+      if (direction < 0 && state.index > 0) {
+        event.preventDefault();
+        scrollWrapper.classList.add('is-sequencing');
+        hideGroup(section, state.index);
+        lastWheelTime = now;
+        return;
+      }
+
+      const currentIndex = sections.indexOf(section);
+      if (direction > 0 && currentIndex >= 0 && currentIndex < sections.length - 1) {
+        lastWheelTime = now;
+        scrollToSection(sections[currentIndex + 1], 1);
+      }
+      if (direction < 0 && currentIndex > 0) {
+        resetSection(section);
+        lastWheelTime = now;
+        scrollToSection(sections[currentIndex - 1], -1);
+      }
+    }, { passive: false });
+
+    sequencingEnabled.addEventListener('change', () => {
+      if (!sequencingEnabled.matches) {
+        scrollWrapper.classList.remove('is-sequencing');
+        sequencedSections.forEach(section => {
+          sectionState.get(section)?.groups.flat().forEach(el => el.classList.add('visible'));
+        });
+      } else {
+        sequencedSections.forEach(resetSection);
+      }
+    });
 
   </script>
 
