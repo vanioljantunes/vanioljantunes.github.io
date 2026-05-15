@@ -85,9 +85,9 @@
 
     /* ---- SECTION BASE ---- */
     .sect {
-      padding: 0 0 64px; /* Removed top padding */
+      padding: 58px 0 64px; /* top = nav height so heading lands below nav on snap */
       border-bottom: var(--bw) solid var(--border);
-      scroll-margin-top: 58px; /* Standard snap to nav height */
+      scroll-margin-top: 0; /* snap at section's true top; nav overlaps the 1px hero border */
     }
     .sect:last-of-type { border-bottom: none; }
     #hero { scroll-margin-top: 0; }
@@ -106,7 +106,6 @@
     /* ---- HERO ---- */
     #hero {
       padding: 18px 0 20px;
-      border-bottom: var(--bw) solid var(--border);
       background: linear-gradient(160deg, oklch(100% 0 0) 0%, var(--accent-dim) 100%);
       position: relative; overflow: hidden;
     }
