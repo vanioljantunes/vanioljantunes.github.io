@@ -884,26 +884,14 @@
       transition-delay: var(--reveal-delay, 0ms);
     }
 
-    @media (prefers-reduced-motion: no-preference) {
-      #hero,
-      .sect {
-        min-height: 100vh;
-        scroll-snap-align: start;
-        scroll-snap-stop: always;
-      }
-      .site-footer {
-        scroll-snap-align: end;
-      }
+    #hero,
+    .sect {
+      min-height: 100vh;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
     }
-
-    @media (prefers-reduced-motion: reduce) {
-      .scroll-wrapper { scroll-behavior: auto; scroll-snap-type: none; }
-      #hero, .sect, .site-footer { scroll-snap-align: none; }
-      .reveal-item {
-        opacity: 1;
-        transform: none;
-        transition: none;
-      }
+    .site-footer {
+      scroll-snap-align: end;
     }
 
     /* ---- RESPONSIVE ---- */
