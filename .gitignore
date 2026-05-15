@@ -2,3 +2,16 @@
 .Rhistory
 .RData
 .Ruserdata
+
+# VS Code extension / local dev tools
+element-bridge.js
+inspector.js
+fix.js
+
+# Local assets
+*.artifact.json
+easydta_sroc.png
+meta3l_forest.png
+
+# Local Python environment
+Python/
