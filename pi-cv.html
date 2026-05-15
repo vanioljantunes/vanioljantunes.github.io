@@ -2105,11 +2105,24 @@
         e.preventDefault();
         e.stopPropagation();
 
+        /* Ctrl+Shift+click → open in VS Code at source line */
+        if (e.shiftKey) {
+          const html = e.target.outerHTML.substring(0, 600);
+          fetch('http://127.0.0.1:9997', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ html })
+          }).then(r => r.json())
+            .then(d => showToast(`Opened pi-cv.html:${d.line}`))
+            .catch(() => showToast('Bridge not running — start "Element Bridge" task'));
+          return;
+        }
+
+        /* Ctrl+click → copy to clipboard */
         const text = serializeElement(e.target);
         navigator.clipboard.writeText(text).then(() => {
           showToast('Element copied — paste into Claude Code');
         }).catch(() => {
-          /* fallback for non-https */
           const ta = document.createElement('textarea');
           ta.value = text;
           ta.style.position = 'fixed'; ta.style.opacity = '0';
