@@ -111,7 +111,10 @@
       padding: 18px 0 20px;
       background: linear-gradient(160deg, oklch(100% 0 0) 0%, var(--accent-dim) 100%);
       position: relative; overflow: hidden;
+      display: flex;
+      align-items: center;
     }
+    #hero > .wrap { width: 100%; }
     #hero::before {
       content: '';
       position: absolute; top: -120px; right: -80px;
@@ -924,6 +927,7 @@
       .nav { padding: 0 20px; gap: 16px; }
       .nav-links { gap: 4px; }
       .wrap { padding: 0 20px; }
+      #hero { align-items: flex-start; }
       .hero-grid { grid-template-columns: 1fr; gap: 40px; }
       .hero-photo-col {
         display: flex;
