@@ -88,6 +88,9 @@
       padding: 58px 0 64px; /* top = nav height so heading lands below nav on snap */
       border-bottom: var(--bw) solid var(--border);
       scroll-margin-top: 0; /* snap at section's true top; nav overlaps the 1px hero border */
+      background: var(--bg);
+      position: relative;
+      z-index: 1;
     }
     .sect:last-of-type { border-bottom: none; }
     #hero { scroll-margin-top: 0; }
