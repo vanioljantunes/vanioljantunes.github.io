@@ -2230,7 +2230,7 @@
                 </svg>
                 Contact me
               </a>
-              <a class="cta-secondary" href="https://scholar.google.com/citations?user=JOZkTg0AAAAJ&amp;hl=en"
+              <a class="cta-secondary" href="https://pubmed.ncbi.nlm.nih.gov/?term=vanio+antunes&amp;sort=date"
                 target="_blank">View my research →</a>
               <a class="cta-secondary" href="https://github.com/vanioljantunes" target="_blank">Explore my code →</a>
             </div>
@@ -2581,8 +2581,8 @@
                   <span class="tool-logo">CLS</span>
                   <div>
                     <div class="tool-name">Building Classes</div>
-                    <div class="tool-use">Designing structured lessons, exercises, and research-methods explanations for
-                      meta-analysis learners.</div>
+                    <div class="tool-use">Designing structured lessons on statistics, coding, and organizing tools —
+                      exercises and research-methods explanations for meta-analysis learners.</div>
                   </div>
                 </div>
                 <div class="tool-item">
@@ -3366,6 +3366,17 @@
     });
 
     document.querySelectorAll('section[id]').forEach(el => activeObs.observe(el));
+
+    /* NAV ANCHOR CLICK -> scroll wrapper to section */
+    document.querySelectorAll('.nav-links a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const id = a.getAttribute('href').slice(1);
+        const target = document.getElementById(id);
+        if (!target) return;
+        e.preventDefault();
+        scrollToSection(target, 1);
+      });
+    });
 
     /* REVEAL ON SCROLL */
     const revealObs = new IntersectionObserver(entries => {
