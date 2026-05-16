@@ -10,8 +10,8 @@ fix.js
 
 # Local assets
 *.artifact.json
-easydta_sroc.png
-meta3l_forest.png
+gen_meta3l_forest.R
+gen_easydta_sroc.R
 
 # Local Python environment
 Python/
