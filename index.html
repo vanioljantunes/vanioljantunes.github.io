@@ -7,7 +7,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta name="build-version" content="2026-05-20-mobile-11">
+  <meta name="build-version" content="2026-05-20-mobile-12">
   <title>Vanio Antunes — MD Candidate · Researcher · Developer</title>
   <script>
     // force fresh load when build-version changes
@@ -2322,22 +2322,40 @@
 
       /* role pill + name + bio + ctas span full width; only location +
          chips share a row with the photo */
-      .hero-role-pill,
-      .hero-name,
-      .hero-bio,
-      .hero-ctas {
+      .hero-role-pill {
         grid-column: 1 / -1;
+        grid-row: 1;
       }
 
-      .hero-location,
+      .hero-name {
+        grid-column: 1 / -1;
+        grid-row: 2;
+      }
+
+      .hero-location {
+        grid-column: 1;
+        grid-row: 3;
+      }
+
       .hero-chips {
         grid-column: 1;
+        grid-row: 4;
+      }
+
+      .hero-bio {
+        grid-column: 1 / -1;
+        grid-row: 5;
+      }
+
+      .hero-ctas {
+        grid-column: 1 / -1;
+        grid-row: 6;
       }
 
       .hero-photo-col {
         position: static;
         grid-column: 2;
-        grid-row: auto / span 2;   /* spans the location + chips rows */
+        grid-row: 3 / span 2;     /* pin to location + chips rows */
         align-self: center;
         justify-self: center;
         width: 140px;
