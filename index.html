@@ -2282,24 +2282,36 @@
 
       .hero-grid {
         grid-template-columns: 1fr;
-        gap: 20px;
+        gap: 14px;
+        position: relative;
       }
 
+      /* small circular avatar floating top-right of hero */
       .hero-photo-col {
-        display: flex;
-        order: -1;
-        max-width: 240px;
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 84px;
+        max-width: 84px;
         min-height: 0;
-        margin: 0 auto 4px;
+        margin: 0;
+        z-index: 2;
+        display: block;
       }
 
       .hero-photo-card {
-        transform: rotate(0deg);
-        border-radius: 22px;
+        transform: none;
+        border-radius: 50%;
+        box-shadow: 0 6px 18px oklch(18% 0.025 250 / 0.20);
+      }
+
+      .hero-photo-card::after {
+        display: none;
       }
 
       .hero-photo {
         aspect-ratio: 1 / 1;
+        object-position: 50% 22%;
       }
 
       .hero-photo-col::before,
@@ -2308,6 +2320,12 @@
       .hero-photo-note,
       .hero-quote-overlay {
         display: none;
+      }
+
+      /* reserve room on the right of the headline so name does not run under avatar */
+      .hero-role-pill,
+      .hero-name {
+        padding-right: 96px;
       }
 
       .site-footer {
