@@ -2280,13 +2280,34 @@
         padding: 14px;
       }
 
-      .hero-photo-col {
-        display: none;
-      }
-
       .hero-grid {
         grid-template-columns: 1fr;
-        gap: 16px;
+        gap: 20px;
+      }
+
+      .hero-photo-col {
+        display: flex;
+        order: -1;
+        max-width: 240px;
+        min-height: 0;
+        margin: 0 auto 4px;
+      }
+
+      .hero-photo-card {
+        transform: rotate(0deg);
+        border-radius: 22px;
+      }
+
+      .hero-photo {
+        aspect-ratio: 1 / 1;
+      }
+
+      .hero-photo-col::before,
+      .hero-photo-col::after,
+      .hero-photo-badge,
+      .hero-photo-note,
+      .hero-quote-overlay {
+        display: none;
       }
 
       .site-footer {
