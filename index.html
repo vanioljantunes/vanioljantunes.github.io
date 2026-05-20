@@ -7,7 +7,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta name="build-version" content="2026-05-20-mobile-10">
+  <meta name="build-version" content="2026-05-20-mobile-11">
   <title>Vanio Antunes — MD Candidate · Researcher · Developer</title>
   <script>
     // force fresh load when build-version changes
@@ -2320,23 +2320,29 @@
         display: contents;
       }
 
+      /* role pill + name + bio + ctas span full width; only location +
+         chips share a row with the photo */
       .hero-role-pill,
       .hero-name,
-      .hero-location,
-      .hero-chips,
       .hero-bio,
       .hero-ctas {
+        grid-column: 1 / -1;
+      }
+
+      .hero-location,
+      .hero-chips {
         grid-column: 1;
       }
 
       .hero-photo-col {
         position: static;
         grid-column: 2;
-        grid-row: 1 / span 4;     /* role + name + location + chips */
-        align-self: end;          /* bottom of photo aligns with bottom of chips */
-        width: 156px;
-        max-width: 156px;
-        height: 156px;
+        grid-row: auto / span 2;   /* spans the location + chips rows */
+        align-self: center;
+        justify-self: center;
+        width: 140px;
+        max-width: 140px;
+        height: 140px;
         min-height: 0;
         margin: 0;
         z-index: 2;
@@ -2344,10 +2350,13 @@
       }
 
       .hero-photo-card {
+        width: 140px;
+        height: 140px;
+      }
+
+      .hero-photo-card {
         transform: none;
         border-radius: 50%;
-        width: 156px;
-        height: 156px;
         box-shadow: 0 10px 26px oklch(18% 0.025 250 / 0.24);
         background: var(--surface);
       }
