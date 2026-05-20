@@ -7,7 +7,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta name="build-version" content="2026-05-20-mobile-9">
+  <meta name="build-version" content="2026-05-20-mobile-10">
   <title>Vanio Antunes — MD Candidate · Researcher · Developer</title>
   <script>
     // force fresh load when build-version changes
@@ -2307,10 +2307,33 @@
         position: relative;
       }
 
+      /* turn the inner text div into a grid passthrough so we can place the
+         photo to span exactly through the chips row */
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1fr 156px;
+        column-gap: 14px;
+        align-items: start;
+      }
+
+      .hero-grid > div:first-child {
+        display: contents;
+      }
+
+      .hero-role-pill,
+      .hero-name,
+      .hero-location,
+      .hero-chips,
+      .hero-bio,
+      .hero-ctas {
+        grid-column: 1;
+      }
+
       .hero-photo-col {
-        position: absolute;
-        top: 4px;
-        right: 0;
+        position: static;
+        grid-column: 2;
+        grid-row: 1 / span 4;     /* role + name + location + chips */
+        align-self: end;          /* bottom of photo aligns with bottom of chips */
         width: 156px;
         max-width: 156px;
         height: 156px;
@@ -2348,15 +2371,7 @@
         display: none;
       }
 
-      /* photo now spans role + name + location + chips, so all four
-         reserve room on the right */
-      .hero-role-pill,
-      .hero-name,
-      .hero-location,
-      .hero-chips {
-        padding-right: 172px;
-      }
-
+      /* with the grid placement above, no manual padding-right needed */
       .hero-role-pill {
         margin-bottom: 10px;
         font-size: 10px;
@@ -2364,7 +2379,7 @@
         max-width: 100%;
       }
 
-      /* uniform stacked chips with icon on the left */
+      /* uniform stacked chips with centered text + icon on the left */
       .hero-chips {
         display: flex;
         flex-direction: column;
@@ -2374,13 +2389,19 @@
 
       .hero-chip {
         width: 100%;
-        justify-content: flex-start;
+        justify-content: center;
+        position: relative;
         gap: 8px;
-        padding: 7px 12px;
+        padding: 8px 14px 8px 36px;
         font-size: 12px;
+        text-align: center;
       }
 
       .hero-chip svg {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
         width: 14px;
         height: 14px;
         margin-right: 0;
