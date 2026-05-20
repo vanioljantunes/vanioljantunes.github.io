@@ -2218,34 +2218,53 @@
         font-size: clamp(22px, 6vw, 28px);
       }
 
-      /* publications carousel → native horizontal swipe */
+      /* publications carousel — keep transform-based, one card per view */
       .pub-carousel {
-        padding: 2px 4px;
-        overflow: visible;
-      }
-
-      .pub-nav {
-        display: none;
+        padding: 2px 38px;
+        overflow: hidden;
       }
 
       .pub-grid {
-        overflow-x: auto;
-        overflow-y: hidden;
-        flex-wrap: nowrap;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-        padding-bottom: 8px;
-        transform: none !important;
-        cursor: default;
+        --pub-gap: 12px;
       }
 
       .pub-card {
-        flex: 0 0 86%;
-        scroll-snap-align: start;
+        flex: 0 0 100%;
+      }
+
+      .pub-nav-btn {
+        width: 30px;
+        height: 30px;
+        font-size: 18px;
       }
 
       .pub-pagination {
         gap: 10px;
+      }
+
+      /* methods + teaching: one column on phones */
+      #methods .methods-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .method-cell {
+        padding: 16px 16px;
+      }
+
+      #teaching .teach-hero {
+        grid-template-columns: 1fr;
+      }
+
+      .teach-stat {
+        padding: 20px 18px;
+      }
+
+      .teach-num {
+        font-size: 36px;
+      }
+
+      #contact .contact-grid {
+        grid-template-columns: 1fr;
       }
 
       .timeline-card {
@@ -3461,6 +3480,8 @@
     document.querySelectorAll('.count-up').forEach(el => resetCountUp(el));
 
     const scrollWrapper = document.querySelector('.scroll-wrapper') || document.body;
+    const isMobileViewport = () => window.matchMedia('(max-width: 768px)').matches;
+    const observerRoot = () => (isMobileViewport() || scrollWrapper === document.body) ? null : scrollWrapper;
 
     /* SCROLL REVEAL */
     const stagedRevealSelectors = [
@@ -3523,7 +3544,7 @@
         }
       });
     }, {
-      root: scrollWrapper === document.body ? null : scrollWrapper,
+      root: observerRoot(),
       threshold: 0.1,
       rootMargin: '-58px 0px -20% 0px'
     });
@@ -3567,7 +3588,7 @@
         }
       });
     }, {
-      root: scrollWrapper === document.body ? null : scrollWrapper,
+      root: observerRoot(),
       threshold: 0,
       rootMargin: '0px 0px -5% 0px'
     });
@@ -3745,7 +3766,7 @@
         }
       });
     }, {
-      root: scrollWrapper === document.body ? null : scrollWrapper,
+      root: observerRoot(),
       threshold: 0.6
     });
 
