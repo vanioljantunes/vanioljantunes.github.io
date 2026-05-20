@@ -7,7 +7,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta name="build-version" content="2026-05-20-mobile-14">
+  <meta name="build-version" content="2026-05-20-mobile-15">
   <title>Vanio Antunes — MD Candidate · Researcher · Developer</title>
   <script>
     // force fresh load when build-version changes
@@ -2340,31 +2340,30 @@
         position: static;
         justify-self: center;
         align-self: center;
-        width: 140px;
-        max-width: 140px;
-        height: 140px;
+        width: 132px;
+        max-width: 132px;
+        height: 132px;
         min-height: 0;
-        margin: 0 0 -42px;       /* pull name card up under the photo */
+        margin: 0 0 -56px;       /* pull deeper into the name card */
         z-index: 3;
         display: block;
       }
 
-      /* unified name + location card */
+      /* unified name + location card — one visual block */
       .hero-name {
         grid-column: 1 / -1;
         grid-row: 3;
         justify-self: center;
         width: min(340px, 100%);
-        background: oklch(100% 0 0 / 0.78);
+        background: oklch(100% 0 0 / 0.82);
         border: 1px solid var(--border);
         border-bottom: none;
-        border-radius: 20px 20px 0 0;
-        padding: 50px 22px 8px;
+        border-radius: 22px 22px 0 0;
+        padding: 62px 22px 4px;
         margin: 0;
         font-size: clamp(24px, 7vw, 32px);
         line-height: 1.05;
         text-align: center;
-        box-shadow: 0 10px 24px oklch(18% 0.025 250 / 0.08);
         backdrop-filter: blur(8px);
         -webkit-backdrop-filter: blur(8px);
         position: relative;
@@ -2376,43 +2375,59 @@
         grid-row: 4;
         justify-self: center;
         width: min(340px, 100%);
-        background: oklch(100% 0 0 / 0.78);
+        background: oklch(100% 0 0 / 0.82);
         border: 1px solid var(--border);
         border-top: none;
-        border-radius: 0 0 20px 20px;
-        padding: 4px 22px 14px;
-        margin: 0 0 14px;
+        border-radius: 0 0 22px 22px;
+        padding: 0 22px 12px;
+        margin: -1px 0 14px;   /* overlap the 1px border with name card */
         font-size: 12px;
         justify-content: center;
         backdrop-filter: blur(8px);
         -webkit-backdrop-filter: blur(8px);
-        box-shadow: 0 14px 26px oklch(18% 0.025 250 / 0.06);
+        box-shadow: 0 18px 32px oklch(18% 0.025 250 / 0.09);
       }
 
-      /* chips + bio side by side */
+      /* col 1: chips card + contact CTA share the left column */
       .hero-chips {
         grid-column: 1;
         grid-row: 5;
-        padding: 0;
-        align-self: start;
-      }
-
-      .hero-bio {
-        grid-column: 2;
-        grid-row: 5;
-        text-align: left;
-        align-self: start;
-        font-size: 13px;
-        margin: 0;
-        max-width: 100%;
+        padding: 12px 10px;
+        background: oklch(100% 0 0 / 0.72);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        align-self: stretch;
+        gap: 8px;
       }
 
       .hero-ctas {
-        grid-column: 1 / -1;
+        grid-column: 1;
         grid-row: 6;
-        margin-top: 14px;
-        max-width: 320px;
-        justify-self: center;
+        margin-top: 10px;
+        max-width: none;
+        justify-self: stretch;
+        flex-direction: column;
+        gap: 0;
+      }
+
+      .hero-ctas .cta-primary {
+        width: 100%;
+        padding: 12px 14px;
+        font-size: 13px;
+      }
+
+      /* col 2: bio spans rows 5 + 6, justified and smaller */
+      .hero-bio {
+        grid-column: 2;
+        grid-row: 5 / span 2;
+        text-align: justify;
+        text-align-last: left;
+        hyphens: auto;
+        align-self: stretch;
+        font-size: 12px;
+        line-height: 1.55;
+        margin: 0;
+        max-width: 100%;
       }
 
       .hero-photo-card {
