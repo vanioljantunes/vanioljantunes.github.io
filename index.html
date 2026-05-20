@@ -2111,6 +2111,169 @@
         justify-content: center;
       }
     }
+
+    /* ---- MOBILE: disable scroll-snap & sequencing, free-flow scroll ---- */
+    @media (max-width: 768px) {
+      html,
+      body {
+        height: auto;
+        overflow: visible;
+      }
+
+      .scroll-wrapper {
+        height: auto;
+        overflow: visible;
+        scroll-snap-type: none;
+      }
+
+      #hero,
+      .sect {
+        min-height: 0;
+        scroll-snap-align: none;
+        scroll-snap-stop: normal;
+        padding: 40px 0 48px;
+        display: block;
+      }
+
+      #hero {
+        padding: 20px 0 36px;
+      }
+
+      .sect {
+        border-bottom: var(--bw) solid var(--border);
+      }
+
+      /* force reveal visible on mobile — sequencing is disabled */
+      .reveal-item {
+        opacity: 1 !important;
+        transform: none !important;
+      }
+
+      .sequenced-section .reveal-item {
+        opacity: 1 !important;
+        transform: none !important;
+      }
+
+      .nav {
+        padding: 0 14px;
+        gap: 10px;
+        height: 54px;
+      }
+
+      .wrap {
+        padding: 0 18px;
+      }
+
+      .nav-name {
+        font-size: 13px;
+      }
+
+      .hero-name {
+        font-size: clamp(34px, 9vw, 48px);
+        line-height: 1.0;
+      }
+
+      .hero-bio {
+        font-size: 14px;
+        max-width: none;
+      }
+
+      .hero-ctas {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .hero-ctas .cta-primary,
+      .hero-ctas .cta-secondary {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .hero-social-strip {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .hero-stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .stat-item {
+        padding: 12px 12px;
+        border-right: var(--bw) solid var(--border);
+      }
+
+      .stat-item:nth-child(2n) {
+        border-right: none;
+      }
+
+      .stat-item:nth-child(-n+2) {
+        border-bottom: var(--bw) solid var(--border);
+      }
+
+      .stat-num {
+        font-size: 20px;
+      }
+
+      .sect-h {
+        font-size: clamp(22px, 6vw, 28px);
+      }
+
+      /* publications carousel → native horizontal swipe */
+      .pub-carousel {
+        padding: 2px 4px;
+        overflow: visible;
+      }
+
+      .pub-nav {
+        display: none;
+      }
+
+      .pub-grid {
+        overflow-x: auto;
+        overflow-y: hidden;
+        flex-wrap: nowrap;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 8px;
+        transform: none !important;
+        cursor: default;
+      }
+
+      .pub-card {
+        flex: 0 0 86%;
+        scroll-snap-align: start;
+      }
+
+      .pub-pagination {
+        gap: 10px;
+      }
+
+      .timeline-card {
+        padding: 14px 14px 14px 58px;
+        border-radius: 14px;
+      }
+
+      .skills-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .skill-card {
+        padding: 14px;
+      }
+
+      .hero-photo-col {
+        display: none;
+      }
+
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .site-footer {
+        scroll-snap-align: none;
+      }
+    }
   </style>
 </head>
 
@@ -3562,9 +3725,14 @@
     }
 
     sequencedSections.forEach(section => {
-      section.classList.add('sequenced-section');
       sectionState.set(section, { groups: getSequenceGroups(section), index: -1 });
-      resetSection(section);
+      if (sequencingEnabled.matches) {
+        section.classList.add('sequenced-section');
+        resetSection(section);
+      } else {
+        // mobile: reveal everything immediately
+        sectionState.get(section).groups.flat().forEach(el => el.classList.add('visible'));
+      }
     });
 
     const sectionObserver = new IntersectionObserver(entries => {
@@ -3581,7 +3749,9 @@
       threshold: 0.6
     });
 
-    sequencedSections.forEach(section => sectionObserver.observe(section));
+    if (sequencingEnabled.matches) {
+      sequencedSections.forEach(section => sectionObserver.observe(section));
+    }
 
     function nearestSection() {
       const top = scrollWrapper.scrollTop;
