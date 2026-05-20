@@ -15,3 +15,8 @@ gen_easydta_sroc.R
 
 # Local Python environment
 Python/
+
+# Local Node dev deps (used for screenshot scripts, not part of site)
+node_modules/
+package-lock.json
+.tmp_*.mjs
