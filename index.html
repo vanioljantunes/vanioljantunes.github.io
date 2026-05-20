@@ -7,7 +7,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta name="build-version" content="2026-05-20-mobile-15">
+  <meta name="build-version" content="2026-05-20-mobile-16">
   <title>Vanio Antunes — MD Candidate · Researcher · Developer</title>
   <script>
     // force fresh load when build-version changes
@@ -2349,23 +2349,21 @@
         display: block;
       }
 
-      /* unified name + location card — one visual block */
+      /* unified name + location card — solid bg, no backdrop-blur seam */
       .hero-name {
         grid-column: 1 / -1;
         grid-row: 3;
         justify-self: center;
         width: min(340px, 100%);
-        background: oklch(100% 0 0 / 0.82);
+        background: #ffffff;
         border: 1px solid var(--border);
         border-bottom: none;
         border-radius: 22px 22px 0 0;
-        padding: 62px 22px 4px;
+        padding: 62px 22px 6px;
         margin: 0;
         font-size: clamp(24px, 7vw, 32px);
         line-height: 1.05;
         text-align: center;
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
         position: relative;
         z-index: 2;
       }
@@ -2375,35 +2373,32 @@
         grid-row: 4;
         justify-self: center;
         width: min(340px, 100%);
-        background: oklch(100% 0 0 / 0.82);
+        background: #ffffff;
         border: 1px solid var(--border);
         border-top: none;
         border-radius: 0 0 22px 22px;
         padding: 0 22px 12px;
-        margin: -1px 0 14px;   /* overlap the 1px border with name card */
+        margin: 0 0 14px;
         font-size: 12px;
         justify-content: center;
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
         box-shadow: 0 18px 32px oklch(18% 0.025 250 / 0.09);
       }
 
-      /* col 1: chips card + contact CTA share the left column */
+      /* chips: bare list, no surrounding card; gap matches contact spacing */
       .hero-chips {
         grid-column: 1;
         grid-row: 5;
-        padding: 12px 10px;
-        background: oklch(100% 0 0 / 0.72);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        align-self: stretch;
+        padding: 0;
+        background: transparent;
+        border: 0;
+        align-self: start;
         gap: 8px;
       }
 
       .hero-ctas {
         grid-column: 1;
         grid-row: 6;
-        margin-top: 10px;
+        margin-top: 8px;            /* match chip-to-chip gap */
         max-width: none;
         justify-self: stretch;
         flex-direction: column;
@@ -2412,11 +2407,11 @@
 
       .hero-ctas .cta-primary {
         width: 100%;
-        padding: 12px 14px;
+        padding: 11px 14px;
         font-size: 13px;
       }
 
-      /* col 2: bio spans rows 5 + 6, justified and smaller */
+      /* bio gets its own soft card */
       .hero-bio {
         grid-column: 2;
         grid-row: 5 / span 2;
@@ -2428,6 +2423,11 @@
         line-height: 1.55;
         margin: 0;
         max-width: 100%;
+        background: oklch(100% 0 0 / 0.7);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 12px 14px;
+        box-shadow: 0 6px 18px oklch(18% 0.025 250 / 0.06);
       }
 
       .hero-photo-card {
