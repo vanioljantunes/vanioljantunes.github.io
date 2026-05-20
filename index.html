@@ -7,7 +7,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta name="build-version" content="2026-05-20-mobile-12">
+  <meta name="build-version" content="2026-05-20-mobile-13">
   <title>Vanio Antunes — MD Candidate · Researcher · Developer</title>
   <script>
     // force fresh load when build-version changes
@@ -2156,7 +2156,7 @@
       }
 
       #hero {
-        padding: 20px 0 36px;
+        padding: 12px 0 24px;
       }
 
       .sect {
@@ -2307,64 +2307,51 @@
         position: relative;
       }
 
-      /* turn the inner text div into a grid passthrough so we can place the
-         photo to span exactly through the chips row */
+      /* single-column centered mobile hero: pill → photo → name →
+         location → chips → bio → CTAs. text div becomes contents so
+         its children join the same flex flow as the photo. */
       .hero-grid {
-        display: grid;
-        grid-template-columns: 1fr 156px;
-        column-gap: 14px;
-        align-items: start;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        text-align: center;
       }
 
       .hero-grid > div:first-child {
         display: contents;
       }
 
-      /* role pill + name + bio + ctas span full width; only location +
-         chips share a row with the photo */
-      .hero-role-pill {
-        grid-column: 1 / -1;
-        grid-row: 1;
-      }
-
-      .hero-name {
-        grid-column: 1 / -1;
-        grid-row: 2;
-      }
-
-      .hero-location {
-        grid-column: 1;
-        grid-row: 3;
-      }
-
-      .hero-chips {
-        grid-column: 1;
-        grid-row: 4;
-      }
-
-      .hero-bio {
-        grid-column: 1 / -1;
-        grid-row: 5;
-      }
-
-      .hero-ctas {
-        grid-column: 1 / -1;
-        grid-row: 6;
-      }
+      .hero-role-pill { order: 1; }
+      .hero-photo-col { order: 2; }
+      .hero-name { order: 3; }
+      .hero-location { order: 4; justify-content: center; }
+      .hero-chips { order: 5; }
+      .hero-bio { order: 6; }
+      .hero-ctas { order: 7; }
 
       .hero-photo-col {
         position: static;
-        grid-column: 2;
-        grid-row: 3 / span 2;     /* pin to location + chips rows */
         align-self: center;
         justify-self: center;
-        width: 140px;
-        max-width: 140px;
-        height: 140px;
+        width: 150px;
+        max-width: 150px;
+        height: 150px;
         min-height: 0;
-        margin: 0;
+        margin: 4px 0 4px;
         z-index: 2;
         display: block;
+      }
+
+      .hero-name,
+      .hero-bio,
+      .hero-chips {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .hero-chips {
+        max-width: 280px;
       }
 
       .hero-photo-card {
