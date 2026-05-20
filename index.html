@@ -7,7 +7,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta name="build-version" content="2026-05-20-mobile-7">
+  <meta name="build-version" content="2026-05-20-mobile-8">
   <title>Vanio Antunes — MD Candidate · Researcher · Developer</title>
   <script>
     // force fresh load when build-version changes
@@ -2309,11 +2309,11 @@
 
       .hero-photo-col {
         position: absolute;
-        top: 4px;
+        top: 40px;
         right: 0;
-        width: 108px;
-        max-width: 108px;
-        height: 108px;
+        width: 96px;
+        max-width: 96px;
+        height: 96px;
         min-height: 0;
         margin: 0;
         z-index: 2;
@@ -2323,8 +2323,8 @@
       .hero-photo-card {
         transform: none;
         border-radius: 50%;
-        width: 108px;
-        height: 108px;
+        width: 96px;
+        height: 96px;
         box-shadow: 0 8px 22px oklch(18% 0.025 250 / 0.22);
         background: var(--surface);
       }
@@ -2348,19 +2348,19 @@
         display: none;
       }
 
-      /* reserve room for the photo on the top rows that visually overlap it */
-      .hero-role-pill,
+      /* role pill keeps full width above the photo; only the name row
+         onward reserves space for the 96px avatar */
       .hero-name,
       .hero-location,
       .hero-chips {
-        padding-right: 124px;
+        padding-right: 112px;
       }
 
       .hero-role-pill {
-        margin-bottom: 8px;
+        margin-bottom: 10px;
         font-size: 10px;
-        padding-block: 4px;
-        padding-left: 10px;
+        padding: 4px 12px;
+        max-width: 100%;
       }
 
       .hero-name {
