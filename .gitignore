@@ -20,3 +20,8 @@ Python/
 node_modules/
 package-lock.json
 .tmp_*.mjs
+
+# Vercel CLI link
+.vercel
+
+.vercel

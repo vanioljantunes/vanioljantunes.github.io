@@ -1,0 +1,14 @@
+Python/
+node_modules/
+*.R
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+element-bridge.js
+inspector.js
+fix.js
+*.artifact.json
+pi-cv-2.html
+.tmp_*.mjs
+.vscode/

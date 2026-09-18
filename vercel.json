@@ -1,0 +1,45 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": null,
+  "installCommand": null,
+  "outputDirectory": ".",
+  "cleanUrls": true,
+  "redirects": [
+    {
+      "source": "/tools/ssHelper",
+      "destination": "/tools/ssHelper/",
+      "permanent": true
+    },
+    {
+      "source": "/research(.html)?",
+      "destination": "/about/research",
+      "permanent": true
+    },
+    {
+      "source": "/stats(.html)?",
+      "destination": "/about/stats",
+      "permanent": true
+    },
+    {
+      "source": "/teaching(.html)?",
+      "destination": "/about/teaching",
+      "permanent": true
+    },
+    {
+      "source": "/contact(.html)?",
+      "destination": "/about/contact",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/tools/ssHelper/",
+      "destination": "https://sshelper-five.vercel.app/tools/ssHelper/"
+    },
+    {
+      "source": "/tools/ssHelper/:path*",
+      "destination": "https://sshelper-five.vercel.app/tools/ssHelper/:path*"
+    }
+  ]
+}

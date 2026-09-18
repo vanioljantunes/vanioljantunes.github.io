@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>R packages | Vanio Antunes</title>
+  <meta name="description" content="R packages by Vanio Antunes: easyDTA, nmaplots and meta3l.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/site.css">
+  <script>
+    /* Hide animated elements only when JS runs and motion is allowed.
+       Fails open: content shows after 2.5 s if the animation module never loads. */
+    (function () {
+      try {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        var root = document.documentElement;
+        root.classList.add('anim-pending');
+        setTimeout(function () { root.classList.remove('anim-pending'); }, 2500);
+      } catch (e) { /* ignore */ }
+    })();
+  </script>
+  <style>.anim-pending [data-anim] { opacity: 0; }</style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="topbar">
+    <div class="wrap">
+      <a class="brand" href="/"><img src="/img/vanio-antunes.jpg" width="32" height="32" alt="">Vanio Antunes</a>
+      <nav aria-label="Main">
+        <ul class="topnav">
+          <li><a href="/about/">Who am I</a></li>
+          <li><a href="/tools/">Tools</a></li>
+          <li><a href="/packages/" aria-current="page">R packages</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="page-main wrap">
+    <div class="page-head">
+      <h1 data-anim>R packages</h1>
+      <p data-anim>Open-source R packages for meta-analysis. Each card opens the GitHub repository in a new tab.</p>
+    </div>
+
+    <ul class="pkg-list">
+      <li data-anim>
+        <a class="card" href="https://github.com/vanioljantunes/easydta" target="_blank" rel="noopener noreferrer">
+          <figure class="card-shot">
+            <img src="/packages/img/easydta.webp" width="1200" height="750" alt="Screenshot of the easydta repository page on GitHub">
+          </figure>
+          <div class="card-body">
+            <p class="card-kicker">Diagnostic accuracy</p>
+            <h2>easyDTA</h2>
+            <p class="card-desc">Cochrane-compliant diagnostic test accuracy meta-analysis in R.</p>
+            <span class="card-cta">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+              View on GitHub<span class="visually-hidden"> (opens in a new tab)</span>
+            </span>
+          </div>
+        </a>
+      </li>
+      <li data-anim>
+        <a class="card" href="https://github.com/vanioljantunes/nmaplots" target="_blank" rel="noopener noreferrer">
+          <figure class="card-shot">
+            <img src="/packages/img/nmaplots.webp" width="1200" height="750" loading="lazy" alt="Screenshot of the nmaplots repository page on GitHub">
+          </figure>
+          <div class="card-body">
+            <p class="card-kicker">Network meta-analysis</p>
+            <h2>nmaplots</h2>
+            <p class="card-desc">Publication-quality network plots for netmeta objects.</p>
+            <span class="card-cta">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.110-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+              View on GitHub<span class="visually-hidden"> (opens in a new tab)</span>
+            </span>
+          </div>
+        </a>
+      </li>
+      <li data-anim>
+        <a class="card" href="https://github.com/vanioljantunes/meta3l" target="_blank" rel="noopener noreferrer">
+          <figure class="card-shot">
+            <img src="/packages/img/meta3l.webp" width="1200" height="750" loading="lazy" alt="Screenshot of the meta3l repository page on GitHub">
+          </figure>
+          <div class="card-body">
+            <p class="card-kicker">Three-level models</p>
+            <h2>meta3l</h2>
+            <p class="card-desc">Three-level meta-analysis plots built on metafor.</p>
+            <span class="card-cta">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+              View on GitHub<span class="visually-hidden"> (opens in a new tab)</span>
+            </span>
+          </div>
+        </a>
+      </li>
+    </ul>
+  </main>
+
+  <script type="module" src="/js/packages.js"></script>
+</body>
+</html>
