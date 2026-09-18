@@ -85,70 +85,6 @@ a:focus-visible {
   padding-inline: 1.25rem;
 }
 
-/* ---------- Top bar (tools, packages) ---------- */
-
-.topbar {
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
-}
-
-.topbar .wrap {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem 1rem;
-  flex-wrap: wrap;
-  min-height: 60px;
-  padding-block: 0.5rem;
-}
-
-.brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  min-height: 44px;
-  color: var(--text);
-  font-weight: 650;
-  text-decoration: none;
-}
-
-.brand img {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-}
-
-.topnav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.topnav a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 40px;
-  padding: 0.35rem 0.75rem;
-  border-radius: 6px;
-  color: var(--muted);
-  font-size: 0.9375rem;
-  font-weight: 500;
-  text-decoration: none;
-}
-
-.topnav a:hover {
-  color: var(--text);
-  background: var(--accent-soft);
-}
-
-.topnav a[aria-current="page"] {
-  color: var(--accent-dark);
-  background: var(--accent-soft);
-}
-
 /* ---------- Page headings ---------- */
 
 .page-head {
@@ -176,8 +112,9 @@ a:focus-visible {
 /* ---------- Home ---------- */
 
 .home {
-  min-height: 100vh;
-  min-height: 100svh;
+  /* Full screen minus the 61px site bar. */
+  min-height: calc(100vh - 61px);
+  min-height: calc(100svh - 61px);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -331,6 +268,44 @@ a:focus-visible {
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+.tile-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.75rem;
+  margin: auto 0 0;
+  padding: 1.25rem 0 0;
+  list-style: none;
+}
+
+/* Space above the divider; margin-top: auto on the list pins it to the card bottom. */
+.tile p:has(+ .tile-stats) {
+  margin-bottom: 1.5rem;
+}
+
+.tile p + .tile-stats {
+  border-top: 1px solid var(--border);
+}
+
+.tile-stats li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.tile-stats strong {
+  color: var(--accent-dark);
+  font-size: 1.75rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.tile-stats span {
+  color: var(--muted);
+  font-size: 0.875rem;
 }
 
 /* ---------- Tools ---------- */

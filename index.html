@@ -6,6 +6,7 @@
   <title>Vanio Antunes</title>
   <meta name="description" content="Vanio Antunes. Last-year medical student. Statistics and medical software development.">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/site-bar.css">
   <link rel="stylesheet" href="/site.css">
   <script>
     /* Hide animated elements only when JS runs and motion is allowed.
@@ -23,6 +24,19 @@
 </head>
 <body>
   <a class="skip-link" href="#sections">Skip to sections</a>
+
+  <header class="site-bar">
+    <div class="site-bar__inner">
+      <a class="site-bar__brand" href="/"><img src="/img/vanio-antunes.jpg" width="32" height="32" alt="">Vanio Antunes</a>
+      <nav aria-label="Main">
+        <ul class="site-bar__links">
+          <li><a href="/about/">Who am I</a></li>
+          <li><a href="/tools/">Tools</a></li>
+          <li><a href="/packages/">R packages</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
 
   <main class="home wrap">
     <header class="intro">
@@ -54,6 +68,10 @@
             <span class="tile-arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
             <h2>Who am I</h2>
             <p>CV, research, publications, teaching</p>
+            <ul class="tile-stats">
+              <li><strong>400+</strong> <span>citations</span></li>
+              <li><strong>30+</strong> <span>papers on PubMed</span></li>
+            </ul>
           </a>
         </li>
         <li>
@@ -62,6 +80,10 @@
             <span class="tile-arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
             <h2>Meta-analysis tools</h2>
             <p>ssHelper and more tools for systematic reviews</p>
+            <ul class="tile-stats">
+              <li><strong>1</strong> <span>live tool</span></li>
+              <li><strong>2</strong> <span>in progress</span></li>
+            </ul>
           </a>
         </li>
         <li>
@@ -70,6 +92,10 @@
             <span class="tile-arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
             <h2>R packages</h2>
             <p>easyDTA, nmaplots, meta3l</p>
+            <ul class="tile-stats">
+              <li><strong>3</strong> <span>R packages</span></li>
+              <li><strong>GitHub</strong> <span>open source</span></li>
+            </ul>
           </a>
         </li>
       </ul>

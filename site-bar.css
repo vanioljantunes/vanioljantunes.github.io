@@ -1,0 +1,101 @@
+/* Shared top bar for every page, the About page included.
+   Self-contained: values are hard-coded and every selector is namespaced so the
+   About page's own inline styles and variables cannot leak in or out. */
+
+.site-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid #c9d0d9;
+  background: #ffffff;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.55;
+}
+
+.site-bar *,
+.site-bar *::before,
+.site-bar *::after {
+  box-sizing: border-box;
+}
+
+.site-bar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  width: 100%;
+  max-width: 1080px;
+  min-height: 60px;
+  margin: 0 auto;
+  padding: 0.5rem 1.25rem;
+}
+
+.site-bar__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 44px;
+  color: #1c2430;
+  font-size: 1rem;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.site-bar__brand img {
+  display: block;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.site-bar__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-bar__links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  color: #545f6d;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.site-bar__links a:hover {
+  color: #1c2430;
+  background: #e8f0fb;
+}
+
+.site-bar__links a[aria-current="page"] {
+  color: #164a90;
+  background: #e8f0fb;
+}
+
+.site-bar a:focus-visible {
+  outline: 3px solid #1d5fb8;
+  outline-offset: 3px;
+}
+
+/* On phones the bar wraps to two rows; do not pin it over the content. */
+@media (max-width: 600px) {
+  .site-bar {
+    position: static;
+  }
+}
+
+@media (max-width: 420px) {
+  .site-bar__links a {
+    padding-inline: 0.55rem;
+    font-size: 0.875rem;
+  }
+}
