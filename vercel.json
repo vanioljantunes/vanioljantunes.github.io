@@ -35,7 +35,7 @@
   "rewrites": [
     {
       "source": "/tools/ssHelper/",
-      "destination": "https://sshelper-five.vercel.app/tools/ssHelper/"
+      "destination": "https://sshelper-five.vercel.app/tools/ssHelper"
     },
     {
       "source": "/tools/ssHelper/:path*",
