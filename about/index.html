@@ -2566,6 +2566,72 @@
         transform: none !important;
       }
     }
+
+    /* ---- STATIC PAGE: no reveal animations, no section snapping ---- */
+    .reveal-item {
+      opacity: 1 !important;
+      transform: none !important;
+      will-change: auto;
+    }
+
+    .scroll-wrapper {
+      scroll-snap-type: none !important;
+      scroll-behavior: auto !important;
+    }
+
+    /* ---- TRAJECTORY: title column, arrow column, card column ---- */
+    @media (min-width: 901px) {
+      .about-timeline {
+        gap: 26px;
+        max-width: 980px;
+      }
+
+      .about-timeline::before {
+        left: 18px;
+        top: 18px;
+        bottom: 18px;
+      }
+
+      .timeline-step {
+        grid-template-columns: 36px minmax(170px, 230px) 64px minmax(0, 1fr);
+        column-gap: 18px;
+      }
+
+      .timeline-title {
+        grid-column: 2;
+        text-align: right;
+        transform: none;
+        hyphens: none;
+      }
+
+      .timeline-connector {
+        grid-column: 3;
+        height: 12px;
+      }
+
+      .timeline-connector::before {
+        left: 0;
+        right: 10px;
+        height: 2px;
+        border-radius: 2px;
+        background: linear-gradient(90deg, var(--border), var(--accent));
+      }
+
+      .timeline-connector::after {
+        right: 0;
+        width: 0;
+        height: 0;
+        border: 0;
+        border-top: 6px solid transparent;
+        border-bottom: 6px solid transparent;
+        border-left: 10px solid var(--accent);
+        transform: translateY(-50%);
+      }
+
+      .timeline-card {
+        grid-column: 4;
+      }
+    }
   </style>
 </head>
 
@@ -2721,7 +2787,7 @@
               </svg>
             </div>
             <div class="stat-text">
-              <div class="stat-num count-up" data-count-target="30" data-count-suffix="+">0+</div>
+              <div class="stat-num count-up" data-count-target="30" data-count-suffix="+">30+</div>
               <div class="stat-lbl">PubMed Papers</div>
               <div class="stat-sub">Published</div>
             </div>
@@ -2734,7 +2800,7 @@
               </svg>
             </div>
             <div class="stat-text">
-              <div class="stat-num count-up" data-count-target="300" data-count-suffix="+">0+</div>
+              <div class="stat-num count-up" data-count-target="300" data-count-suffix="+">300+</div>
               <div class="stat-lbl">Citations</div>
               <div class="stat-sub">Across publications</div>
             </div>
@@ -2749,7 +2815,7 @@
               </svg>
             </div>
             <div class="stat-text">
-              <div class="stat-num count-up" data-count-target="79" data-count-suffix="+">0+</div>
+              <div class="stat-num count-up" data-count-target="79" data-count-suffix="+">79+</div>
               <div class="stat-lbl">Teaching Sessions</div>
               <div class="stat-sub">On meta-analysis</div>
             </div>
@@ -2759,7 +2825,7 @@
               <span class="stat-icon-r">R</span>
             </div>
             <div class="stat-text">
-              <div class="stat-num count-up" data-count-target="3">0</div>
+              <div class="stat-num count-up" data-count-target="3">3</div>
               <div class="stat-lbl">R Packages</div>
               <div class="stat-sub">Open-source</div>
             </div>
@@ -3147,17 +3213,17 @@
           scratch.</p>
         <div class="teach-hero">
           <div class="teach-stat">
-            <div class="teach-num count-up" data-count-target="79" data-count-html="<span>+</span>">0<span>+</span>
+            <div class="teach-num count-up" data-count-target="79" data-count-html="<span>+</span>">79<span>+</span>
             </div>
             <div class="teach-stat-label">Recorded sessions</div>
           </div>
           <div class="teach-stat">
-            <div class="teach-num count-up" data-count-target="20" data-count-html="<span>+</span>">0<span>+</span>
+            <div class="teach-num count-up" data-count-target="20" data-count-html="<span>+</span>">20<span>+</span>
             </div>
             <div class="teach-stat-label">Hours of content</div>
           </div>
           <div class="teach-stat">
-            <div class="teach-num count-up" data-count-target="10" data-count-html="<span>+</span>">0<span>+</span>
+            <div class="teach-num count-up" data-count-target="10" data-count-html="<span>+</span>">10<span>+</span>
             </div>
             <div class="teach-stat-label">Mentees trained (incl. USA residents &amp; specialists: radiology, endoscopy,
               pediatrics, hospitalists)</div>
@@ -3415,429 +3481,9 @@
       });
     }
 
-    /* COUNT UP */
-    function startCountUp(el) {
-      const target = parseInt(el.dataset.countTarget, 10);
-      const suffix = el.dataset.countSuffix || '';
-      const htmlSuffix = el.dataset.countHtml || '';
-      const duration = 1200;
-      const startTime = performance.now();
-
-      function update(currentTime) {
-        if (!el.classList.contains('count-visible')) return;
-
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        const easeOut = 1 - Math.pow(1 - progress, 3);
-        const current = Math.floor(target * easeOut);
-
-        if (htmlSuffix) {
-          el.innerHTML = current + htmlSuffix;
-        } else {
-          el.textContent = current + suffix;
-        }
-
-        if (progress < 1) {
-          requestAnimationFrame(update);
-        } else {
-          if (htmlSuffix) el.innerHTML = target + htmlSuffix;
-          else el.textContent = target + suffix;
-        }
-      }
-      requestAnimationFrame(update);
-    }
-
-    function resetCountUp(el) {
-      const suffix = el.dataset.countSuffix || '';
-      const htmlSuffix = el.dataset.countHtml || '';
-      if (htmlSuffix) {
-        el.innerHTML = '0' + htmlSuffix;
-      } else {
-        el.textContent = '0' + suffix;
-      }
-    }
-
-    document.querySelectorAll('.count-up').forEach(el => resetCountUp(el));
-
-    const scrollWrapper = document.querySelector('.scroll-wrapper') || document.body;
-    const isMobileViewport = () => window.matchMedia('(max-width: 768px)').matches;
-    const observerRoot = () => (isMobileViewport() || scrollWrapper === document.body) ? null : scrollWrapper;
-
-    /* SCROLL REVEAL */
-    const stagedRevealSelectors = [
-      '.hero-grid > *',
-      '.hero-social-strip',
-      '.hero-stats',
-      '.sect-label',
-      '.sect-h',
-      '.sect-sub',
-      '.timeline-step',
-      '.about-text',
-      '.stack-panel',
-      '.skill-card',
-      '.filter-row',
-      '.pub-carousel',
-      '.pub-pagination',
-      '.scholar-cta',
-      '.pkg-card',
-      '.methods-grid',
-      '.method-cell',
-      '.teach-hero',
-      '.teach-stat',
-      '.teach-card',
-      '.toolchain-row',
-      '.contact-card'
-    ];
-
-    /* Per-section staged targets */
-    document.querySelectorAll('#hero, .sect').forEach(section => {
-      const elements = [];
-      stagedRevealSelectors.forEach(sel => {
-        section.querySelectorAll(sel).forEach(el => {
-          if (!el.closest('.reveal-item') || el.matches('.timeline-step, .pkg-card')) {
-            elements.push(el);
-          }
-        });
-      });
-      elements.forEach((el, i) => {
-        el.classList.add('reveal-item');
-        el.style.transitionDelay = '0ms';
-      });
-    });
-
-    /* ACTIVE NAV & STEPS */
-    const activeObs = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          if (e.target.tagName === 'SECTION') {
-            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
-            const active = document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
-            if (active) active.classList.add('active');
-          }
-          if (e.target.classList.contains('timeline-step')) {
-            e.target.classList.add('is-active');
-          }
-        } else {
-          if (e.target.classList.contains('timeline-step')) {
-            e.target.classList.remove('is-active');
-          }
-        }
-      });
-    }, {
-      root: observerRoot(),
-      threshold: 0.1,
-      rootMargin: '-58px 0px -20% 0px'
-    });
-
-    document.querySelectorAll('section[id]').forEach(el => activeObs.observe(el));
-
-    /* NAV ANCHOR CLICK -> scroll wrapper to section */
-    document.querySelectorAll('.nav-links a[href^="#"]').forEach(a => {
-      a.addEventListener('click', e => {
-        const id = a.getAttribute('href').slice(1);
-        const target = document.getElementById(id);
-        if (!target) return;
-        e.preventDefault();
-        scrollToSection(target, 1);
-      });
-    });
-
-    /* REVEAL ON SCROLL */
-    const revealObs = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (e.target.closest('.sequenced-section')) return;
-        if (e.isIntersecting) {
-          e.target.classList.add('visible');
-
-          const counters = e.target.querySelectorAll('.count-up');
-          counters.forEach(c => {
-            if (!c.dataset.counted) {
-              c.classList.add('count-visible');
-              c.dataset.counted = 'true';
-              startCountUp(c);
-            }
-          });
-        } else {
-          e.target.classList.remove('visible');
-          const counters = e.target.querySelectorAll('.count-up');
-          counters.forEach(c => {
-            c.classList.remove('count-visible');
-            c.dataset.counted = '';
-            resetCountUp(c);
-          });
-        }
-      });
-    }, {
-      root: observerRoot(),
-      threshold: 0,
-      rootMargin: '0px 0px -5% 0px'
-    });
-
-    const revealItems = document.querySelectorAll('.reveal-item');
-    revealItems.forEach(el => revealObs.observe(el));
-
-    /* SEQUENCED SECTION SCROLL */
-    const sequencingEnabled = window.matchMedia('(min-width: 768px)');
-    const sections = Array.from(document.querySelectorAll('#hero, .sect'));
-    const sequencedSections = sections.filter(section => section.id !== 'hero');
-    const sectionState = new Map();
-    let activeSection = null;
-    let isProgrammaticScroll = false;
-    let lastWheelTime = 0;
-    let lastSectionScrollTime = 0;
-    let lastScrollTop = scrollWrapper.scrollTop || 0;
-    let currentScrollDirection = 1;
-
-    function getSequenceGroups(section) {
-      const groups = [];
-      const header = Array.from(section.querySelectorAll(':scope > .wrap > .sect-label, :scope > .wrap > .sect-h, :scope > .wrap > .sect-sub'));
-      if (header.length) groups.push(header);
-
-      if (section.id === 'about') {
-        section.querySelectorAll('.timeline-step').forEach(step => groups.push([step]));
-        const aboutText = section.querySelector('.about-text');
-        if (aboutText) groups.push([aboutText]);
-        return groups;
-      }
-
-      const selectors = [
-        '.stack-panel',
-        '.skill-card',
-        '.filter-row',
-        '.pub-carousel',
-        '.pub-pagination',
-        '.scholar-cta',
-        '.pkg-card',
-        '.methods-grid',
-        '.method-cell',
-        '.teach-hero',
-        '.teach-stat',
-        '.teach-card',
-        '.toolchain-row',
-        '.contact-card'
-      ];
-
-      const seen = new Set(header);
-      selectors.forEach(selector => {
-        section.querySelectorAll(selector).forEach(el => {
-          if (!seen.has(el)) {
-            seen.add(el);
-            groups.push([el]);
-          }
-        });
-      });
-      return groups;
-    }
-
-    function resetSection(section) {
-      const state = sectionState.get(section);
-      if (!state) return;
-      state.index = -1;
-      state.groups.flat().forEach(el => {
-        el.classList.remove('visible');
-        if (el.classList.contains('timeline-step')) el.classList.remove('is-active');
-      });
-      state.groups.flat().forEach(el => {
-        el.querySelectorAll('.count-up').forEach(counter => {
-          counter.classList.remove('count-visible');
-          counter.dataset.counted = '';
-          resetCountUp(counter);
-        });
-      });
-    }
-
-    function showAllGroups(section) {
-      const state = sectionState.get(section);
-      if (!state) return;
-      state.groups.forEach((group, index) => showGroup(section, index));
-      state.index = state.groups.length - 1;
-    }
-
-    function showGroup(section, index) {
-      const state = sectionState.get(section);
-      if (!state || !state.groups[index]) return;
-      state.groups[index].forEach(el => {
-        el.classList.add('visible');
-        if (el.classList.contains('timeline-step')) el.classList.add('is-active');
-        el.querySelectorAll('.count-up').forEach(counter => {
-          if (!counter.dataset.counted) {
-            counter.classList.add('count-visible');
-            counter.dataset.counted = 'true';
-            startCountUp(counter);
-          }
-        });
-      });
-      state.index = Math.max(state.index, index);
-    }
-
-    function hideGroup(section, index) {
-      const state = sectionState.get(section);
-      if (!state || !state.groups[index]) return;
-      state.groups[index].forEach(el => {
-        el.classList.remove('visible');
-        if (el.classList.contains('timeline-step')) el.classList.remove('is-active');
-        el.querySelectorAll('.count-up').forEach(counter => {
-          counter.classList.remove('count-visible');
-          counter.dataset.counted = '';
-          resetCountUp(counter);
-        });
-      });
-      state.index = Math.min(state.index, index - 1);
-    }
-
-    function activateSection(section) {
-      if (!sequencingEnabled.matches || !section || !sectionState.has(section)) return;
-      if (activeSection !== section) {
-        activeSection = section;
-        section.classList.add('sequenced-section');
-        const state = sectionState.get(section);
-        if (state.index < 0) {
-          if (currentScrollDirection < 0) {
-            showAllGroups(section);
-          } else {
-            showGroup(section, 0);
-          }
-        }
-      }
-    }
-
-    function scrollToSection(section, direction = 1) {
-      if (!section) return;
-      isProgrammaticScroll = true;
-      scrollWrapper.classList.remove('is-sequencing');
-      if (sectionState.has(section)) {
-        if (direction < 0) {
-          showAllGroups(section);
-          activeSection = section;
-        } else {
-          resetSection(section);
-          activeSection = null;
-        }
-      }
-      scrollWrapper.scrollTo({ top: section.offsetTop, behavior: 'smooth' });
-      window.setTimeout(() => {
-        isProgrammaticScroll = false;
-        if (sectionState.has(section)) {
-          activeSection = section;
-          const state = sectionState.get(section);
-          if (direction > 0 && state.index < 0) showGroup(section, 0);
-        }
-      }, 720);
-    }
-
-    sequencedSections.forEach(section => {
-      sectionState.set(section, { groups: getSequenceGroups(section), index: -1 });
-      if (sequencingEnabled.matches) {
-        section.classList.add('sequenced-section');
-        resetSection(section);
-      } else {
-        // mobile: reveal everything immediately
-        sectionState.get(section).groups.flat().forEach(el => el.classList.add('visible'));
-      }
-    });
-
-    const sectionObserver = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          activateSection(entry.target);
-        } else if (sectionState.has(entry.target)) {
-          if (activeSection === entry.target) activeSection = null;
-          resetSection(entry.target);
-        }
-      });
-    }, {
-      root: observerRoot(),
-      threshold: 0.6
-    });
-
-    if (sequencingEnabled.matches) {
-      sequencedSections.forEach(section => sectionObserver.observe(section));
-    }
-
-    function nearestSection() {
-      const top = scrollWrapper.scrollTop;
-      return sections.reduce((closest, section) => {
-        return Math.abs(section.offsetTop - top) < Math.abs(closest.offsetTop - top) ? section : closest;
-      }, sections[0]);
-    }
-
-    scrollWrapper.addEventListener('scroll', () => {
-      const top = scrollWrapper.scrollTop || 0;
-      if (Math.abs(top - lastScrollTop) > 2) {
-        currentScrollDirection = top > lastScrollTop ? 1 : -1;
-        lastScrollTop = top;
-      }
-    }, { passive: true });
-
-    scrollWrapper.addEventListener('wheel', event => {
-      if (!sequencingEnabled.matches || isProgrammaticScroll) return;
-      const now = performance.now();
-      if (now - lastWheelTime < 260) {
-        event.preventDefault();
-        return;
-      }
-
-      const direction = Math.sign(event.deltaY);
-      currentScrollDirection = direction || currentScrollDirection;
-
-      const section = activeSection || nearestSection();
-      const state = section ? sectionState.get(section) : null;
-      if (!section || !state || !state.groups.length) {
-        const currentIndex = sections.indexOf(section);
-        if (direction < 0 && currentIndex > 0 && section?.id !== 'hero') {
-          const previous = sections[currentIndex - 1];
-          if (sectionState.has(previous)) showAllGroups(previous);
-        }
-        return;
-      }
-
-      if (direction > 0 && state.index < state.groups.length - 1) {
-        event.preventDefault();
-        scrollWrapper.classList.add('is-sequencing');
-        showGroup(section, state.index + 1);
-        lastWheelTime = now;
-        return;
-      }
-
-      if (direction < 0 && state.index > 0) {
-        event.preventDefault();
-        scrollWrapper.classList.add('is-sequencing');
-        hideGroup(section, state.index);
-        lastWheelTime = now;
-        return;
-      }
-
-      const currentIndex = sections.indexOf(section);
-      if (direction > 0 && currentIndex >= 0 && currentIndex < sections.length - 1) {
-        if (now - lastSectionScrollTime < 900) { event.preventDefault(); return; }
-        lastSectionScrollTime = now;
-        lastWheelTime = now;
-        scrollToSection(sections[currentIndex + 1], 1);
-      }
-      if (direction < 0 && currentIndex > 0) {
-        if (now - lastSectionScrollTime < 900) { event.preventDefault(); return; }
-        lastSectionScrollTime = now;
-        resetSection(section);
-        lastWheelTime = now;
-        scrollToSection(sections[currentIndex - 1], -1);
-      }
-    }, { passive: false });
-
-    sequencingEnabled.addEventListener('change', () => {
-      if (!sequencingEnabled.matches) {
-        scrollWrapper.classList.remove('is-sequencing');
-        sequencedSections.forEach(section => {
-          sectionState.get(section)?.groups.flat().forEach(el => el.classList.add('visible'));
-        });
-      } else {
-        sequencedSections.forEach(resetSection);
-      }
-    });
-
   </script>
 
 
-  <script type="module" src="/js/about.js"></script>
 </body>
 
 </html>
