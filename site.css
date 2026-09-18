@@ -250,6 +250,98 @@ a:focus-visible {
   color: var(--muted);
 }
 
+.tile {
+  align-items: center;
+  text-align: center;
+}
+
+.tile:focus-within {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-hover);
+}
+
+.tile-num {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+}
+
+.tile-badge {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin-top: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+  transition: background 0.2s, color 0.2s;
+}
+
+.tile-badge:hover {
+  background: var(--accent);
+  color: var(--surface);
+}
+
+.tile-badge svg {
+  width: 26px;
+  height: 26px;
+  fill: currentColor;
+}
+
+.tile-badge svg.stroke {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.tile h2 {
+  margin-top: 1.25rem;
+}
+
+/* The title link covers the whole card; the badge sits above it. */
+.tile-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.tile-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+}
+
+.tile-link:focus-visible {
+  outline: none;
+}
+
+.tile-link:focus-visible::after {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.intro-scholar {
+  display: block;
+  width: 220px;
+  margin-bottom: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow: var(--shadow-hover);
+}
+
+.intro-scholar img {
+  width: 100%;
+  height: auto;
+}
+
 .tile-arrow {
   position: absolute;
   top: 1.35rem;
@@ -270,43 +362,6 @@ a:focus-visible {
   stroke-linejoin: round;
 }
 
-.tile-stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem 1.75rem;
-  margin: auto 0 0;
-  padding: 1.25rem 0 0;
-  list-style: none;
-}
-
-/* Space above the divider; margin-top: auto on the list pins it to the card bottom. */
-.tile p:has(+ .tile-stats) {
-  margin-bottom: 1.5rem;
-}
-
-.tile p + .tile-stats {
-  border-top: 1px solid var(--border);
-}
-
-.tile-stats li {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-}
-
-.tile-stats strong {
-  color: var(--accent-dark);
-  font-size: 1.75rem;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-}
-
-.tile-stats span {
-  color: var(--muted);
-  font-size: 0.875rem;
-}
 
 /* ---------- Tools ---------- */
 

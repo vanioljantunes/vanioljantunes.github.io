@@ -70,8 +70,8 @@ if (reduced) {
       tile.addEventListener('pointerenter', lift);
       tile.addEventListener('pointerleave', drop);
     }
-    tile.addEventListener('focus', lift);
-    tile.addEventListener('blur', drop);
+    tile.addEventListener('focusin', lift);
+    tile.addEventListener('focusout', drop);
     if (typeof Motion.press === 'function') {
       Motion.press(tile, () => {
         animate(tile, { scale: 0.985 }, { duration: 0.15, ease: EXPO_OUT });
