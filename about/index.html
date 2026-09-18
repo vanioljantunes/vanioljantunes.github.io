@@ -371,6 +371,35 @@
       color: var(--navy);
     }
 
+    .hero-bio-card {
+      max-width: 62ch;
+      margin: 14px 0 16px;
+      padding: 16px 18px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface);
+      box-shadow: 0 10px 28px oklch(22% 0.02 240 / 0.06);
+    }
+
+    .hero-bio-card .hero-bio {
+      margin: 0;
+      max-width: none;
+    }
+
+    .timeline-year {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--accent-txt);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    .timeline-body a {
+      color: var(--accent-txt);
+    }
+
     .hero-chip svg {
       width: 12px;
       height: 12px;
@@ -2576,6 +2605,15 @@
               UFCSPA, Porto Alegre, Brazil
             </div>
 
+            <!-- bio card -->
+            <div class="hero-bio-card">
+              <p class="hero-bio">Final-year medical student with more than <strong>30 peer-reviewed
+                publications</strong>, two open-source R packages, and more than <strong>150 hours teaching
+                meta-analysis methodology</strong>. I combine clinical training with postdoctoral-level statistical
+                methods and production-grade programming. In the future, I want to work with
+                <strong>3D reconstruction in radiology</strong>.</p>
+            </div>
+
             <!-- expertise chips -->
             <div class="hero-chips">
               <span class="hero-chip">
@@ -2604,11 +2642,6 @@
               </span>
             </div>
 
-            <!-- bio -->
-            <p class="hero-bio">Medical student in its last graduation year with a 30+ paper PubMed portfolio, three
-              open-source R packages, and 79+ recorded teaching sessions on meta-analysis methodology. I combine
-              clinical training with graduate-level statistical methods and production-grade programming. I search for
-              research positions where workflows productions are needed to be developed.</p>
 
             <!-- CTAs -->
             <div class="hero-ctas">
@@ -2625,7 +2658,7 @@
           <!-- RIGHT: photo card -->
           <div class="hero-photo-col">
             <div class="hero-photo-card">
-              <img class="hero-photo" src="/profile.jpg" alt="Vanio Antunes — MD Candidate &amp; Researcher">
+              <img class="hero-photo" src="/img/vanio-antunes-portrait.jpg" alt="Portrait of Vanio Antunes">
             </div>
           </div>
 
@@ -2738,78 +2771,104 @@
     <section id="about" class="sect reveal">
       <div class="wrap">
         <div class="sect-label">About</div>
-        <h2 class="sect-h">A clinical researcher who can also build the methods layer.</h2>
-        <p class="sect-sub">A guided snapshot of where I am, what I do, and what kind of research position collaboration
-          I am looking for.</p>
+        <h2 class="sect-h">My trajectory</h2>
+        <p class="sect-sub">From medical school to radiology, and where I want to go next.</p>
         <div class="about-grid">
-          <div class="about-timeline" aria-label="About Vanio Antunes timeline">
+          <div class="about-timeline" aria-label="Trajectory of Vanio Antunes">
             <article class="timeline-step">
               <div class="timeline-num">01</div>
-              <h3 class="timeline-title">Who am I?</h3>
+              <h3 class="timeline-title"><span class="timeline-year">2021</span>Medical school</h3>
               <div class="timeline-connector" aria-hidden="true"></div>
               <div class="timeline-card">
                 <div class="timeline-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <path d="m22 10-10-5-10 5 10 5 10-5Z"></path>
-                    <path d="M6 12v5c3 2 9 2 12 0v-5"></path>
-                  </svg>
+                    stroke-linejoin="round"><path d="m22 10-10-5-10 5 10 5 10-5Z"></path><path d="M6 12v5c3 2 9 2 12 0v-5"></path></svg>
                 </div>
-                <p class="timeline-body">Final-year medical student at <strong>UFCSPA</strong> with a research
-                  trajectory spanning cardiology, hepatology, gastroenterology, and neurology.</p>
+                <p class="timeline-body">Started medical school at <a href="https://ufcspa.edu.br/" target="_blank" rel="noopener noreferrer"><strong>UFCSPA</strong></a>, a federal university with no tuition.</p>
               </div>
             </article>
             <article class="timeline-step">
               <div class="timeline-num">02</div>
-              <h3 class="timeline-title">What I do at the moment</h3>
+              <h3 class="timeline-title"><span class="timeline-year">2023</span>Learning meta-analysis</h3>
               <div class="timeline-connector" aria-hidden="true"></div>
               <div class="timeline-card">
                 <div class="timeline-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <path d="m16 18 6-6-6-6"></path>
-                    <path d="m8 6-6 6 6 6"></path>
-                    <path d="m14 4-4 16"></path>
-                  </svg>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round"><path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2z"></path><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7z"></path></svg>
                 </div>
-                <p class="timeline-body">I build evidence-synthesis projects from protocol to manuscript, combining
-                  <strong>clinical reasoning</strong>, advanced meta-analysis methods, and reproducible R/Python
-                  workflows.</p>
+                <p class="timeline-body">Learned how to do meta-analysis online and <strong>started publishing</strong>.</p>
               </div>
             </article>
             <article class="timeline-step">
               <div class="timeline-num">03</div>
-              <h3 class="timeline-title">What I aim</h3>
+              <h3 class="timeline-title"><span class="timeline-year">2024</span>Mentoring specialists</h3>
               <div class="timeline-connector" aria-hidden="true"></div>
               <div class="timeline-card">
                 <div class="timeline-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="9"></circle>
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"></circle>
-                  </svg>
+                    stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                 </div>
-                <p class="timeline-body">To become the kind of clinical researcher who can turn hard medical questions
-                  into <strong>transparent statistical models</strong>, reusable code, and publishable evidence.</p>
+                <p class="timeline-body">Started mentoring <strong>certified specialists</strong> in research within their own areas.</p>
               </div>
             </article>
             <article class="timeline-step">
               <div class="timeline-num">04</div>
-              <h3 class="timeline-title">What I am searching</h3>
+              <h3 class="timeline-title"><span class="timeline-year">2024</span>100 citations</h3>
               <div class="timeline-connector" aria-hidden="true"></div>
               <div class="timeline-card">
                 <div class="timeline-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <rect x="3" y="7" width="18" height="13" rx="2"></rect>
-                    <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                    <path d="M9 13h6"></path>
-                    <path d="M12 10v6"></path>
-                  </svg>
+                    stroke-linejoin="round"><path d="m22 7-8.5 8.5-5-5L2 17"></path><path d="M16 7h6v6"></path></svg>
                 </div>
-                <p class="timeline-body">A research position or funded PhD with a PI who needs a medical doctor profile
-                  that can <strong>read the clinic, write the code, and ship the paper</strong>.</p>
+                <p class="timeline-body">Reached <strong>100 citations</strong>.</p>
+              </div>
+            </article>
+            <article class="timeline-step">
+              <div class="timeline-num">05</div>
+              <h3 class="timeline-title"><span class="timeline-year">2025</span>An educational product</h3>
+              <div class="timeline-connector" aria-hidden="true"></div>
+              <div class="timeline-card">
+                <div class="timeline-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8"></path><path d="M12 17v4"></path><path d="m10 7 5 3-5 3z"></path></svg>
+                </div>
+                <p class="timeline-body">Built a whole educational product end to end: <strong>concepts, knowledge, slides, recording, uploading and hosting</strong>.</p>
+              </div>
+            </article>
+            <article class="timeline-step">
+              <div class="timeline-num">06</div>
+              <h3 class="timeline-title"><span class="timeline-year">2026</span>R packages</h3>
+              <div class="timeline-connector" aria-hidden="true"></div>
+              <div class="timeline-card">
+                <div class="timeline-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round"><path d="m16 18 6-6-6-6"></path><path d="m8 6-6 6 6 6"></path></svg>
+                </div>
+                <p class="timeline-body">Developed <strong>open-source R packages</strong> for the methods I use.</p>
+              </div>
+            </article>
+            <article class="timeline-step">
+              <div class="timeline-num">07</div>
+              <h3 class="timeline-title"><span class="timeline-year">Sep 2026</span>Radiology</h3>
+              <div class="timeline-connector" aria-hidden="true"></div>
+              <div class="timeline-card">
+                <div class="timeline-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path><circle cx="12" cy="12" r="4"></circle></svg>
+                </div>
+                <p class="timeline-body">After rethinking my career, I decided to pursue <strong>radiology</strong> instead of gastroenterology.</p>
+              </div>
+            </article>
+            <article class="timeline-step">
+              <div class="timeline-num">08</div>
+              <h3 class="timeline-title"><span class="timeline-year">Future</span>3D reconstruction</h3>
+              <div class="timeline-connector" aria-hidden="true"></div>
+              <div class="timeline-card">
+                <div class="timeline-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg>
+                </div>
+                <p class="timeline-body">I strongly want to work on <strong>reconstruction algorithms and software for 3D composition</strong>, and on innovation in signal theory across hardware and software.</p>
               </div>
             </article>
           </div>
@@ -2828,178 +2887,6 @@
       </div>
     </section>
 
-    <section id="stack" class="sect reveal">
-      <div class="wrap">
-        <div class="sect-label" style="display: flex; margin-inline: auto; width: max-content;">Technical Stack</div>
-        <h2 class="sect-h" style="text-align: center;">Core Capabilities</h2>
-        <p class="sect-sub" style="text-align: center; margin-bottom: 48px;">Methodological anchors, programming
-          languages, and soft skills.</p>
-        <div class="stack-panel" style="margin-top: 0;">
-          <div class="skills-grid">
-            <div class="skill-card">
-              <div class="skill-card-head">
-                <span class="skill-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <path d="M3 3v18h18"></path>
-                    <path d="m7 15 4-4 3 3 5-7"></path>
-                  </svg>
-                </span>
-                <div>
-                  <div class="skill-title">Statistics</div>
-                  <div class="skill-note">Three methodological anchors I can apply directly in research pipelines.</div>
-                </div>
-              </div>
-              <div class="tool-list">
-                <div class="tool-item">
-                  <span class="tool-logo cochrane">
-                    <svg class="cochrane-mark" viewBox="0 0 64 64" aria-hidden="true">
-                      <path d="M28 7a25 25 0 0 0 0 50" fill="none" stroke="#003B75" stroke-width="9.5"
-                        stroke-linecap="butt"></path>
-                      <path d="M36 7a25 25 0 0 1 0 50" fill="none" stroke="#003B75" stroke-width="9.5"
-                        stroke-linecap="butt"></path>
-                      <path d="M32 5v54" stroke="#9B2C96" stroke-width="4.2" stroke-linecap="square"></path>
-                      <path d="M27 18h5M21 24h15M18 30h14M23 36h18M17 43h18M20 49h8" stroke="#9B2C96" stroke-width="3.6"
-                        stroke-linecap="square"></path>
-                      <path d="M25.5 52 29 48.5 32.5 52 29 55.5z" fill="#9B2C96"></path>
-                    </svg>
-                  </span>
-                  <div>
-                    <div class="tool-name">Cochrane Recommendations</div>
-                    <div class="tool-use">Protocol, eligibility, extraction, risk-of-bias, and reporting decisions
-                      aligned with handbook standards.</div>
-                  </div>
-                </div>
-                <div class="tool-item">
-                  <span class="tool-logo">BAY</span>
-                  <div>
-                    <div class="tool-name">Bayesian Statistics</div>
-                    <div class="tool-use">Priors, posterior interpretation, uncertainty communication, and evidence
-                      models for clinical questions.</div>
-                  </div>
-                </div>
-                <div class="tool-item">
-                  <span class="tool-logo">MA</span>
-                  <div>
-                    <div class="tool-name">Meta-Analysis Designs</div>
-                    <div class="tool-use">NMA, DTA, pair-wise, and single-arm meta-analysis designs from protocol to
-                      reproducible output.</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="skill-card">
-              <div class="skill-card-head">
-                <span class="skill-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <path d="M16 18 22 12 16 6"></path>
-                    <path d="M8 6 2 12 8 18"></path>
-                  </svg>
-                </span>
-                <div>
-                  <div class="skill-title">Programming</div>
-                  <div class="skill-note">Research code that turns statistical methods into reusable workflows.</div>
-                </div>
-              </div>
-              <div class="tool-list">
-                <div class="tool-item">
-                  <span class="tool-logo r"><img src="https://www.r-project.org/logo/Rlogo.svg" alt="R logo"></span>
-                  <div>
-                    <div class="tool-name">R</div>
-                    <div class="tool-use">Open-source package development, including <em>meta3l</em> and
-                      <em>easydta</em>, plus reproducible analysis reports.</div>
-                  </div>
-                </div>
-                <div class="tool-item">
-                  <span class="tool-logo py" aria-label="Python logo">
-                    <svg viewBox="0 0 42 42" aria-hidden="true">
-                      <path class="py-blue"
-                        d="M20.8 5.2c-5.1 0-7.6 1.5-7.6 4.5v4.2h8.1v1.8H9.9c-3.2 0-5.6 2.5-5.6 6.7 0 4.8 2.1 7.3 5.6 7.3h3.5v-4.9c0-3.6 3.1-6.7 6.8-6.7h7.5c2.2 0 4-1.8 4-4V9.7c0-2.9-2.5-4.5-7.5-4.5h-3.4Z">
-                      </path>
-                      <path class="py-yellow"
-                        d="M21.2 36.8c5.1 0 7.6-1.5 7.6-4.5v-4.2h-8.1v-1.8h11.4c3.2 0 5.6-2.5 5.6-6.7 0-4.8-2.1-7.3-5.6-7.3h-3.5v4.9c0 3.6-3.1 6.7-6.8 6.7h-7.5c-2.2 0-4 1.8-4 4v4.4c0 2.9 2.5 4.5 7.5 4.5h3.4Z">
-                      </path>
-                      <circle cx="17.1" cy="9.8" r="1.35" fill="white"></circle>
-                      <circle cx="24.9" cy="32.2" r="1.35" fill="white"></circle>
-                    </svg>
-                  </span>
-                  <div>
-                    <div class="tool-name">Python</div>
-                    <div class="tool-use">Automation, data processing, research utilities, and glue code around
-                      reproducible pipelines.</div>
-                  </div>
-                </div>
-                <div class="tool-item">
-                  <span class="tool-logo git">
-                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                      <path
-                        d="M12 .5a12 12 0 0 0-3.8 23.39c.6.11.82-.26.82-.58v-2.02c-3.34.73-4.04-1.42-4.04-1.42-.55-1.38-1.34-1.75-1.34-1.75-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.49 1 .11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.53.12-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0C15.52 3.88 16.53 4.2 16.53 4.2c.66 1.65.25 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.63-5.49 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58A12 12 0 0 0 12 .5Z">
-                      </path>
-                    </svg>
-                  </span>
-                  <div>
-                    <div class="tool-name">Git / GitHub</div>
-                    <div class="tool-use">Versioned code, collaborative review, public repositories, and transparent
-                      research handoffs.</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="skill-card">
-              <div class="skill-card-head">
-                <span class="skill-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <path d="M3 4h18v12H3z"></path>
-                    <path d="M8 20h8"></path>
-                    <path d="M12 16v4"></path>
-                    <path d="m8 10 3 3 5-6"></path>
-                  </svg>
-                </span>
-                <div>
-                  <div class="skill-title">Teaching, Design &amp; Soft Skills</div>
-                  <div class="skill-note">How I make complex methods understandable and usable by teams.</div>
-                </div>
-              </div>
-              <div class="tool-list">
-                <div class="tool-item">
-                  <span class="tool-logo">CLS</span>
-                  <div>
-                    <div class="tool-name">Building Classes</div>
-                    <div class="tool-use">Designing structured lessons on statistics, coding, and organizing tools —
-                      exercises and research-methods explanations for meta-analysis learners.</div>
-                  </div>
-                </div>
-                <div class="tool-item">
-                  <span class="tool-logo">SLD</span>
-                  <div>
-                    <div class="tool-name">Slides</div>
-                    <div class="tool-use">Clear academic decks with visual hierarchy, diagrams, and publication-ready
-                      explanation flow.</div>
-                  </div>
-                </div>
-                <div class="tool-item">
-                  <span class="tool-logo">
-                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <path d="M7 9.5 12 5l5 4.5" stroke="oklch(48% 0.18 300)" stroke-width="3" stroke-linecap="round"
-                        stroke-linejoin="round"></path>
-                      <path d="M7 15.5 12 20l5-4.5" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"
-                        stroke-linejoin="round"></path>
-                    </svg>
-                  </span>
-                  <div>
-                    <div class="tool-name">Teaching Tools</div>
-                    <div class="tool-use">Canva, ClickUp, and Google Workspace for class materials, team organization,
-                      and mentoring workflows.</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
 
     <section id="publications" class="sect reveal">
       <div class="wrap">
@@ -3250,118 +3137,7 @@
       </div>
     </section>
 
-    <section id="packages" class="sect reveal">
-      <div class="wrap">
-        <div class="sect-label">Code</div>
-        <h2 class="sect-h">R Packages</h2>
-        <p class="sect-sub">Open-source tools for reproducible evidence synthesis.</p>
-        <div class="pkg-grid">
-          <div class="pkg-card">
-            <div class="pkg-head">
-              <div>
-                <div class="pkg-name">meta3l</div>
-                <div class="pkg-version">Three-Level Meta-Analysis</div>
-              </div>
-              <span class="pkg-badge">Open source</span>
-            </div>
-            <div class="pkg-body">
-              <p class="pkg-desc">Implements three-level meta-analytic models for clustered and hierarchically
-                structured study data — the case where multiple effect sizes come from the same study or research group.
-                Handles variance decomposition across levels with full forest plot output.</p>
-              <div class="pkg-methods">
-                <span class="tag hi">3-level random effects</span>
-                <span class="tag">Forest plots</span>
-                <span class="tag">Heterogeneity I²</span>
-              </div>
-              <img class="pkg-plot" src="/meta3l_forest.png" alt="meta3l forest plot example">
-              <div class="pkg-install">
-                <code id="meta3l-cmd">devtools::install_github("vanioljantunes/meta3l")</code>
-                <button class="copy-btn" onclick="copyCmd('meta3l-cmd', this)">Copy</button>
-              </div>
-            </div>
-            <div class="pkg-footer">
-              <a class="pill" href="https://github.com/vanioljantunes/meta3l" target="_blank"
-                style="font-size:12px">GitHub →</a>
-            </div>
-          </div>
-          <div class="pkg-card">
-            <div class="pkg-head">
-              <div>
-                <div class="pkg-name">easydta</div>
-                <div class="pkg-version">Diagnostic Test Accuracy MA</div>
-              </div>
-              <span class="pkg-badge">Open source</span>
-            </div>
-            <div class="pkg-body">
-              <p class="pkg-desc">User-friendly interface for diagnostic test accuracy meta-analysis. Implements
-                bivariate GLMM and HSROC models for pooling sensitivity and specificity across studies. Designed to
-                lower the barrier for clinical researchers performing DTA syntheses in R.</p>
-              <div class="pkg-methods">
-                <span class="tag hi">Bivariate GLMM</span>
-                <span class="tag hi">HSROC</span>
-                <span class="tag">ROC space plots</span>
-                <span class="tag">Sensitivity/Specificity</span>
-              </div>
-              <img class="pkg-plot" src="/easydta_sroc.png" alt="easydta sROC plot example">
-              <div class="pkg-install">
-                <code id="easydta-cmd">devtools::install_github("vanioljantunes/easydta")</code>
-                <button class="copy-btn" onclick="copyCmd('easydta-cmd', this)">Copy</button>
-              </div>
-            </div>
-            <div class="pkg-footer">
-              <a class="pill" href="https://github.com/vanioljantunes/easydta" target="_blank"
-                style="font-size:12px">GitHub →</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
 
-    <section id="methods" class="sect reveal">
-      <div class="wrap">
-        <div class="sect-label">Methods</div>
-        <h2 class="sect-h">Statistical Methods</h2>
-        <p class="sect-sub">Methods applied in published work — not just listed on a CV.</p>
-        <div class="methods-grid">
-          <div class="method-cell">
-            <div class="method-cat">Meta-Analysis</div>
-            <div class="method-items">
-              <div class="method-item">Pairwise random-effects MA</div>
-              <div class="method-item">Three-level hierarchical MA</div>
-              <div class="method-item">Network meta-analysis (NMA)</div>
-              <div class="method-item">Dose-response MA</div>
-            </div>
-          </div>
-          <div class="method-cell">
-            <div class="method-cat">Diagnostic Accuracy</div>
-            <div class="method-items">
-              <div class="method-item">Bivariate GLMM (Reitsma)</div>
-              <div class="method-item">HSROC model</div>
-              <div class="method-item">Bayesian DTA (WinBUGS)</div>
-              <div class="method-item">QUADAS-2 assessment</div>
-            </div>
-          </div>
-          <div class="method-cell">
-            <div class="method-cat">Bayesian Methods</div>
-            <div class="method-items">
-              <div class="method-item">Bayesian NMA (gemtc)</div>
-              <div class="method-item">Threshold-constrained models</div>
-              <div class="method-item">WinBUGS via R</div>
-              <div class="method-item">Prior sensitivity analysis</div>
-            </div>
-          </div>
-          <div class="method-cell">
-            <div class="method-cat">Software &amp; Repro</div>
-            <div class="method-items">
-              <div class="method-item">R (meta, metafor, mada)</div>
-              <div class="method-item">R Markdown pipelines</div>
-              <div class="method-item">Python (data wrangling)</div>
-              <div class="method-item">RevMan 5 / Web</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
 
     <section id="teaching" class="sect reveal">
       <div class="wrap">
