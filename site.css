@@ -985,3 +985,50 @@ a.tool:hover {
   }
 }
 
+/* ---------- Home cards: same width as the profile panel; aligned dividers ---------- */
+
+.tiles {
+  max-width: 52rem;
+  margin-inline: auto;
+}
+
+@media (min-width: 861px) {
+  /* Subgrid rows line the badge, title, text, stats and links up across the three cards,
+     so every divider sits at the same height. */
+  .tiles {
+    row-gap: 0;
+  }
+
+  .tiles > li {
+    display: grid;
+    grid-row: span 5;
+    grid-template-rows: subgrid;
+  }
+
+  .tile {
+    grid-row: 1 / -1;
+    display: grid;
+    grid-template-rows: subgrid;
+    justify-items: center;
+    align-items: start;
+    padding-inline: 1.1rem;
+  }
+
+  .tile-badge { grid-row: 1; }
+  .tile h2 { grid-row: 2; }
+  .tile > p { grid-row: 3; }
+  .tile-stats { grid-row: 4; }
+
+  .tile-links {
+    grid-row: 5;
+    align-self: start;
+  }
+}
+
+.tile-links a {
+  white-space: nowrap;
+}
+
+.tile-soon {
+  font-size: 0.6875rem;
+}

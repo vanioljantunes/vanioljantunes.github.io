@@ -50,6 +50,42 @@
   object-fit: cover;
 }
 
+.site-bar__id {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.site-bar__social {
+  display: flex;
+  gap: 0.1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-bar__social a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  color: #1c2430;
+}
+
+.site-bar__social a:hover {
+  color: #164a90;
+  background: #e8f0fb;
+}
+
+.site-bar__social svg {
+  width: 17px;
+  height: 17px;
+  fill: currentColor;
+}
+
 .site-bar__links {
   display: flex;
   flex-wrap: wrap;
@@ -110,7 +146,41 @@
 
   .site-bar__links a {
     min-height: 36px;
-    padding-inline: 0.55rem;
-    font-size: 0.875rem;
+    padding-inline: 0.45rem;
+    font-size: 0.8125rem;
+  }
+
+  .site-bar__id {
+    gap: 0.25rem;
+  }
+
+  .site-bar__social a {
+    width: 28px;
+    height: 28px;
+  }
+
+  .site-bar__social svg {
+    width: 15px;
+    height: 15px;
+  }
+}
+
+/* Very narrow phones (under 380px): tighter links so the bar stays on one row. */
+@media (max-width: 379px) {
+  .site-bar__inner {
+    padding-inline: 0.6rem;
+  }
+
+  .site-bar__links {
+    gap: 0;
+  }
+
+  .site-bar__links a {
+    padding-inline: 0.35rem;
+    font-size: 0.75rem;
+  }
+
+  .site-bar__social a {
+    width: 26px;
   }
 }
