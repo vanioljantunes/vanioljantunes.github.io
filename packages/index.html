@@ -55,16 +55,24 @@
         </ul>
       </nav>
     </div>
+    <nav class="site-subnav" aria-label="Packages">
+      <ul class="site-subnav__links">
+          <li><a href="#main">All packages</a></li>
+          <li><a href="#easydta">easyDTA</a></li>
+          <li><a href="#nmaplots">nmaplots</a></li>
+          <li><a href="#meta3l">meta3l</a></li>
+      </ul>
+    </nav>
   </header>
 
-  <main id="main" class="page-main wrap">
+  <main id="main" class="page-main wrap" data-top>
     <div class="page-head">
       <h1 data-anim>R packages</h1>
       <p data-anim>Open-source R packages for meta-analysis. Each card opens the GitHub repository in a new tab.</p>
     </div>
 
     <ul class="pkg-list">
-      <li data-anim>
+      <li data-anim id="easydta">
         <a class="card" href="https://github.com/vanioljantunes/easydta" target="_blank" rel="noopener noreferrer">
           <figure class="card-shot">
             <img src="/packages/img/easydta.webp" width="1200" height="750" alt="Screenshot of the easydta repository page on GitHub">
@@ -80,7 +88,7 @@
           </div>
         </a>
       </li>
-      <li data-anim>
+      <li data-anim id="nmaplots">
         <a class="card" href="https://github.com/vanioljantunes/nmaplots" target="_blank" rel="noopener noreferrer">
           <figure class="card-shot">
             <img src="/packages/img/nmaplots.webp" width="1200" height="750" loading="lazy" alt="Screenshot of the nmaplots repository page on GitHub">
@@ -96,7 +104,7 @@
           </div>
         </a>
       </li>
-      <li data-anim>
+      <li data-anim id="meta3l">
         <a class="card" href="https://github.com/vanioljantunes/meta3l" target="_blank" rel="noopener noreferrer">
           <figure class="card-shot">
             <img src="/packages/img/meta3l.webp" width="1200" height="750" loading="lazy" alt="Screenshot of the meta3l repository page on GitHub">
@@ -116,5 +124,6 @@
   </main>
 
   <script type="module" src="/js/packages.js"></script>
+  <script type="module" src="/js/subnav.js"></script>
 </body>
 </html>

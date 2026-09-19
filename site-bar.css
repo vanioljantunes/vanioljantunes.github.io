@@ -219,7 +219,8 @@
   background: #e8f0fb;
 }
 
-.site-subnav__links a[aria-current="page"] {
+.site-subnav__links a[aria-current="page"],
+.site-subnav__links a[aria-current="location"] {
   color: #ffffff;
   background: #164a90;
 }

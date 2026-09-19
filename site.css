@@ -1607,3 +1607,10 @@ a.tool:hover {
 .calc-table-wrap {
   position: relative;
 }
+
+/* Sub-navigation jumps land below the pinned bars. */
+.pkg-list > li,
+[data-top] {
+  scroll-margin-top: 112px;
+}
+
