@@ -2775,6 +2775,151 @@
         height: 20px;
       }
     }
+
+    /* ---- Sections fit their content (the full-screen snap design is gone) ---- */
+    .sect {
+      min-height: 0 !important;
+    }
+
+    @media (max-width: 600px) {
+      #hero {
+        min-height: 0 !important;
+      }
+
+      .sect {
+        padding: 32px 0 36px !important;
+      }
+
+      .sect-h {
+        font-size: 21px !important;
+      }
+
+      .hero-bio {
+        font-size: 14px !important;
+      }
+
+      .sect-sub {
+        font-size: 14px !important;
+        margin-bottom: 16px !important;
+      }
+
+      /* Hero: bio card full width under the name, then chips in one row, then the button */
+      .hero-bio-card {
+        grid-column: 1 / -1;
+        grid-row: 5;
+        max-width: none;
+        margin: 0 0 12px;
+        padding: 12px 14px;
+        text-align: left;
+      }
+
+      .hero-bio-card .hero-bio {
+        grid-column: auto;
+        grid-row: auto;
+        padding: 0 !important;
+        background: none !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        text-align: left !important;
+        hyphens: manual;
+        line-height: 1.5 !important;
+      }
+
+      .hero-chips {
+        grid-column: 1 / -1 !important;
+        grid-row: 6 !important;
+        flex-direction: row !important;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px !important;
+      }
+
+      .hero-ctas {
+        grid-column: 1 / -1 !important;
+        grid-row: 7 !important;
+        margin-top: 12px !important;
+      }
+
+      .hero-chip {
+        width: auto !important;
+        flex: 0 0 auto !important;
+        padding: 5px 10px !important;
+        font-size: 12px !important;
+      }
+
+      .teach-hero {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        gap: 8px !important;
+      }
+
+      .teach-stat {
+        padding: 10px 8px !important;
+        text-align: center;
+      }
+
+      /* Teaching cards */
+      .teach-grid {
+        gap: 10px !important;
+      }
+
+      .teach-grid > * {
+        padding: 14px 16px !important;
+      }
+
+      .teach-grid h3 {
+        font-size: 16px !important;
+        margin-bottom: 4px !important;
+      }
+
+      .teach-grid p {
+        font-size: 14px !important;
+        margin-bottom: 8px !important;
+      }
+
+      /* Trajectory */
+      .traj-year-group + .traj-year-group {
+        margin-top: 4px;
+      }
+
+      .traj-year {
+        margin-bottom: 10px;
+      }
+
+      .traj-year span {
+        font-size: 18px;
+        padding: 5px 24px 5px 10px;
+      }
+
+      .traj-body {
+        padding: 2px 0 12px;
+        margin-bottom: 12px;
+      }
+
+      .traj-title {
+        font-size: 13px;
+        margin-bottom: 3px;
+      }
+
+      .traj-body p {
+        font-size: 14px;
+        line-height: 1.45;
+      }
+
+      .traj-icon {
+        width: 38px;
+        height: 38px;
+        margin-left: calc(var(--traj-line) - 19px);
+      }
+
+      .traj-icon svg {
+        width: 17px;
+        height: 17px;
+      }
+
+      .traj-event {
+        column-gap: 30px;
+      }
+    }
   </style>
 </head>
 
@@ -2782,7 +2927,7 @@
   <div class="scroll-wrapper">
     <header class="site-bar">
     <div class="site-bar__inner">
-      <a class="site-bar__brand" href="/"><img src="/img/vanio-antunes.jpg" width="32" height="32" alt="">Vanio Antunes</a>
+      <a class="site-bar__brand" href="/"><img src="/img/vanio-antunes.jpg" width="32" height="32" alt=""><span class="site-bar__name">Vanio Antunes</span></a>
       <nav aria-label="Main">
         <ul class="site-bar__links">
           <li><a href="/about/" aria-current="page">Who am I</a></li>
@@ -2817,7 +2962,7 @@
             <!-- bio card -->
             <div class="hero-bio-card">
               <p class="hero-bio">Final-year medical student with more than <strong>30 peer-reviewed
-                publications</strong>, two open-source R packages, and more than <strong>150 hours teaching
+                publications</strong>, three open-source R packages, and more than <strong>150 hours teaching
                 meta-analysis methodology</strong>. I combine clinical training with postdoctoral-level statistical
                 methods and production-grade programming. In the future, I want to work with
                 <strong>3D reconstruction in radiology</strong>.</p>
