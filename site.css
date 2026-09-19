@@ -763,3 +763,119 @@ a.tool:hover {
     margin-bottom: 0.9rem;
   }
 }
+
+/* ---------- Home profile: photo card joined to the Google Scholar panel ---------- */
+
+.profile {
+  display: grid;
+  grid-template-columns: minmax(0, 20rem) minmax(0, 20rem);
+  align-items: stretch;
+  margin-bottom: 1.5rem;
+}
+
+.profile-card {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 1.25rem;
+  border-radius: 22px;
+  background: #eceef1;
+  text-align: center;
+}
+
+.profile-photo {
+  width: 160px;
+  height: 160px;
+  margin-bottom: 0.75rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-card h1 {
+  margin: 0 0 0.3rem;
+  font-size: 1.75rem;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+}
+
+.profile-line {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+}
+
+.profile-line + .profile-line {
+  margin-top: 0.35rem;
+  color: var(--muted);
+}
+
+.profile-scholar {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0.75rem 0;
+  padding: 0.5rem 0.75rem 0.5rem 0;
+  border: 1px solid var(--border);
+  border-left: 0;
+  border-radius: 0 14px 14px 0;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.profile-scholar:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-hover);
+}
+
+.profile-scholar img {
+  width: 100%;
+  height: auto;
+}
+
+@media (max-width: 600px) {
+  .profile {
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+    max-width: 22rem;
+    margin-bottom: 1rem;
+  }
+
+  .profile-card {
+    padding: 1rem 1rem 1.1rem;
+    border-radius: 18px 18px 0 0;
+  }
+
+  .profile-photo {
+    width: 104px;
+    height: 104px;
+    margin-bottom: 0.5rem;
+  }
+
+  .profile-card h1 {
+    font-size: 1.4rem;
+  }
+
+  .profile-line {
+    font-size: 0.875rem;
+  }
+
+  .profile-scholar {
+    flex-direction: column;
+    align-items: stretch;
+    margin: 0;
+    padding: 0.4rem;
+    border: 1px solid var(--border);
+    border-top: 0;
+    border-radius: 0 0 18px 18px;
+  }
+
+  .profile-scholar img {
+    width: 100%;
+  }
+}
