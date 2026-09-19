@@ -86,13 +86,6 @@
   outline-offset: 3px;
 }
 
-/* On phones the bar wraps to two rows; do not pin it over the content. */
-@media (max-width: 600px) {
-  .site-bar {
-    position: static;
-  }
-}
-
 @media (max-width: 420px) {
   .site-bar__links a {
     padding-inline: 0.55rem;
