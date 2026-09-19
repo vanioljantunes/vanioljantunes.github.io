@@ -28,35 +28,21 @@ export function normSInv(p) {
 
 /**
  * Diagnostic 2x2 table from sensitivity, specificity (both 0-1), the number of people with the
- * outcome, and the prevalence (0-1). Total = diseased / prevalence.
+ * outcome and the total sample size.
  */
-export function diagnostic({ sensitivity, specificity, diseased, prevalence }) {
+export function diagnostic({ sensitivity, specificity, diseased, total }) {
   const errors = [];
   if (!(sensitivity >= 0 && sensitivity <= 1)) errors.push('Sensitivity must be between 0 and 100%.');
   if (!(specificity >= 0 && specificity <= 1)) errors.push('Specificity must be between 0 and 100%.');
-  if (!(diseased > 0)) errors.push('Number of people with the outcome must be greater than 0.');
-  if (!(prevalence > 0 && prevalence <= 1)) errors.push('Prevalence must be greater than 0% and at most 100%.');
+  if (!(diseased >= 0)) errors.push('People with the outcome cannot be negative.');
+  if (!(total > 0)) errors.push('Sample size must be greater than 0.');
+  if (diseased > total) errors.push('People with the outcome cannot exceed the sample size.');
   if (errors.length) return { errors };
 
-  const total = diseased / prevalence;
   const healthy = total - diseased;
   const tp = sensitivity * diseased;
-  const fn = diseased - tp;
   const tn = specificity * healthy;
-  const fp = healthy - tn;
-  const ratio = (num, den) => (den > 0 ? num / den : NaN);
-  return {
-    errors,
-    tp, fp, fn, tn,
-    diseased, healthy, total,
-    testPositive: tp + fp,
-    testNegative: fn + tn,
-    ppv: ratio(tp, tp + fp),
-    npv: ratio(tn, tn + fn),
-    lrPositive: ratio(sensitivity, 1 - specificity),
-    lrNegative: ratio(1 - sensitivity, specificity),
-    accuracy: ratio(tp + tn, total),
-  };
+  return { errors, total, diseased, healthy, tp, fn: diseased - tp, tn, fp: healthy - tn };
 }
 
 /**

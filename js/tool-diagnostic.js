@@ -6,31 +6,32 @@ const num = (id) => {
   return v === '' ? NaN : Number(v);
 };
 const count = (x) => (Math.abs(x - Math.round(x)) < 1e-9 ? String(Math.round(x)) : x.toFixed(1));
+const values = () => $('diag-tree').querySelectorAll('[data-k]');
 
-function render() {
-  const values = [num('sens'), num('spec'), num('diseased'), num('prev')];
-  const tree = $('diag-tree');
-  const message = $('diag-message');
-  if (values.some(Number.isNaN)) {
-    tree.hidden = true;
-    message.hidden = false;
-    message.textContent = 'Fill in the four inputs to build the matrix.';
-    return;
-  }
-  const [sens, spec, diseased, prev] = values;
-  const r = diagnostic({ sensitivity: sens / 100, specificity: spec / 100, diseased, prevalence: prev / 100 });
-  if (r.errors.length) {
-    tree.hidden = true;
-    message.hidden = false;
-    message.textContent = r.errors.join(' ');
-    return;
-  }
-  tree.querySelectorAll('[data-k]').forEach((el) => {
-    el.textContent = count(r[el.dataset.k]);
+function clear(text) {
+  values().forEach((el) => {
+    el.textContent = '–';
+    el.classList.add('is-empty');
   });
-  message.hidden = true;
-  tree.hidden = false;
+  $('diag-message').textContent = text;
 }
 
-$('diag-form').addEventListener('input', render);
-render();
+$('diag-form').addEventListener('submit', (event) => {
+  event.preventDefault();
+  const input = [num('sens'), num('spec'), num('diseased'), num('total')];
+  if (input.some(Number.isNaN)) {
+    clear('Fill in all four inputs, then press Calculate.');
+    return;
+  }
+  const [sens, spec, diseased, total] = input;
+  const r = diagnostic({ sensitivity: sens / 100, specificity: spec / 100, diseased, total });
+  if (r.errors.length) {
+    clear(r.errors.join(' '));
+    return;
+  }
+  values().forEach((el) => {
+    el.textContent = count(r[el.dataset.k]);
+    el.classList.remove('is-empty');
+  });
+  $('diag-message').textContent = 'Calculated.';
+});
