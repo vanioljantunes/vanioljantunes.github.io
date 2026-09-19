@@ -2632,6 +2632,149 @@
         grid-column: 4;
       }
     }
+
+    /* ---- TRAJECTORY (year ribbons on a vertical line, icon per event) ---- */
+    .traj {
+      --traj-line: 120px;
+      position: relative;
+      max-width: 860px;
+      margin: 8px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .traj::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: calc(var(--traj-line) - 2px);
+      width: 4px;
+      border-radius: 2px;
+      background: var(--navy);
+    }
+
+    .traj-year-group + .traj-year-group {
+      margin-top: 14px;
+    }
+
+    .traj-year {
+      position: relative;
+      z-index: 1;
+      margin: 0 0 14px;
+    }
+
+    .traj-year span {
+      display: inline-flex;
+      align-items: center;
+      min-width: calc(var(--traj-line) + 30px);
+      padding: 8px 30px 8px 18px;
+      background: var(--accent);
+      color: #ffffff;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 50%, 100% 100%, 0 100%);
+    }
+
+    .traj-events {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .traj-event {
+      display: grid;
+      grid-template-columns: var(--traj-line) minmax(0, 1fr);
+      align-items: start;
+      column-gap: 40px;
+    }
+
+    .traj-icon {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      width: 56px;
+      height: 56px;
+      margin-left: calc(var(--traj-line) - 28px);
+      border: 4px solid var(--surface);
+      border-radius: 50%;
+      background: var(--navy);
+      color: #ffffff;
+      box-shadow: 0 0 0 2px var(--navy);
+    }
+
+    .traj-icon svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .traj-body {
+      padding: 6px 0 20px;
+      margin-bottom: 18px;
+      border-bottom: 2px dotted var(--border);
+    }
+
+    .traj-year-group:last-child .traj-event:last-child .traj-body {
+      border-bottom: 0;
+      margin-bottom: 0;
+    }
+
+    .traj-title {
+      margin: 0 0 6px;
+      color: var(--accent-txt);
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .traj-body p {
+      margin: 0;
+      max-width: 62ch;
+      color: oklch(33% 0.05 245);
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .traj-body strong {
+      color: var(--navy);
+      font-weight: 800;
+    }
+
+    .traj-body a {
+      color: var(--accent-txt);
+    }
+
+    @media (max-width: 600px) {
+      .traj {
+        --traj-line: 28px;
+      }
+
+      .traj-year span {
+        min-width: 0;
+        font-size: 20px;
+        padding: 6px 26px 6px 12px;
+      }
+
+      .traj-event {
+        column-gap: 36px;
+      }
+
+      .traj-icon {
+        width: 44px;
+        height: 44px;
+        margin-left: calc(var(--traj-line) - 22px);
+        border-width: 3px;
+      }
+
+      .traj-icon svg {
+        width: 20px;
+        height: 20px;
+      }
+    }
   </style>
 </head>
 
@@ -2840,104 +2983,94 @@
         <h2 class="sect-h">My trajectory</h2>
         <p class="sect-sub">From medical school to radiology, and where I want to go next.</p>
         <div class="about-grid">
-          <div class="about-timeline" aria-label="Trajectory of Vanio Antunes">
-            <article class="timeline-step">
-              <div class="timeline-num">01</div>
-              <h3 class="timeline-title"><span class="timeline-year">2021</span>Medical school</h3>
-              <div class="timeline-connector" aria-hidden="true"></div>
-              <div class="timeline-card">
-                <div class="timeline-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round"><path d="m22 10-10-5-10 5 10 5 10-5Z"></path><path d="M6 12v5c3 2 9 2 12 0v-5"></path></svg>
+          <ol class="traj" aria-label="Trajectory of Vanio Antunes">
+            <li class="traj-year-group">
+              <h3 class="traj-year"><span>2021</span></h3>
+              <ol class="traj-events">
+              <li class="traj-event">
+                <span class="traj-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 10-10-5-10 5 10 5 10-5Z"></path><path d="M6 12v5c3 2 9 2 12 0v-5"></path></svg></span>
+                <div class="traj-body">
+                  <h4 class="traj-title">Medical school</h4>
+                  <p>Started medical school at <a href="https://ufcspa.edu.br/" target="_blank" rel="noopener noreferrer"><strong>UFCSPA</strong></a>, a federal university with no tuition.</p>
                 </div>
-                <p class="timeline-body">Started medical school at <a href="https://ufcspa.edu.br/" target="_blank" rel="noopener noreferrer"><strong>UFCSPA</strong></a>, a federal university with no tuition.</p>
-              </div>
-            </article>
-            <article class="timeline-step">
-              <div class="timeline-num">02</div>
-              <h3 class="timeline-title"><span class="timeline-year">2023</span>Learning meta-analysis</h3>
-              <div class="timeline-connector" aria-hidden="true"></div>
-              <div class="timeline-card">
-                <div class="timeline-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round"><path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2z"></path><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7z"></path></svg>
+              </li>
+              </ol>
+            </li>
+            <li class="traj-year-group">
+              <h3 class="traj-year"><span>2023</span></h3>
+              <ol class="traj-events">
+              <li class="traj-event">
+                <span class="traj-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2z"></path><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7z"></path></svg></span>
+                <div class="traj-body">
+                  <h4 class="traj-title">Learning meta-analysis</h4>
+                  <p>Learned how to do meta-analysis online and <strong>started publishing</strong>.</p>
                 </div>
-                <p class="timeline-body">Learned how to do meta-analysis online and <strong>started publishing</strong>.</p>
-              </div>
-            </article>
-            <article class="timeline-step">
-              <div class="timeline-num">03</div>
-              <h3 class="timeline-title"><span class="timeline-year">2024</span>Mentoring specialists</h3>
-              <div class="timeline-connector" aria-hidden="true"></div>
-              <div class="timeline-card">
-                <div class="timeline-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              </li>
+              </ol>
+            </li>
+            <li class="traj-year-group">
+              <h3 class="traj-year"><span>2024</span></h3>
+              <ol class="traj-events">
+              <li class="traj-event">
+                <span class="traj-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span>
+                <div class="traj-body">
+                  <h4 class="traj-title">Mentoring specialists</h4>
+                  <p>Started mentoring <strong>certified specialists</strong> in research within their own areas.</p>
                 </div>
-                <p class="timeline-body">Started mentoring <strong>certified specialists</strong> in research within their own areas.</p>
-              </div>
-            </article>
-            <article class="timeline-step">
-              <div class="timeline-num">04</div>
-              <h3 class="timeline-title"><span class="timeline-year">2024</span>100 citations</h3>
-              <div class="timeline-connector" aria-hidden="true"></div>
-              <div class="timeline-card">
-                <div class="timeline-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round"><path d="m22 7-8.5 8.5-5-5L2 17"></path><path d="M16 7h6v6"></path></svg>
+              </li>
+              <li class="traj-event">
+                <span class="traj-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 7-8.5 8.5-5-5L2 17"></path><path d="M16 7h6v6"></path></svg></span>
+                <div class="traj-body">
+                  <h4 class="traj-title">100 citations</h4>
+                  <p>Reached <strong>100 citations</strong>.</p>
                 </div>
-                <p class="timeline-body">Reached <strong>100 citations</strong>.</p>
-              </div>
-            </article>
-            <article class="timeline-step">
-              <div class="timeline-num">05</div>
-              <h3 class="timeline-title"><span class="timeline-year">2025</span>An educational product</h3>
-              <div class="timeline-connector" aria-hidden="true"></div>
-              <div class="timeline-card">
-                <div class="timeline-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8"></path><path d="M12 17v4"></path><path d="m10 7 5 3-5 3z"></path></svg>
+              </li>
+              </ol>
+            </li>
+            <li class="traj-year-group">
+              <h3 class="traj-year"><span>2025</span></h3>
+              <ol class="traj-events">
+              <li class="traj-event">
+                <span class="traj-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8"></path><path d="M12 17v4"></path><path d="m10 7 5 3-5 3z"></path></svg></span>
+                <div class="traj-body">
+                  <h4 class="traj-title">An educational product</h4>
+                  <p>Built a whole educational product end to end: <strong>concepts, knowledge, slides, recording, uploading and hosting</strong>.</p>
                 </div>
-                <p class="timeline-body">Built a whole educational product end to end: <strong>concepts, knowledge, slides, recording, uploading and hosting</strong>.</p>
-              </div>
-            </article>
-            <article class="timeline-step">
-              <div class="timeline-num">06</div>
-              <h3 class="timeline-title"><span class="timeline-year">2026</span>R packages</h3>
-              <div class="timeline-connector" aria-hidden="true"></div>
-              <div class="timeline-card">
-                <div class="timeline-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round"><path d="m16 18 6-6-6-6"></path><path d="m8 6-6 6 6 6"></path></svg>
+              </li>
+              </ol>
+            </li>
+            <li class="traj-year-group">
+              <h3 class="traj-year"><span>2026</span></h3>
+              <ol class="traj-events">
+              <li class="traj-event">
+                <span class="traj-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 18 6-6-6-6"></path><path d="m8 6-6 6 6 6"></path></svg></span>
+                <div class="traj-body">
+                  <h4 class="traj-title">R packages</h4>
+                  <p>Developed <strong>open-source R packages</strong> for the methods I use.</p>
                 </div>
-                <p class="timeline-body">Developed <strong>open-source R packages</strong> for the methods I use.</p>
-              </div>
-            </article>
-            <article class="timeline-step">
-              <div class="timeline-num">07</div>
-              <h3 class="timeline-title"><span class="timeline-year">Sep 2026</span>Radiology</h3>
-              <div class="timeline-connector" aria-hidden="true"></div>
-              <div class="timeline-card">
-                <div class="timeline-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path><circle cx="12" cy="12" r="4"></circle></svg>
+              </li>
+              <li class="traj-event">
+                <span class="traj-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path><circle cx="12" cy="12" r="4"></circle></svg></span>
+                <div class="traj-body">
+                  <h4 class="traj-title">September: Radiology</h4>
+                  <p>After rethinking my career, I decided to pursue <strong>radiology</strong> instead of gastroenterology.</p>
                 </div>
-                <p class="timeline-body">After rethinking my career, I decided to pursue <strong>radiology</strong> instead of gastroenterology.</p>
-              </div>
-            </article>
-            <article class="timeline-step">
-              <div class="timeline-num">08</div>
-              <h3 class="timeline-title"><span class="timeline-year">Future</span>3D reconstruction</h3>
-              <div class="timeline-connector" aria-hidden="true"></div>
-              <div class="timeline-card">
-                <div class="timeline-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg>
+              </li>
+              </ol>
+            </li>
+            <li class="traj-year-group">
+              <h3 class="traj-year"><span>Future</span></h3>
+              <ol class="traj-events">
+              <li class="traj-event">
+                <span class="traj-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg></span>
+                <div class="traj-body">
+                  <h4 class="traj-title">3D reconstruction</h4>
+                  <p>I strongly want to work on <strong>reconstruction algorithms and software for 3D composition</strong>, and on innovation in signal theory across hardware and software.</p>
                 </div>
-                <p class="timeline-body">I strongly want to work on <strong>reconstruction algorithms and software for 3D composition</strong>, and on innovation in signal theory across hardware and software.</p>
-              </div>
-            </article>
-          </div>
+              </li>
+              </ol>
+            </li>
+          </ol>
           <div class="about-text">
             <p>I am a final-year medical student at UFCSPA with a research trajectory that started early and accelerated
               fast. My work spans cardiology, hepatology, gastroenterology, and neurology — always at the intersection
