@@ -1473,3 +1473,137 @@ a.tool:hover {
   color: var(--border-strong);
 }
 
+/* ---------- Median to mean: one table, intervention and control per study ---------- */
+
+.calc-page--wide {
+  max-width: 84rem;
+}
+
+.m2m-table {
+  min-width: 64rem;
+}
+
+.m2m-table th,
+.m2m-table td {
+  padding: 0.3rem 0.25rem;
+  text-align: center;
+}
+
+.m2m-table input {
+  width: 100%;
+  min-width: 3rem;
+  min-height: 34px;
+  padding: 0.25rem 0.4rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 5px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.m2m-table input:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.m2m-table .m2m-study {
+  min-width: 7rem;
+}
+
+.m2m-optional {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.m2m-arm {
+  font-size: 0.875rem !important;
+  letter-spacing: 0.02em;
+}
+
+.m2m-arm--int {
+  background: #e8f0fb !important;
+}
+
+.m2m-arm--ctl {
+  background: #efeafb !important;
+}
+
+.m2m-out-h {
+  background: #1c2430 !important;
+  color: #ffffff;
+}
+
+.m2m-out {
+  min-width: 4.4rem;
+  background: #eef1f4;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.m2m-out output {
+  display: block;
+  font-size: 0.9375rem;
+}
+
+.m2m-flag {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.m2m-out.is-ok {
+  background: #dcf1e2;
+  color: #14532d;
+}
+
+.m2m-out.is-skewed {
+  background: #fbdcd8;
+  color: #7f1d1d;
+}
+
+.m2m-out.is-error {
+  background: #fff4d6;
+  color: #7c4a03;
+}
+
+.m2m-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8125rem;
+}
+
+.m2m-legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.m2m-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+}
+
+.m2m-swatch.is-ok {
+  background: #dcf1e2;
+  border: 1px solid #14532d;
+}
+
+.m2m-swatch.is-skewed {
+  background: #fbdcd8;
+  border: 1px solid #7f1d1d;
+}
+
+
+/* Keeps absolutely positioned hidden labels inside the scroll area. */
+.calc-table-wrap {
+  position: relative;
+}
