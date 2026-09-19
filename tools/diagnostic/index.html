@@ -48,7 +48,7 @@
     <p class="calc-back"><a href="/tools/">All tools</a></p>
     <div class="page-head">
       <h1>Diagnostic calculator</h1>
-      <p>Enter the test's sensitivity and specificity, the number of people with the outcome and the prevalence. The 2x2 table updates as you type.</p>
+      <p>Enter the test's sensitivity and specificity, the number of people with the outcome and the prevalence. The confusion matrix updates as you type.</p>
     </div>
 
     <section class="calc-panel" aria-labelledby="diag-inputs">
@@ -74,28 +74,23 @@
     </section>
 
     <section class="calc-panel" aria-labelledby="diag-results">
-      <h2 id="diag-results" class="calc-h2">2x2 table</h2>
-      <p class="calc-message" id="diag-message" aria-live="polite">Fill in the four inputs to build the table.</p>
-      <div class="calc-table-wrap">
-        <table class="calc-table confusion" id="diag-table" hidden>
-          <thead>
-            <tr><th scope="col"><span class="visually-hidden">Test result</span></th><th scope="col">Outcome present</th><th scope="col">Outcome absent</th><th scope="col">Total</th></tr>
-          </thead>
-          <tbody>
-            <tr><th scope="row">Test positive</th><td class="cell-good" data-k="tp"></td><td class="cell-bad" data-k="fp"></td><td data-k="testPositive"></td></tr>
-            <tr><th scope="row">Test negative</th><td class="cell-bad" data-k="fn"></td><td class="cell-good" data-k="tn"></td><td data-k="testNegative"></td></tr>
-            <tr class="calc-total"><th scope="row">Total</th><td data-k="diseased"></td><td data-k="healthy"></td><td data-k="total"></td></tr>
-          </tbody>
-        </table>
+      <h2 id="diag-results" class="calc-h2">Confusion matrix</h2>
+      <p class="calc-message" id="diag-message" aria-live="polite">Fill in the four inputs to build the matrix.</p>
+      <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+        <defs>
+          <marker id="dt-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0 0L10 5L0 10z"/>
+          </marker>
+        </defs>
+      </svg>
+      <div class="dt-tree" id="diag-tree" hidden>
+        <div class="dt-row dt-row--1"><div class="dt-box" data-box="total"><span class="dt-label">Total patients</span><span class="dt-value" data-k="total"></span></div></div>
+        <svg class="dt-branch" width="100%" height="40" aria-hidden="true" focusable="false"><line x1="50%" y1="0" x2="50%" y2="14"/><line x1="25%" y1="14" x2="75%" y2="14"/><line x1="25%" y1="14" x2="25%" y2="33" marker-end="url(#dt-arrow)"/><line x1="75%" y1="14" x2="75%" y2="33" marker-end="url(#dt-arrow)"/></svg>
+        <div class="dt-row dt-row--2"><div class="dt-box" data-box="diseased"><span class="dt-label">Diseased patients<br>(patients with the outcome)</span><span class="dt-value" data-k="diseased"></span></div><div class="dt-box" data-box="healthy"><span class="dt-label">Non-diseased patients<br>(patients without the outcome)</span><span class="dt-value" data-k="healthy"></span></div></div>
+        <svg class="dt-branch" width="100%" height="40" aria-hidden="true" focusable="false"><line x1="25%" y1="0" x2="25%" y2="14"/><line x1="12.5%" y1="14" x2="37.5%" y2="14"/><line x1="12.5%" y1="14" x2="12.5%" y2="33" marker-end="url(#dt-arrow)"/><line x1="37.5%" y1="14" x2="37.5%" y2="33" marker-end="url(#dt-arrow)"/><line x1="75%" y1="0" x2="75%" y2="14"/><line x1="62.5%" y1="14" x2="87.5%" y2="14"/><line x1="62.5%" y1="14" x2="62.5%" y2="33" marker-end="url(#dt-arrow)"/><line x1="87.5%" y1="14" x2="87.5%" y2="33" marker-end="url(#dt-arrow)"/></svg>
+        <div class="dt-row dt-row--4"><div class="dt-box dt-box--good" data-box="tp"><span class="dt-label"><abbr title="True positives">TP</abbr></span><span class="dt-value" data-k="tp"></span></div><div class="dt-box dt-box--bad" data-box="fn"><span class="dt-label"><abbr title="False negatives">FN</abbr></span><span class="dt-value" data-k="fn"></span></div><div class="dt-box dt-box--good" data-box="tn"><span class="dt-label"><abbr title="True negatives">TN</abbr></span><span class="dt-value" data-k="tn"></span></div><div class="dt-box dt-box--bad" data-box="fp"><span class="dt-label"><abbr title="False positives">FP</abbr></span><span class="dt-value" data-k="fp"></span></div></div>
       </div>
-      <dl class="calc-stats" id="diag-stats" hidden>
-        <div><dt>Positive predictive value</dt><dd data-k="ppv"></dd></div>
-        <div><dt>Negative predictive value</dt><dd data-k="npv"></dd></div>
-        <div><dt>Positive likelihood ratio</dt><dd data-k="lrPositive"></dd></div>
-        <div><dt>Negative likelihood ratio</dt><dd data-k="lrNegative"></dd></div>
-        <div><dt>Accuracy</dt><dd data-k="accuracy"></dd></div>
-      </dl>
-      <p class="calc-note">Total = people with the outcome / prevalence. True positives = sensitivity x people with the outcome; true negatives = specificity x people without it. Counts are expected values and can be fractional.</p>
+      <p class="calc-note">Total = diseased patients / prevalence. TP = sensitivity x diseased; FN = diseased - TP. TN = specificity x non-diseased; FP = non-diseased - TN. Counts are expected values and can be fractional.</p>
     </section>
   </main>
 
