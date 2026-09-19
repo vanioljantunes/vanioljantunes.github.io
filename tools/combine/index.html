@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Meta-analysis tools | Vanio Antunes</title>
-  <meta name="description" content="Free tools for systematic reviews and meta-analysis by Vanio Antunes.">
+  <title>Combine means and SDs | Vanio Antunes</title>
+  <meta name="description" content="Combine the mean and standard deviation of two or more groups with Cochrane's formula.">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/site-bar.css">
   <link rel="stylesheet" href="/site.css">
@@ -44,49 +44,45 @@
     </div>
   </header>
 
-  <main id="main" class="page-main wrap">
+  <main id="main" class="page-main wrap calc-page">
+    <p class="calc-back"><a href="/tools/">All tools</a></p>
     <div class="page-head">
-      <h1>Meta-analysis tools</h1>
-      <p>Free tools for systematic reviews. They run in the browser.</p>
+      <h1>Combine means and SDs</h1>
+      <p>Enter the sample size, mean and standard deviation of each group. Groups are combined in order with Cochrane's formula; rows left empty are skipped.</p>
     </div>
 
-    <ul class="tool-grid">
-      <li>
-        <a class="tool" href="https://vanioantunes.com/tools/ssHelper/">
-          <h2>ssHelper</h2>
-          <p>Build and test PubMed search strategies: arms, result counts, and known-study checks.</p>
-          <span class="tool-cta">Open ssHelper</span>
-        </a>
-      </li>
-      <li>
-        <a class="tool" href="/tools/diagnostic/">
-          <h2>Diagnostic calculator</h2>
-          <p>Build the 2x2 table from sensitivity, specificity, the number of people with the outcome and the prevalence.</p>
-          <span class="tool-cta">Open calculator</span>
-        </a>
-      </li>
-      <li>
-        <a class="tool" href="/tools/combine/">
-          <h2>Combine means and SDs</h2>
-          <p>Combine the sample size, mean and SD of two or more groups with Cochrane's formula.</p>
-          <span class="tool-cta">Open calculator</span>
-        </a>
-      </li>
-      <li>
-        <a class="tool" href="/tools/median/">
-          <h2>Median to mean</h2>
-          <p>Estimate the mean and SD from the median with the range and/or the interquartile range.</p>
-          <span class="tool-cta">Open calculator</span>
-        </a>
-      </li>
-      <li>
-        <div class="tool tool-soon" id="sd-finder">
-          <h2>SD finder</h2>
-          <p>Recover standard deviations from reported statistics.</p>
-          <div class="overlay"><span>In progress</span></div>
-        </div>
-      </li>
-    </ul>
+    <section class="calc-panel" aria-labelledby="comb-inputs">
+      <h2 id="comb-inputs" class="calc-h2">Groups</h2>
+      <div class="calc-table-wrap">
+        <table class="calc-table calc-groups">
+          <thead>
+            <tr><th scope="col">Group</th><th scope="col">Sample size (n)</th><th scope="col">Mean</th><th scope="col">SD</th><th scope="col"><span class="visually-hidden">Remove</span></th></tr>
+          </thead>
+          <tbody id="comb-rows"></tbody>
+        </table>
+      </div>
+      <button type="button" class="calc-button" id="comb-add">Add group</button>
+    </section>
+
+    <section class="calc-panel" aria-labelledby="comb-results">
+      <h2 id="comb-results" class="calc-h2">Combined</h2>
+      <p class="calc-message" id="comb-message" aria-live="polite">Fill in at least one group.</p>
+      <dl class="calc-stats calc-stats--big" id="comb-result" hidden>
+        <div><dt>Sample size</dt><dd data-k="n"></dd></div>
+        <div><dt>Mean</dt><dd data-k="mean"></dd></div>
+        <div><dt>SD</dt><dd data-k="sd"></dd></div>
+      </dl>
+      <div class="calc-table-wrap">
+        <table class="calc-table" id="comb-steps" hidden>
+          <caption>Running combination, group by group</caption>
+          <thead><tr><th scope="col">Up to group</th><th scope="col">n</th><th scope="col">Mean</th><th scope="col">SD</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="calc-note">Formula: Cochrane Handbook 5.1, <a href="https://handbook-5-1.cochrane.org/chapter_7/table_7_7_a_formulae_for_combining_groups.htm" target="_blank" rel="noopener noreferrer">table 7.7.a<span class="visually-hidden"> (opens in a new tab)</span></a>, applied to each pair in turn.</p>
+    </section>
   </main>
+
+  <script type="module" src="/js/tool-combine.js"></script>
 </body>
 </html>

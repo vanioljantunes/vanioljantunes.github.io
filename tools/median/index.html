@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Median to mean | Vanio Antunes</title>
+  <meta name="description" content="Estimate the sample mean and standard deviation from the median, range and/or interquartile range.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/site-bar.css">
+  <link rel="stylesheet" href="/site.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-bar">
+    <div class="site-bar__inner">
+      <div class="site-bar__id">
+        <a class="site-bar__brand" href="/"><img src="/img/vanio-antunes.jpg" width="32" height="32" alt=""><span class="site-bar__name">Vanio Antunes</span></a>
+        <ul class="site-bar__social" aria-label="Profiles">
+          <li>
+          <a href="https://scholar.google.com/citations?user=JOZkTg0AAAAJ&amp;hl=en" target="_blank" rel="noopener noreferrer" aria-label="Google Scholar (opens in a new tab)">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269zM12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></svg>
+          </a>
+          </li>
+          <li>
+          <a href="https://www.linkedin.com/in/vanio-antunes/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn (opens in a new tab)">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.370 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </a>
+          </li>
+          <li>
+          <a href="https://x.com/VanioAntunes" target="_blank" rel="noopener noreferrer" aria-label="X (opens in a new tab)">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          </li>
+        </ul>
+      </div>
+      <nav aria-label="Main">
+        <ul class="site-bar__links">
+          <li><a href="/about/">Who am I</a></li>
+          <li><a href="/tools/" aria-current="page">Tools</a></li>
+          <li><a href="/packages/">R packages</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="page-main wrap calc-page">
+    <p class="calc-back"><a href="/tools/">All tools</a></p>
+    <div class="page-head">
+      <h1>Median to mean</h1>
+      <p>Estimate the sample mean and SD from the sample size and the median with the range, the interquartile range, or both. Methods and skewness test as in <a href="https://www.math.hkbu.edu.hk/~tongt/papers/median2mean.html" target="_blank" rel="noopener noreferrer">median2mean by Tong et al.<span class="visually-hidden"> (opens in a new tab)</span></a></p>
+    </div>
+
+    <section class="calc-panel" aria-labelledby="s1-title" data-scenario="1">
+      <h2 id="s1-title" class="calc-h2">Scenario 1: minimum, median, maximum</h2>
+      <p class="calc-desc">The study reports the median and the range.</p>
+      <form class="calc-grid" novalidate>
+          <label class="calc-field" for="s1-n">
+            <span class="calc-label">Sample size (n)</span>
+            <input id="s1-n" type="number" inputmode="decimal" step="1" min="1">
+          </label>
+          <label class="calc-field" for="s1-min">
+            <span class="calc-label">Minimum</span>
+            <input id="s1-min" type="number" inputmode="decimal" step="any" min="0">
+          </label>
+          <label class="calc-field" for="s1-median">
+            <span class="calc-label">Median</span>
+            <input id="s1-median" type="number" inputmode="decimal" step="any" min="0">
+          </label>
+          <label class="calc-field" for="s1-max">
+            <span class="calc-label">Maximum</span>
+            <input id="s1-max" type="number" inputmode="decimal" step="any" min="0">
+          </label>
+      </form>
+      <p class="calc-message" id="s1-message" aria-live="polite">Fill in all values.</p>
+      <dl class="calc-stats calc-stats--big" id="s1-result" hidden>
+        <div><dt>Estimated mean <span class="calc-method">Luo et al. (2018)</span></dt><dd data-k="mean"></dd></div>
+        <div><dt>Estimated SD <span class="calc-method">Wan et al. (2014)</span></dt><dd data-k="sd"></dd></div>
+      </dl>
+    </section>
+
+    <section class="calc-panel" aria-labelledby="s2-title" data-scenario="2">
+      <h2 id="s2-title" class="calc-h2">Scenario 2: first quartile, median, third quartile</h2>
+      <p class="calc-desc">The study reports the median and the interquartile range.</p>
+      <form class="calc-grid" novalidate>
+          <label class="calc-field" for="s2-n">
+            <span class="calc-label">Sample size (n)</span>
+            <input id="s2-n" type="number" inputmode="decimal" step="1" min="1">
+          </label>
+          <label class="calc-field" for="s2-q1">
+            <span class="calc-label">First quartile (Q1)</span>
+            <input id="s2-q1" type="number" inputmode="decimal" step="any" min="0">
+          </label>
+          <label class="calc-field" for="s2-median">
+            <span class="calc-label">Median</span>
+            <input id="s2-median" type="number" inputmode="decimal" step="any" min="0">
+          </label>
+          <label class="calc-field" for="s2-q3">
+            <span class="calc-label">Third quartile (Q3)</span>
+            <input id="s2-q3" type="number" inputmode="decimal" step="any" min="0">
+          </label>
+      </form>
+      <p class="calc-message" id="s2-message" aria-live="polite">Fill in all values.</p>
+      <dl class="calc-stats calc-stats--big" id="s2-result" hidden>
+        <div><dt>Estimated mean <span class="calc-method">Luo et al. (2018)</span></dt><dd data-k="mean"></dd></div>
+        <div><dt>Estimated SD <span class="calc-method">Wan et al. (2014)</span></dt><dd data-k="sd"></dd></div>
+      </dl>
+    </section>
+
+    <section class="calc-panel" aria-labelledby="s3-title" data-scenario="3">
+      <h2 id="s3-title" class="calc-h2">Scenario 3: all five numbers</h2>
+      <p class="calc-desc">The study reports the minimum, both quartiles, the median and the maximum.</p>
+      <form class="calc-grid" novalidate>
+          <label class="calc-field" for="s3-n">
+            <span class="calc-label">Sample size (n)</span>
+            <input id="s3-n" type="number" inputmode="decimal" step="1" min="1">
+          </label>
+          <label class="calc-field" for="s3-min">
+            <span class="calc-label">Minimum</span>
+            <input id="s3-min" type="number" inputmode="decimal" step="any" min="0">
+          </label>
+          <label class="calc-field" for="s3-q1">
+            <span class="calc-label">First quartile (Q1)</span>
+            <input id="s3-q1" type="number" inputmode="decimal" step="any" min="0">
+          </label>
+          <label class="calc-field" for="s3-median">
+            <span class="calc-label">Median</span>
+            <input id="s3-median" type="number" inputmode="decimal" step="any" min="0">
+          </label>
+          <label class="calc-field" for="s3-q3">
+            <span class="calc-label">Third quartile (Q3)</span>
+            <input id="s3-q3" type="number" inputmode="decimal" step="any" min="0">
+          </label>
+          <label class="calc-field" for="s3-max">
+            <span class="calc-label">Maximum</span>
+            <input id="s3-max" type="number" inputmode="decimal" step="any" min="0">
+          </label>
+      </form>
+      <p class="calc-message" id="s3-message" aria-live="polite">Fill in all values.</p>
+      <dl class="calc-stats calc-stats--big" id="s3-result" hidden>
+        <div><dt>Estimated mean <span class="calc-method">Luo et al. (2018)</span></dt><dd data-k="mean"></dd></div>
+        <div><dt>Estimated SD <span class="calc-method">Shi et al. (2020)</span></dt><dd data-k="sd"></dd></div>
+      </dl>
+    </section>
+
+    <p class="calc-note">Skewness is tested with Shi et al. (2023). When the data are significantly skewed, these normal-based estimates are not recommended.</p>
+  </main>
+
+  <script type="module" src="/js/tool-median.js"></script>
+</body>
+</html>

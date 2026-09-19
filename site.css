@@ -1086,3 +1086,262 @@ a.tool:hover {
     display: block;
   }
 }
+
+/* ---------- Calculator pages (static; no motion) ---------- */
+
+.calc-page {
+  max-width: 52rem;
+  padding-bottom: 3rem;
+}
+
+.calc-back {
+  margin: 1.25rem 0 0;
+  font-size: 0.875rem;
+}
+
+.calc-panel {
+  margin-top: 1.25rem;
+  padding: 1.25rem 1.35rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.calc-h2 {
+  margin: 0 0 0.9rem;
+  font-size: 1.125rem;
+}
+
+.calc-desc {
+  margin: -0.5rem 0 0.9rem;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+.calc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 0.9rem 1rem;
+}
+
+.calc-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.calc-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.calc-field input,
+.calc-groups input {
+  width: 100%;
+  min-height: 40px;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+}
+
+.calc-field input:focus-visible,
+.calc-groups input:focus-visible,
+.calc-button:focus-visible,
+.calc-remove:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.calc-message {
+  margin: 0 0 0.9rem;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+.calc-page [data-scenario] .calc-message {
+  margin: 1rem 0 0;
+}
+
+.calc-message.is-warning {
+  padding: 0.55rem 0.75rem;
+  border: 1px solid #b45309;
+  border-radius: 6px;
+  background: #fff7ed;
+  color: #7c2d12;
+}
+
+.calc-table-wrap {
+  overflow-x: auto;
+}
+
+.calc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.calc-table caption {
+  margin-bottom: 0.4rem;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  text-align: left;
+}
+
+.calc-table th,
+.calc-table td {
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--border);
+  text-align: right;
+}
+
+.calc-table thead th {
+  background: var(--bg);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.calc-table tbody th {
+  text-align: left;
+  font-weight: 600;
+}
+
+.confusion td {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.confusion .cell-good {
+  background: #eef6f0;
+}
+
+.confusion .cell-bad {
+  background: #fbf0ee;
+}
+
+.confusion .calc-total td,
+.confusion .calc-total th {
+  background: var(--bg);
+}
+
+.calc-groups th,
+.calc-groups td {
+  padding: 0.35rem 0.45rem;
+}
+
+.calc-groups tbody th {
+  width: 3.5rem;
+  text-align: center;
+}
+
+.calc-button,
+.calc-remove {
+  min-height: 36px;
+  padding: 0.35rem 0.85rem;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--accent-dark);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.calc-button {
+  margin-top: 0.9rem;
+}
+
+.calc-button:hover,
+.calc-remove:hover:not(:disabled) {
+  background: var(--accent-soft);
+}
+
+.calc-remove {
+  border-color: var(--border-strong);
+  color: var(--text);
+  font-weight: 500;
+}
+
+.calc-remove:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.calc-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0 0;
+}
+
+.calc-stats div {
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+}
+
+.calc-stats dt {
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.calc-stats dd {
+  margin: 0.15rem 0 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.calc-stats--big dd {
+  color: var(--accent-dark);
+  font-size: 1.5rem;
+}
+
+.calc-method {
+  display: block;
+  font-size: 0.75rem;
+}
+
+.calc-note {
+  margin: 1rem 0 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+@media (max-width: 600px) {
+  .calc-panel {
+    padding: 0.9rem 0.9rem 1rem;
+  }
+
+  .calc-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem;
+  }
+
+  .calc-table th,
+  .calc-table td {
+    padding: 0.4rem 0.45rem;
+  }
+
+  .confusion td {
+    font-size: 1rem;
+  }
+
+  .calc-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .calc-stats--big dd {
+    font-size: 1.25rem;
+  }
+}
+
+
+.calc-stats + .calc-table-wrap {
+  margin-top: 1.25rem;
+}
