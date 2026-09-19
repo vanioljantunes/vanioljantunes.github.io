@@ -1032,3 +1032,17 @@ a.tool:hover {
 .tile-soon {
   font-size: 0.6875rem;
 }
+
+.tile-stat-line strong {
+  color: var(--accent-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.tiles > li,
+.tile {
+  min-width: 0;
+}
+
+.tile-links a:has(.tile-stat-line) {
+  white-space: normal;
+}
