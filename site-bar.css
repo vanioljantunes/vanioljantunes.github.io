@@ -184,3 +184,60 @@
     width: 26px;
   }
 }
+
+/* Tools sub-navigation: second row of the pinned bar on every tools page. */
+.site-subnav {
+  border-top: 1px solid #e3e7ec;
+  background: #f7f8fa;
+}
+
+.site-subnav__links {
+  display: flex;
+  gap: 0.25rem;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0.3rem 1.25rem;
+  overflow-x: auto;
+  list-style: none;
+  scrollbar-width: none;
+}
+
+.site-subnav__links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  color: #545f6d;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.site-subnav__links a:hover {
+  color: #1c2430;
+  background: #e8f0fb;
+}
+
+.site-subnav__links a[aria-current="page"] {
+  color: #ffffff;
+  background: #164a90;
+}
+
+.site-subnav a:focus-visible {
+  outline: 3px solid #1d5fb8;
+  outline-offset: -3px;
+}
+
+@media (max-width: 600px) {
+  .site-subnav__links {
+    padding: 0.25rem 0.75rem;
+  }
+
+  .site-subnav__links a {
+    min-height: 30px;
+    padding-inline: 0.55rem;
+    font-size: 0.8125rem;
+  }
+}
+

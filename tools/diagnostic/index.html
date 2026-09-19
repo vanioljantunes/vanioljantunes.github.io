@@ -42,10 +42,18 @@
         </ul>
       </nav>
     </div>
+    <nav class="site-subnav" aria-label="Tools">
+      <ul class="site-subnav__links">
+          <li><a href="/tools/">All tools</a></li>
+          <li><a href="/tools/ssHelper/">ssHelper</a></li>
+          <li><a href="/tools/diagnostic/" aria-current="page">Diagnostic calculator</a></li>
+          <li><a href="/tools/combine/">Combine means and SDs</a></li>
+          <li><a href="/tools/median/">Median to mean</a></li>
+      </ul>
+    </nav>
   </header>
 
   <main id="main" class="page-main wrap calc-page">
-    <p class="calc-back"><a href="/tools/">All tools</a></p>
     <div class="page-head">
       <h1>Diagnostic calculator</h1>
       <p>Enter the test's sensitivity and specificity, the number of people with the outcome and the prevalence. The confusion matrix updates as you type.</p>
@@ -95,5 +103,6 @@
   </main>
 
   <script type="module" src="/js/tool-diagnostic.js"></script>
+  <script type="module" src="/js/subnav.js"></script>
 </body>
 </html>
