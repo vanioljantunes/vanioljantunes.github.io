@@ -1037,55 +1037,11 @@ a.tool:hover {
   min-width: 0;
 }
 
-/* Scholar counts pinned to the top-right corner of the Scholar screenshot. */
-.profile-scholar {
-  position: relative;
-}
-
-.scholar-badge {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  z-index: 1;
-  padding: 0.3rem 0.6rem;
-  border: 1px solid var(--text);
-  border-radius: 999px;
-  background: var(--surface);
-  color: var(--text);
-  font-size: 0.8125rem;
-  white-space: nowrap;
-  box-shadow: 0 4px 12px rgba(28, 36, 48, 0.12);
-}
-
 /* The photo and text card stay above both screenshots. */
 .profile-card {
   z-index: 2;
 }
 
-.scholar-badge strong {
-  color: var(--accent-dark);
-  font-variant-numeric: tabular-nums;
-}
-
-@media (max-width: 600px) {
-  .scholar-badge {
-    top: 0.35rem;
-    right: 0.35rem;
-    padding: 0.2rem 0.5rem;
-    border-radius: 10px;
-    font-size: 0.6875rem;
-    line-height: 1.3;
-    text-align: center;
-  }
-
-  .scholar-badge__sep {
-    display: none;
-  }
-
-  .scholar-badge__idx {
-    display: block;
-  }
-}
 
 /* ---------- Calculator pages (static; no motion) ---------- */
 
@@ -1614,3 +1570,23 @@ a.tool:hover {
   scroll-margin-top: 112px;
 }
 
+/* Scholar counts: third line of the profile card. */
+.profile-stats {
+  margin-top: 0.45rem !important;
+  padding-top: 0.45rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.875rem;
+}
+
+.profile-stats strong {
+  color: var(--accent-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+
+@media (max-width: 600px) {
+  .profile-stats {
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+}
