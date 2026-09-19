@@ -768,7 +768,7 @@ a.tool:hover {
 
 .profile {
   display: grid;
-  grid-template-columns: minmax(0, 20rem) minmax(0, 20rem);
+  grid-template-columns: minmax(0, 18rem) minmax(0, 20rem) minmax(0, 20rem);
   align-items: stretch;
   margin-bottom: 1.5rem;
 }
@@ -810,7 +810,6 @@ a.tool:hover {
 
 .profile-line + .profile-line {
   margin-top: 0.35rem;
-  color: var(--muted);
 }
 
 .profile-scholar {
@@ -818,7 +817,7 @@ a.tool:hover {
   flex-direction: column;
   justify-content: center;
   gap: 0.5rem;
-  margin: 0.75rem 0;
+  margin: 0;
   padding: 0.5rem 0.75rem 0.5rem 0;
   border: 1px solid var(--border);
   border-left: 0;
@@ -877,5 +876,171 @@ a.tool:hover {
 
   .profile-scholar img {
     width: 100%;
+  }
+}
+
+/* ---------- Home cards: Scholar preview and quick links ---------- */
+
+.tile {
+  transform-origin: center;
+}
+
+.tile-badge {
+  margin-top: 0.25rem;
+}
+
+.tile-stats {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin: 1rem 0 0;
+}
+
+.tile-stats div {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+}
+
+.tile-stats dd {
+  margin: 0;
+  color: var(--accent-dark);
+  font-size: 1.375rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.tile-stats dt {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.tile-links {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 0.15rem;
+  width: 100%;
+  margin: 1rem 0 0;
+  padding: 0.85rem 0 0;
+  border-top: 1px solid var(--border);
+  list-style: none;
+  text-align: left;
+}
+
+.tile-links a {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 32px;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 0.9375rem;
+  text-decoration: none;
+}
+
+.tile-links a::before {
+  content: "";
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.tile-links a:hover {
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+}
+
+.tile-soon {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+@media (max-width: 600px) {
+  .tile-stats {
+    gap: 1.1rem;
+    margin-top: 0.6rem;
+  }
+
+  .tile-stats dd {
+    font-size: 1.125rem;
+  }
+
+  .tile-links {
+    margin-top: 0.6rem;
+    padding-top: 0.5rem;
+  }
+
+  .tile-links a {
+    font-size: 0.875rem;
+  }
+}
+
+/* PubMed panel: mirror of the Scholar panel, on the left of the photo card. */
+.profile-pubmed {
+  display: block;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-right: 0;
+  border-radius: 14px 0 0 14px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.profile-pubmed:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-hover);
+}
+
+.profile-pubmed img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top left;
+}
+
+/* Below 1080px the three panels do not fit side by side: photo card first, then both panels. */
+@media (max-width: 1080px) {
+  .profile {
+    grid-template-columns: minmax(0, 20rem) minmax(0, 20rem);
+    grid-template-areas:
+      'card scholar'
+      'pubmed pubmed';
+  }
+
+  .profile-card {
+    grid-area: card;
+  }
+
+  .profile-scholar {
+    grid-area: scholar;
+  }
+
+  .profile-pubmed {
+    grid-area: pubmed;
+    height: 14rem;
+    margin-top: 0.75rem;
+    border-right: 1px solid var(--border);
+    border-radius: 14px;
+  }
+}
+
+@media (max-width: 600px) {
+  .profile {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'card'
+      'scholar'
+      'pubmed';
+  }
+
+  .profile-pubmed {
+    height: 12rem;
   }
 }

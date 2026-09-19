@@ -50,17 +50,10 @@ if (reduced) {
     }
   }
 
-  // Hover lift, press and arrow nudge (transform only).
+  // Hover grows the card, press settles it (transform only).
   document.querySelectorAll('[data-tile]').forEach((tile) => {
-    const arrow = tile.querySelector('.tile-arrow');
-    const lift = () => {
-      animate(tile, { y: -3 }, { duration: 0.3, ease: EXPO_OUT });
-      if (arrow) anime.animate(arrow, { translateX: 4, duration: 350, ease: 'outQuart' });
-    };
-    const drop = () => {
-      animate(tile, { y: 0 }, { duration: 0.3, ease: EXPO_OUT });
-      if (arrow) anime.animate(arrow, { translateX: 0, duration: 350, ease: 'outQuart' });
-    };
+    const lift = () => animate(tile, { scale: 1.035 }, { duration: 0.35, ease: EXPO_OUT });
+    const drop = () => animate(tile, { scale: 1 }, { duration: 0.35, ease: EXPO_OUT });
     if (typeof Motion.hover === 'function') {
       Motion.hover(tile, () => {
         lift();
@@ -74,8 +67,8 @@ if (reduced) {
     tile.addEventListener('focusout', drop);
     if (typeof Motion.press === 'function') {
       Motion.press(tile, () => {
-        animate(tile, { scale: 0.985 }, { duration: 0.15, ease: EXPO_OUT });
-        return () => animate(tile, { scale: 1 }, { duration: 0.3, ease: EXPO_OUT });
+        animate(tile, { scale: 1.01 }, { duration: 0.15, ease: EXPO_OUT });
+        return () => animate(tile, { scale: 1.035 }, { duration: 0.3, ease: EXPO_OUT });
       });
     }
   });
