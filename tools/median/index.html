@@ -77,7 +77,12 @@
           <tbody id="m2m-rows"></tbody>
         </table>
       </div>
-      <button type="button" class="calc-button" id="m2m-add">Add study</button>
+      <div class="m2m-toolbar">
+        <button type="button" class="calc-button" id="m2m-add">Add study</button>
+        <button type="button" class="calc-button" id="m2m-copy">Copy table</button>
+        <button type="button" class="calc-button calc-button--primary" id="m2m-export">Export .xlsx</button>
+      </div>
+      <p class="calc-status" id="m2m-status" role="status" aria-live="polite"></p>
       <ul class="m2m-legend">
         <li><span class="m2m-swatch is-ok"></span>Not significantly skewed</li>
         <li><span class="m2m-swatch is-skewed"></span>Significantly skewed: normal-based estimates not recommended</li>

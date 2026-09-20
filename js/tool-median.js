@@ -1,4 +1,5 @@
 import { medianToMean } from './calc.js';
+import { copyText, downloadBlob, rowsToTsv, rowsToXlsxBlob } from './xlsx.js';
 
 // One row per study; each arm (intervention, control) has n, median, Q1, Q3, min, max and
 // computed mean and SD. The scenario follows from the filled cells: all five numbers (3),
@@ -110,6 +111,71 @@ function computeRow(tr) {
     });
   }
 }
+
+const FIELD_HEADS = ['n', 'Median', 'Q1', 'Q3', 'Min', 'Max', 'Mean', 'SD', 'Skewness'];
+
+function outValue(tr, arm, out) {
+  const cell = tr.querySelector(`[data-arm="${arm}"][data-out="${out}"]`);
+  const text = cell.querySelector('output').textContent;
+  const value = Number(text);
+  return Number.isFinite(value) ? value : '';
+}
+
+function skewLabel(tr, arm) {
+  const cell = tr.querySelector(`[data-arm="${arm}"][data-out="sd"]`);
+  if (cell.classList.contains('is-skewed')) return 'Skewed';
+  if (cell.classList.contains('is-ok')) return 'Not skewed';
+  if (cell.classList.contains('is-error')) return 'Check values';
+  return '';
+}
+
+/** The table as it stands: two header rows, then one row per study, numbers kept as numbers. */
+function tableRows() {
+  const head1 = ['Study'];
+  const head2 = ['Study'];
+  for (const arm of ARMS) {
+    head1.push(arm.key === 'int' ? 'Intervention' : 'Control', ...Array(FIELD_HEADS.length - 1).fill(''));
+    head2.push(...FIELD_HEADS);
+  }
+  head1[0] = '';
+  const body = [...rows.rows].map((tr) => {
+    const line = [tr.querySelector('[data-k="study"]').value.trim()];
+    for (const arm of ARMS) {
+      const v = readArm(tr, arm.key);
+      for (const f of INPUTS) line.push(Number.isFinite(v[f.key]) ? v[f.key] : '');
+      line.push(outValue(tr, arm.key, 'mean'), outValue(tr, arm.key, 'sd'), skewLabel(tr, arm.key));
+    }
+    return line;
+  });
+  return [head1, head2, ...body];
+}
+
+const status = document.getElementById('m2m-status');
+let statusTimer = 0;
+
+function say(message) {
+  status.textContent = message;
+  clearTimeout(statusTimer);
+  statusTimer = setTimeout(() => {
+    status.textContent = '';
+  }, 4000);
+}
+
+function stamp() {
+  const now = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+}
+
+document.getElementById('m2m-export').addEventListener('click', () => {
+  downloadBlob(rowsToXlsxBlob(tableRows(), 'Median to mean'), `median-to-mean-${stamp()}.xlsx`);
+  say('Workbook downloaded.');
+});
+
+document.getElementById('m2m-copy').addEventListener('click', async () => {
+  const ok = await copyText(rowsToTsv(tableRows()));
+  say(ok ? 'Table copied. Paste it into a spreadsheet.' : 'Could not copy in this browser.');
+});
 
 rows.addEventListener('input', (event) => {
   const tr = event.target.closest('tr');
