@@ -214,6 +214,17 @@
   text-decoration: none;
 }
 
+.nav-beta {
+  margin-left: 0.35rem;
+  padding: 0 0.3rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
 .site-subnav__links a:hover {
   color: #1c2430;
   background: #e8f0fb;

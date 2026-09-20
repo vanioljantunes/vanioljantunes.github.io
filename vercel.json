@@ -12,6 +12,11 @@
       "permanent": true
     },
     {
+      "source": "/tools/triageHelper",
+      "destination": "/tools/triageHelper/",
+      "permanent": true
+    },
+    {
       "source": "/research(.html)?",
       "destination": "/about/research",
       "permanent": true
@@ -40,6 +45,14 @@
     {
       "source": "/tools/ssHelper/:path*",
       "destination": "https://sshelper-five.vercel.app/tools/ssHelper/:path*"
+    },
+    {
+      "source": "/tools/triageHelper/",
+      "destination": "https://triagehelper.vercel.app/"
+    },
+    {
+      "source": "/tools/triageHelper/:path*",
+      "destination": "https://triagehelper.vercel.app/:path*"
     }
   ]
 }
