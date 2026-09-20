@@ -48,7 +48,7 @@
     },
     {
       "source": "/tools/triageHelper/",
-      "destination": "https://triagehelper.vercel.app/"
+      "destination": "https://triagehelper.vercel.app/index.html"
     },
     {
       "source": "/tools/triageHelper/:path*",
