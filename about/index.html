@@ -2750,6 +2750,72 @@
       color: var(--accent-txt);
     }
 
+    .mentees {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px 18px;
+      margin: 14px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .mentee {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      width: 76px;
+    }
+
+    .mentee-face {
+      display: grid;
+      place-items: center;
+      width: 52px;
+      height: 52px;
+      border: 2px solid var(--accent);
+      border-radius: 50%;
+      background: var(--accent-dim);
+      color: var(--accent-txt);
+    }
+
+    .mentee-face svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .mentee-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.25;
+      text-align: center;
+      letter-spacing: 0.02em;
+    }
+
+    @media (max-width: 600px) {
+      .mentees {
+        gap: 12px 14px;
+      }
+
+      .mentee {
+        width: 66px;
+      }
+
+      .mentee-face {
+        width: 44px;
+        height: 44px;
+      }
+
+      .mentee-face svg {
+        width: 20px;
+        height: 20px;
+      }
+
+      .mentee-label {
+        font-size: 11px;
+      }
+    }
+
     @media (max-width: 600px) {
       .traj {
         --traj-line: 28px;
@@ -3184,7 +3250,7 @@
                 <span class="traj-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2z"></path><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7z"></path></svg></span>
                 <div class="traj-body">
                   <h4 class="traj-title">Learning meta-analysis</h4>
-                  <p>Learned how to do meta-analysis online and <strong>started publishing</strong>.</p>
+                  <p>Learned how to do meta-analysis online and started publishing, on the way to <strong>30 PubMed-indexed papers</strong> and <strong>400+ citations</strong>.</p>
                 </div>
               </li>
               </ol>
@@ -3196,7 +3262,25 @@
                 <span class="traj-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span>
                 <div class="traj-body">
                   <h4 class="traj-title">Mentoring specialists</h4>
-                  <p>Started mentoring <strong>certified specialists</strong> in research within their own areas.</p>
+                  <p>Started mentoring <strong>12 certified specialists</strong> from <strong>4 countries</strong> (Brazil, the United States, Israel and India) in research within their own areas.</p>
+                  <ul class="mentees" aria-label="Examples of the specialties mentored">
+                    <li class="mentee">
+                      <span class="mentee-face" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"></path><path d="M5 21V7l7-4 7 4v14"></path><path d="M12 9v6"></path><path d="M9 12h6"></path></svg></span>
+                      <span class="mentee-label">Hospitalists</span>
+                    </li>
+                    <li class="mentee">
+                      <span class="mentee-face" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="10" cy="7" r="4"></circle><path d="M18 9v6"></path><path d="M21 12h-6"></path></svg></span>
+                      <span class="mentee-label">Residents</span>
+                    </li>
+                    <li class="mentee">
+                      <span class="mentee-face" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v8a5 5 0 0 0 10 0V8a3 3 0 0 1 6 0v6"></path><circle cx="21" cy="17" r="3"></circle></svg></span>
+                      <span class="mentee-label">Endoscopists</span>
+                    </li>
+                    <li class="mentee">
+                      <span class="mentee-face" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 3a9 9 0 0 1 0 18"></path><path d="M12 8a4 4 0 0 1 0 8"></path><path d="M12 12h.01"></path></svg></span>
+                      <span class="mentee-label">Radiologists</span>
+                    </li>
+                  </ul>
                 </div>
               </li>
               <li class="traj-event">
@@ -3215,7 +3299,7 @@
                 <span class="traj-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8"></path><path d="M12 17v4"></path><path d="m10 7 5 3-5 3z"></path></svg></span>
                 <div class="traj-body">
                   <h4 class="traj-title">An educational product</h4>
-                  <p>Built a whole educational product end to end: <strong>concepts, knowledge, slides, recording, uploading and hosting</strong>.</p>
+                  <p>Built a whole educational product end to end, from concepts and slides to recording and hosting: <strong>150+ hours</strong> of meta-analysis methodology, taken by <strong>3,000+ students from 100+ countries</strong>.</p>
                 </div>
               </li>
               </ol>
@@ -3227,7 +3311,7 @@
                 <span class="traj-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 18 6-6-6-6"></path><path d="m8 6-6 6 6 6"></path></svg></span>
                 <div class="traj-body">
                   <h4 class="traj-title">R packages</h4>
-                  <p>Developed <strong>open-source R packages</strong> for the methods I use.</p>
+                  <p>Developed <strong>three open-source R packages</strong> for the methods I use: nmaplots, easyDTA and meta3l.</p>
                 </div>
               </li>
               <li class="traj-event">
