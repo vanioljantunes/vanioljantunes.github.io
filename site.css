@@ -364,45 +364,73 @@ a:focus-visible {
 
 
 /* ---------- Tools ---------- */
+/* Each tool is a name over a rounded icon box, with a one-line description under the box. */
 
 .tool-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1.25rem;
+  gap: 2rem 1.5rem;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .tool {
-  position: relative;
   display: flex;
   flex-direction: column;
+  align-items: center;
   height: 100%;
-  min-height: 210px;
-  padding: 1.5rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  color: var(--text);
+  text-align: center;
+  text-decoration: none;
+}
+
+.tool-name {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  min-height: 2.5em;
+  margin: 0 0 0.6rem;
+  font-size: 1.125rem;
+  line-height: 1.25;
+}
+
+.tool-box {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  max-width: 220px;
+  aspect-ratio: 4 / 3;
+  border: 1.5px solid var(--text);
+  border-radius: 26px;
   background: var(--surface);
   box-shadow: var(--shadow);
   color: var(--text);
-  text-decoration: none;
-  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s, color 0.2s;
 }
 
-a.tool {
-  transition: border-color 0.2s, box-shadow 0.2s;
+.tool-box svg {
+  width: 46px;
+  height: 46px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-a.tool:hover {
+a.tool:hover .tool-box,
+a.tool:focus-visible .tool-box {
   border-color: var(--accent);
   box-shadow: var(--shadow-hover);
+  color: var(--accent);
 }
 
-.tool h2 {
-  margin: 0 0 0.5rem;
-  font-size: 1.375rem;
-  line-height: 1.2;
+a.tool:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 8px;
 }
 
 /* Marks a tool that is open to use while still under test. */
@@ -420,40 +448,35 @@ a.tool:hover {
   vertical-align: middle;
 }
 
-.tool p {
-  margin: 0 0 1.25rem;
+.tool-desc {
+  max-width: 26ch;
+  margin: 0.7rem 0 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+/* Tools not yet available: dashed box, muted icon, a tag inside the box. */
+.tool-soon .tool-box {
+  border-style: dashed;
+  border-color: var(--border-strong);
+  box-shadow: none;
   color: var(--muted);
 }
 
-.tool-cta {
-  margin-top: auto;
-  color: var(--accent);
-  font-weight: 600;
-}
-
-.overlay {
+.tool-soon-tag {
   position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding: 1.5rem;
-  background: rgba(247, 248, 250, 0.35);
-}
-
-.overlay span {
-  padding: 0.45rem 0.95rem;
+  bottom: 0.7rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.2rem 0.65rem;
   border: 1px solid var(--border-strong);
   border-radius: 999px;
   background: var(--surface);
   color: var(--text);
-  font-size: 0.9375rem;
+  font-size: 0.75rem;
   font-weight: 650;
-}
-
-/* Text under the overlay stays dark enough to pass contrast once tinted. */
-.tool-soon p {
-  color: var(--text);
+  white-space: nowrap;
 }
 
 /* ---------- Packages ---------- */
@@ -561,13 +584,16 @@ a.tool:hover {
 /* ---------- Responsive ---------- */
 
 @media (max-width: 860px) {
-  .tiles,
-  .tool-grid {
+  .tiles {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .tile,
-  .tool {
+  .tool-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem 1rem;
+  }
+
+  .tile {
     min-height: 0;
   }
 
@@ -608,8 +634,21 @@ a.tool:hover {
     padding-block: 2rem 1.25rem;
   }
 
-  .tool {
-    min-height: 180px;
+  .tool-name {
+    font-size: 1rem;
+  }
+
+  .tool-box {
+    border-radius: 20px;
+  }
+
+  .tool-box svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .tool-desc {
+    font-size: 0.8125rem;
   }
 }
 
