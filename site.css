@@ -387,8 +387,10 @@ a:focus-visible {
 
 .tool-name {
   display: flex;
-  align-items: flex-end;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.3rem;
   min-height: 2.5em;
   margin: 0 0 0.6rem;
   font-size: 1.125rem;
@@ -396,18 +398,13 @@ a:focus-visible {
 }
 
 .tool-box {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 100%;
-  max-width: 220px;
-  aspect-ratio: 4 / 3;
-  border: 1.5px solid var(--text);
-  border-radius: 26px;
-  background: var(--surface);
-  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 0 0.25rem;
   color: var(--text);
-  transition: border-color 0.2s, box-shadow 0.2s, color 0.2s;
+  transition: color 0.2s;
 }
 
 .tool-box svg {
@@ -422,8 +419,6 @@ a:focus-visible {
 
 a.tool:hover .tool-box,
 a.tool:focus-visible .tool-box {
-  border-color: var(--accent);
-  box-shadow: var(--shadow-hover);
   color: var(--accent);
 }
 
@@ -451,24 +446,17 @@ a.tool:focus-visible {
 .tool-desc {
   max-width: 26ch;
   margin: 0.7rem 0 0;
-  color: var(--muted);
+  color: var(--text);
   font-size: 0.875rem;
   line-height: 1.45;
 }
 
-/* Tools not yet available: dashed box, muted icon, a tag inside the box. */
+/* Tools not yet available: muted icon, a tag under it. */
 .tool-soon .tool-box {
-  border-style: dashed;
-  border-color: var(--border-strong);
-  box-shadow: none;
   color: var(--muted);
 }
 
 .tool-soon-tag {
-  position: absolute;
-  bottom: 0.7rem;
-  left: 50%;
-  transform: translateX(-50%);
   padding: 0.2rem 0.65rem;
   border: 1px solid var(--border-strong);
   border-radius: 999px;
@@ -636,10 +624,6 @@ a.tool:focus-visible {
 
   .tool-name {
     font-size: 1rem;
-  }
-
-  .tool-box {
-    border-radius: 20px;
   }
 
   .tool-box svg {
