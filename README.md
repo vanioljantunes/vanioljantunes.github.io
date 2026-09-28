@@ -8,11 +8,12 @@ Live at: https://vanioljantunes.github.io
 
 | Path | Description |
 |---|---|
-| `index.html` | Home: photo, one-line bio, links to the three sections |
+| `index.html` | Home: photo, one-line bio, links to the four sections |
 | `about/index.html` | CV / about page (research, publications, teaching, contact) |
 | `about/research.html`, `stats.html`, `teaching.html`, `contact.html` | Older sub-pages (root copies redirect here) |
 | `tools/index.html` | Meta-analysis tools (ssHelper, upcoming tools) |
 | `packages/index.html` | R packages, linking to their GitHub repositories |
+| `3d/index.html` | 3D projects (aleArrhythmia, cinematic rendering for 3D CT, CT reconstruction with machine learning), all in progress |
 
 ## Stack
 

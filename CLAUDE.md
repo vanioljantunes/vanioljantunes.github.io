@@ -5,8 +5,9 @@ Operating context for Claude Code sessions in the vanioAntunes website repositor
 ## Project
 
 Personal academic site of Vanio Antunes, live at https://vanioantunes.com (Vercel) and
-https://vanioljantunes.github.io (GitHub Pages). Three paths from the home page: Who am I
-(`about/`), Meta-analysis tools (`tools/`), R packages (`packages/`). [PRODUCT.md](PRODUCT.md)
+https://vanioljantunes.github.io (GitHub Pages). Four paths from the home page: Who am I
+(`about/`), Meta-analysis tools (`tools/`), R packages (`packages/`), 3D projects (`3d/`, three
+in-progress cards). [PRODUCT.md](PRODUCT.md)
 holds users, brand and design principles and wins over taste; [README.md](README.md) lists pages.
 
 This folder is the working copy for the site as a whole. Tools and packages that the site shows

@@ -144,14 +144,39 @@
     white-space: nowrap;
   }
 
+  .site-bar__links {
+    gap: 0;
+  }
+
   .site-bar__links a {
     min-height: 36px;
-    padding-inline: 0.45rem;
-    font-size: 0.8125rem;
+    padding-inline: 0.4rem;
+    font-size: 0.78rem;
+  }
+
+  /* "3D projects" becomes "3D" so four links fit on one row. */
+  .site-bar__long {
+    display: none;
   }
 
   .site-bar__id {
+    flex: none;
     gap: 0.25rem;
+  }
+
+  /* Never a second row: with four links they scroll sideways inside the bar. */
+  .site-bar__inner > nav {
+    min-width: 0;
+  }
+
+  .site-bar__links {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .site-bar__links a {
+    white-space: nowrap;
   }
 
   .site-bar__social a {
