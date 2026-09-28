@@ -203,8 +203,8 @@ a:focus-visible {
 
 .tiles {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -593,12 +593,6 @@ a.tool:focus-visible {
 }
 
 /* ---------- Responsive ---------- */
-
-@media (max-width: 1000px) {
-  .tiles {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
 
 @media (max-width: 600px) {
   .tiles {
@@ -1093,6 +1087,11 @@ a.tool:focus-visible {
     grid-row: 5;
     align-self: start;
   }
+
+  /* Row gap between the two rows (the subgrid keeps row-gap at 0 for its own tracks). */
+  .tiles > li:nth-child(-n + 2) .tile {
+    margin-bottom: 1.25rem;
+  }
 }
 
 .tile-links a {
@@ -1105,6 +1104,47 @@ a.tool:focus-visible {
 .tiles > li,
 .tile {
   min-width: 0;
+}
+
+/* Sub-items appear when the pointer rests on a card or a link in it has focus. Two-by-two
+   grid keeps the row height, so nothing shifts; touch screens show the lists always. */
+@media (hover: hover) and (min-width: 601px) {
+  .tile {
+    overflow: visible;
+  }
+
+  .tile-links {
+    position: absolute;
+    top: 100%;
+    right: -1px;
+    left: -1px;
+    z-index: 5;
+    margin: -1px 0 0;
+    padding: 0.85rem 1.1rem 1rem;
+    border: 1px solid var(--accent);
+    border-top: 1px solid var(--border);
+    border-radius: 0 0 var(--radius) var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow-hover);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px);
+    transition: opacity 0.2s var(--ease-out), transform 0.2s var(--ease-out), visibility 0s 0.2s;
+  }
+
+  .tile:hover,
+  .tile:focus-within {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .tile:hover .tile-links,
+  .tile:focus-within .tile-links {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition-delay: 0s;
+  }
 }
 
 /* The photo and text card stay above both screenshots. */

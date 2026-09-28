@@ -150,8 +150,8 @@
 
   .site-bar__links a {
     min-height: 36px;
-    padding-inline: 0.4rem;
-    font-size: 0.78rem;
+    padding-inline: 0.3rem;
+    font-size: 0.75rem;
   }
 
   /* "3D projects" becomes "3D" so four links fit on one row. */
@@ -179,14 +179,19 @@
     white-space: nowrap;
   }
 
-  .site-bar__social a {
+  .site-bar__brand img {
     width: 28px;
     height: 28px;
   }
 
+  .site-bar__social a {
+    width: 24px;
+    height: 28px;
+  }
+
   .site-bar__social svg {
-    width: 15px;
-    height: 15px;
+    width: 14px;
+    height: 14px;
   }
 }
 

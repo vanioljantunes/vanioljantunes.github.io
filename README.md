@@ -13,7 +13,7 @@ Live at: https://vanioljantunes.github.io
 | `about/research.html`, `stats.html`, `teaching.html`, `contact.html` | Older sub-pages (root copies redirect here) |
 | `tools/index.html` | Meta-analysis tools (ssHelper, upcoming tools) |
 | `packages/index.html` | R packages, linking to their GitHub repositories |
-| `3d/index.html` | 3D projects (aleArrhythmia, cinematic rendering for 3D CT, CT reconstruction with machine learning), all in progress |
+| `3d/index.html` | Imaging projects (aleArrhythmia, cinematic rendering for 3D CT, CT reconstruction with machine learning), all in progress |
 
 ## Stack
 
