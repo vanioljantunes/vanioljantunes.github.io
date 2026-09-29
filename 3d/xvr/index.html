@@ -59,7 +59,7 @@
   <main id="main" class="page-main wrap calc-page calc-page--wide">
     <div class="page-head">
       <h1>X-ray to volume registration</h1>
-      <p>Where was the C-arm standing when this radiograph was taken? The page simulates a radiograph from a real CT scan at a pose it does not tell you, then recovers that pose by rendering the CT over and over and matching the two images. Everything runs on your graphics card, in this tab.</p>
+      <p>Find where the C-arm stood, from a radiograph and a CT.</p>
     </div>
 
     <section class="calc-panel" aria-labelledby="xvr-steps-title">
@@ -68,48 +68,46 @@
         <li class="xvr-step">
           <span class="xvr-step__num">Step 1</span>
           <svg viewBox="0 0 64 48" aria-hidden="true" focusable="false">
-            <path d="M12 37 32 30 52 37 32 44Z"/>
-            <path d="M12 28 32 21 52 28 32 35Z"/>
-            <path d="M12 19 32 12 52 19 32 26Z"/>
-            <circle cx="32" cy="19" r="2.4"/>
+            <rect x="5" y="9" width="17" height="22" rx="1.5"/>
+            <rect x="23.5" y="9" width="17" height="22" rx="1.5"/>
+            <rect x="42" y="9" width="17" height="22" rx="1.5"/>
+            <path d="M5 36h17M23.5 36h17M42 36h17"/>
+            <path d="M5 41h11M23.5 41h11M42 41h11"/>
           </svg>
-          <h3>A CT scan is a map of density</h3>
-          <p>Every voxel records how strongly that cubic millimetre of the patient absorbs X-rays.</p>
+          <h3>Read the three panels</h3>
+          <p>Left is the radiograph to match. Middle is the CT rendered at the pose the sliders hold. Right overlays them.</p>
         </li>
         <li class="xvr-step">
           <span class="xvr-step__num">Step 2</span>
           <svg viewBox="0 0 64 48" aria-hidden="true" focusable="false">
-            <circle cx="32" cy="5" r="2.4"/>
-            <path d="M32 8 15 38M32 8 49 38M32 8v30"/>
-            <rect x="24" y="17" width="16" height="12" rx="1.5"/>
-            <path d="M10 40h44"/>
+            <rect x="8" y="10" width="34" height="14" rx="7"/>
+            <path d="M16 17h18"/>
+            <path d="M33 26 41 44 43.5 36.5 51 34Z"/>
           </svg>
-          <h3>An X-ray is a sum along a ray</h3>
-          <p>Add up the density a ray crosses and that is one pixel. Do it for every pixel and the CT has produced a radiograph.</p>
+          <h3>Press Register</h3>
+          <p>The optimiser takes over and the middle image chases the left one. Stop halts it wherever it has got to.</p>
         </li>
         <li class="xvr-step">
           <span class="xvr-step__num">Step 3</span>
           <svg viewBox="0 0 64 48" aria-hidden="true" focusable="false">
-            <circle cx="32" cy="26" r="17" stroke-dasharray="3 3.5"/>
-            <rect x="27" y="21.5" width="10" height="9" rx="1.5"/>
-            <circle cx="40.5" cy="11.3" r="2.3"/>
-            <path d="M39.4 13.4 18.3 37.7M41.9 13.7 28.7 43.7"/>
-            <path d="M18.3 37.7 28.7 43.7"/>
-            <path d="M47.5 15.6 49 9.6 43.2 8"/>
+            <path d="M7 41V9"/>
+            <path d="M7 41h50"/>
+            <path d="M7 16h50" stroke-dasharray="3 3.5"/>
+            <path d="M8 39c13 0 14-19 24-21s13 2 24 2"/>
           </svg>
-          <h3>Six numbers place the camera</h3>
-          <p>Three rotations and three translations say where the C-arm stood. Change them and the simulated radiograph changes.</p>
+          <h3>Watch it land</h3>
+          <p>Grey overlay means matched. Fit gives the correlation and the true error; Reveal true pose prints the answer.</p>
         </li>
         <li class="xvr-step">
           <span class="xvr-step__num">Step 4</span>
           <svg viewBox="0 0 64 48" aria-hidden="true" focusable="false">
-            <rect x="14" y="6" width="22" height="16" rx="1.5"/>
-            <rect x="24" y="12" width="22" height="16" rx="1.5" stroke-dasharray="3.5 3"/>
-            <path d="M8 44h48"/>
-            <path d="M9 41c10 0 12-8 20-10s12 1 26 1"/>
+            <path d="M8 14h48M8 24h48M8 34h48"/>
+            <circle cx="24" cy="14" r="4"/>
+            <circle cx="40" cy="24" r="4"/>
+            <circle cx="17" cy="34" r="4"/>
           </svg>
-          <h3>Registration searches those numbers</h3>
-          <p>Try a pose, score how well it matches the real X-ray, move the way the score improves, and repeat until the overlay goes grey.</p>
+          <h3>Then try to break it</h3>
+          <p>Drag a slider far off, or press Perturb pose, and register again. New radiograph deals a fresh unknown pose.</p>
         </li>
       </ol>
     </section>
