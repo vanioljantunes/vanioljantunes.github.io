@@ -1,6 +1,6 @@
 /* X-ray to volume registration, in the browser.
 
-   A WebGL2 reimplementation of the forward model used by DiffDRR and by the
+   A WebGL2 reimplementation of the forward model used by nanoDRR and by the
    `xvr register` step: a digitally reconstructed radiograph is the line
    integral of linear attenuation along every source-to-detector ray, and the
    pose is recovered by maximising normalised cross-correlation between the

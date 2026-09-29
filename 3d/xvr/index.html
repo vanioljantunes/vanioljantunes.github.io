@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>X-ray to volume registration | Vanio Antunes</title>
-  <meta name="description" content="A browser implementation of X-ray to volume registration: digitally reconstructed radiographs rendered with WebGL2 and a six degree-of-freedom pose recovered by optimising normalised cross-correlation.">
+  <meta name="description" content="A browser implementation of X-ray to volume registration: digitally reconstructed radiographs rendered with WebGL2 and a six degree-of-freedom pose recovered by optimising normalised cross-correlation, with a Colab notebook for your own scans.">
   <link rel="icon" href="/favicon.ico?v=2" sizes="48x48">
   <link rel="icon" href="/favicon-32.png?v=2" type="image/png" sizes="32x32">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
@@ -62,8 +62,60 @@
       <p>Where was the C-arm standing when this radiograph was taken? The page simulates a radiograph from a real CT scan at a pose it does not tell you, then recovers that pose by rendering the CT over and over and matching the two images. Everything runs on your graphics card, in this tab.</p>
     </div>
 
+    <section class="calc-panel" aria-labelledby="xvr-steps-title">
+      <h2 id="xvr-steps-title" class="calc-h2">Step by step</h2>
+      <ol class="xvr-steps">
+        <li class="xvr-step">
+          <span class="xvr-step__num">Step 1</span>
+          <svg viewBox="0 0 64 48" aria-hidden="true" focusable="false">
+            <path d="M12 37 32 30 52 37 32 44Z"/>
+            <path d="M12 28 32 21 52 28 32 35Z"/>
+            <path d="M12 19 32 12 52 19 32 26Z"/>
+            <circle cx="32" cy="19" r="2.4"/>
+          </svg>
+          <h3>A CT scan is a map of density</h3>
+          <p>Every voxel records how strongly that cubic millimetre of the patient absorbs X-rays.</p>
+        </li>
+        <li class="xvr-step">
+          <span class="xvr-step__num">Step 2</span>
+          <svg viewBox="0 0 64 48" aria-hidden="true" focusable="false">
+            <circle cx="32" cy="5" r="2.4"/>
+            <path d="M32 8 15 38M32 8 49 38M32 8v30"/>
+            <rect x="24" y="17" width="16" height="12" rx="1.5"/>
+            <path d="M10 40h44"/>
+          </svg>
+          <h3>An X-ray is a sum along a ray</h3>
+          <p>Add up the density a ray crosses and that is one pixel. Do it for every pixel and the CT has produced a radiograph.</p>
+        </li>
+        <li class="xvr-step">
+          <span class="xvr-step__num">Step 3</span>
+          <svg viewBox="0 0 64 48" aria-hidden="true" focusable="false">
+            <circle cx="32" cy="26" r="17" stroke-dasharray="3 3.5"/>
+            <rect x="27" y="21.5" width="10" height="9" rx="1.5"/>
+            <circle cx="40.5" cy="11.3" r="2.3"/>
+            <path d="M39.4 13.4 18.3 37.7M41.9 13.7 28.7 43.7"/>
+            <path d="M18.3 37.7 28.7 43.7"/>
+            <path d="M47.5 15.6 49 9.6 43.2 8"/>
+          </svg>
+          <h3>Six numbers place the camera</h3>
+          <p>Three rotations and three translations say where the C-arm stood. Change them and the simulated radiograph changes.</p>
+        </li>
+        <li class="xvr-step">
+          <span class="xvr-step__num">Step 4</span>
+          <svg viewBox="0 0 64 48" aria-hidden="true" focusable="false">
+            <rect x="14" y="6" width="22" height="16" rx="1.5"/>
+            <rect x="24" y="12" width="22" height="16" rx="1.5" stroke-dasharray="3.5 3"/>
+            <path d="M8 44h48"/>
+            <path d="M9 41c10 0 12-8 20-10s12 1 26 1"/>
+          </svg>
+          <h3>Registration searches those numbers</h3>
+          <p>Try a pose, score how well it matches the real X-ray, move the way the score improves, and repeat until the overlay goes grey.</p>
+        </li>
+      </ol>
+    </section>
+
     <section class="calc-panel xvr-panel" aria-labelledby="xvr-demo-title">
-      <h2 id="xvr-demo-title" class="calc-h2">Registration</h2>
+      <h2 id="xvr-demo-title" class="calc-h2">Try it</h2>
 
       <div class="xvr-views">
         <figure class="xvr-view">
@@ -143,18 +195,95 @@
 
     <section class="calc-panel" aria-labelledby="xvr-method-title">
       <h2 id="xvr-method-title" class="calc-h2">How it works</h2>
-      <p>A digitally reconstructed radiograph is a line integral. For every detector pixel a ray leaves the X-ray source, crosses the CT volume and lands on the detector, and the pixel value is the sum of the linear attenuation coefficient along that ray. The fragment shader on this page marches each ray in 384 equal steps through a 3D texture holding the CT, which is the forward model that <a href="https://github.com/eigenvivek/DiffDRR" target="_blank" rel="noopener noreferrer">DiffDRR<span class="visually-hidden"> (opens in a new tab)</span></a> implements in PyTorch.</p>
-      <p>Registration then asks which of the six rigid pose parameters &mdash; three rotations and three translations of the C-arm about the isocentre &mdash; produce a DRR that looks like the fixed radiograph. Similarity is normalised cross-correlation over the whole image. The optimiser is Adam on the gradient of one minus that correlation, and the gradient comes from central differences: each iteration renders thirteen poses into one tiled framebuffer, reads it back once, and computes thirteen correlations. It searches coarse first, at 64 by 64 pixels, then refines at 112 by 112.</p>
-      <p>The fixed radiograph is itself a DRR, rendered at a pose drawn at random and hidden from the optimiser. That is the standard synthetic-target setup for measuring registration accuracy: because the true pose is known, the rotation and translation errors above are real errors rather than estimates.</p>
+      <p class="xvr-flow-intro">Each step on the left is one line of the loop. The panel beside it holds the detail, for anyone who wants the numbers.</p>
+
+      <ol class="xvr-flow">
+        <li class="xvr-flow__row">
+          <div class="xvr-flow__step">
+            <span class="xvr-flow__num">Step 1</span>
+            <h3>Load the CT as a 3D texture</h3>
+            <p>The scan is uploaded to the graphics card once, and stays there.</p>
+          </div>
+          <div class="xvr-flow__detail">
+            <p>138 by 124 by 184 voxels at 2.6 mm, one byte each. Hounsfield units become linear attenuation by <span class="xvr-eq">&mu; = &mu;<sub>water</sub> (1 + HU / 1000)</span>, clamped at zero and quantised to eight bits, which is what the shader samples.</p>
+          </div>
+        </li>
+        <li class="xvr-flow__row">
+          <div class="xvr-flow__step">
+            <span class="xvr-flow__num">Step 2</span>
+            <h3>Render a DRR at the current pose</h3>
+            <p>One ray per pixel, from the source through the patient to the detector.</p>
+          </div>
+          <div class="xvr-flow__detail">
+            <p>A fragment shader intersects each ray with the volume box, marches it in 384 equal steps and accumulates <span class="xvr-eq">&mu; &times; ds</span>. This is the same forward model <a href="https://github.com/eigenvivek/nanodrr" target="_blank" rel="noopener noreferrer">nanoDRR<span class="visually-hidden"> (opens in a new tab)</span></a> implements in PyTorch, where it is differentiable end to end.</p>
+          </div>
+        </li>
+        <li class="xvr-flow__row">
+          <div class="xvr-flow__step">
+            <span class="xvr-flow__num">Step 3</span>
+            <h3>Score it against the radiograph</h3>
+            <p>One number says how well the two images agree.</p>
+          </div>
+          <div class="xvr-flow__detail">
+            <p>Normalised cross-correlation over every pixel. Subtracting the means and dividing by the standard deviations makes the score blind to brightness and contrast, so only the anatomy lining up can raise it. 1.0 means identical.</p>
+          </div>
+        </li>
+        <li class="xvr-flow__row">
+          <div class="xvr-flow__step">
+            <span class="xvr-flow__num">Step 4</span>
+            <h3>Estimate the gradient</h3>
+            <p>Which way should each of the six numbers move?</p>
+          </div>
+          <div class="xvr-flow__detail">
+            <p>There is no automatic differentiation in the browser, so central differences: nudge each parameter up and down by 0.25&deg; or 0.5 mm. That is thirteen poses per iteration, drawn into one tiled framebuffer and read back in a single call, because reading pixels back from the GPU is the expensive part.</p>
+          </div>
+        </li>
+        <li class="xvr-flow__row">
+          <div class="xvr-flow__step">
+            <span class="xvr-flow__num">Step 5</span>
+            <h3>Step the six numbers</h3>
+            <p>Move downhill, then render again.</p>
+          </div>
+          <div class="xvr-flow__detail">
+            <p>Adam, with the learning rate decaying from 0.9 to 0.06. Adam rescales each parameter by its own gradient history, which is what lets degrees and millimetres share a single step size without one of them dominating.</p>
+          </div>
+        </li>
+        <li class="xvr-flow__row">
+          <div class="xvr-flow__step">
+            <span class="xvr-flow__num">Step 6</span>
+            <h3>Coarse first, then fine</h3>
+            <p>Find roughly where it is, then sharpen.</p>
+          </div>
+          <div class="xvr-flow__detail">
+            <p>130 iterations at 64 by 64 pixels, then 90 at 112 by 112. The coarse pass is cheap and smooths the score surface, which widens the range of starting poses that converge; the fine pass recovers the last fraction of a degree.</p>
+          </div>
+        </li>
+      </ol>
+
       <h3 class="xvr-h3">What this is not</h3>
       <p>The contribution of XVR is a neural network that regresses the pose directly, trained per patient in minutes, which removes the need for a good starting guess and makes the method fast enough for the operating room. That network is PyTorch and CUDA and does not run in a browser. What runs here is the differentiable-rendering half, the part <code>xvr register</code> uses to refine a pose, started from a deliberately perturbed one. Drag the sliders far enough and the failure mode the paper is about appears: the correlation surface has local maxima, and gradient descent alone settles into the wrong one.</p>
+    </section>
+
+    <section class="calc-panel" aria-labelledby="xvr-colab-title">
+      <h2 id="xvr-colab-title" class="calc-h2">Run it on your own scans</h2>
+      <p>The demo above is fixed to one CT. To register your own data you need the real thing, on a GPU. This notebook installs <code>xvr</code> on a free Colab runtime, takes a CT volume and a radiograph you upload, and runs <code>xvr register</code> on them.</p>
+      <p class="xvr-colab-cta">
+        <a class="calc-button calc-button--primary" href="https://colab.research.google.com/github/vanioljantunes/vanioljantunes.github.io/blob/main/3d/xvr/xvr-colab.ipynb" target="_blank" rel="noopener noreferrer">Open the notebook in Colab<span class="visually-hidden"> (opens in a new tab)</span></a>
+        <a class="calc-button" href="/3d/xvr/xvr-colab.ipynb" download>Download the notebook</a>
+      </p>
+      <ul class="xvr-colab-list">
+        <li><strong>What you need.</strong> A CT or MR volume as NIfTI (<code>.nii</code> or <code>.nii.gz</code>), one radiograph, and the geometry of the machine that took it: source-to-detector distance, detector pixel spacing and image size. Those are in the DICOM header of most fluoroscopy images.</li>
+        <li><strong>Runtime.</strong> Set <em>Runtime &rarr; Change runtime type &rarr; T4 GPU</em> before running. It works on CPU, slowly.</li>
+        <li><strong>A starting guess.</strong> <code>xvr register</code> is a local optimiser, exactly like the demo above. It needs an initial pose in the right neighbourhood, or a patient-specific network from <code>xvr train</code> to supply one. The notebook covers both.</li>
+        <li><strong>Your data leaves your computer.</strong> Colab runs on Google's machines. Do not upload identifiable patient data without the approvals that requires.</li>
+      </ul>
     </section>
 
     <section class="calc-panel" aria-labelledby="xvr-credit-title">
       <h2 id="xvr-credit-title" class="calc-h2">Credit</h2>
       <ul class="xvr-credits">
         <li><strong>Method.</strong> Gopalakrishnan V and colleagues. Rapid patient-specific neural networks for X-ray to volume registration. <em>Nature</em>, 2026. <a href="https://doi.org/10.1038/s41586-026-11045-x" target="_blank" rel="noopener noreferrer">doi:10.1038/s41586-026-11045-x<span class="visually-hidden"> (opens in a new tab)</span></a></li>
-        <li><strong>Reference implementation.</strong> <a href="https://github.com/eigenvivek/xvr" target="_blank" rel="noopener noreferrer">eigenvivek/xvr<span class="visually-hidden"> (opens in a new tab)</span></a>, MIT licence, built on <a href="https://github.com/eigenvivek/DiffDRR" target="_blank" rel="noopener noreferrer">DiffDRR<span class="visually-hidden"> (opens in a new tab)</span></a>. This page is an independent browser reimplementation of the forward model and the optimisation step, not a port of that code.</li>
+        <li><strong>Reference implementation.</strong> <a href="https://github.com/eigenvivek/xvr" target="_blank" rel="noopener noreferrer">eigenvivek/xvr<span class="visually-hidden"> (opens in a new tab)</span></a>, MIT licence. The differentiable renderer behind this forward model is <a href="https://github.com/eigenvivek/nanodrr" target="_blank" rel="noopener noreferrer">eigenvivek/nanodrr<span class="visually-hidden"> (opens in a new tab)</span></a>, also MIT, by the same author. This page is an independent browser reimplementation of the forward model and the optimisation step, not a port of either.</li>
         <li><strong>CT scan.</strong> Task03_Liver, case 100, from the <a href="http://medicaldecathlon.com/" target="_blank" rel="noopener noreferrer">Medical Segmentation Decathlon<span class="visually-hidden"> (opens in a new tab)</span></a>, licensed <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0<span class="visually-hidden"> (opens in a new tab)</span></a>, obtained through the 3D Slicer sample data collection. Cropped to the body, resampled to 2.6 mm isotropic and quantised to 8 bits for the web; the derived volume is shared under the same licence.</li>
       </ul>
     </section>
