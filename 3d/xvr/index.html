@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>X-ray to volume registration | Vanio Antunes</title>
+  <meta name="description" content="A browser implementation of X-ray to volume registration: digitally reconstructed radiographs rendered with WebGL2 and a six degree-of-freedom pose recovered by optimising normalised cross-correlation.">
+  <link rel="icon" href="/favicon.ico?v=2" sizes="48x48">
+  <link rel="icon" href="/favicon-32.png?v=2" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
+  <link rel="stylesheet" href="/site-bar.css">
+  <link rel="stylesheet" href="/site.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-bar">
+    <div class="site-bar__inner">
+      <div class="site-bar__id">
+        <a class="site-bar__brand" href="/"><img src="/img/vanio-antunes.jpg" width="32" height="32" alt=""><span class="site-bar__name">Vanio Antunes</span></a>
+        <ul class="site-bar__social" aria-label="Profiles">
+          <li>
+          <a href="https://scholar.google.com/citations?user=JOZkTg0AAAAJ&amp;hl=en" target="_blank" rel="noopener noreferrer" aria-label="Google Scholar (opens in a new tab)">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269zM12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></svg>
+          </a>
+          </li>
+          <li>
+          <a href="https://www.linkedin.com/in/vanio-antunes/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn (opens in a new tab)">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.370 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </a>
+          </li>
+          <li>
+          <a href="https://x.com/VanioAntunes" target="_blank" rel="noopener noreferrer" aria-label="X (opens in a new tab)">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          </li>
+        </ul>
+      </div>
+      <nav aria-label="Main">
+        <ul class="site-bar__links">
+          <li><a href="/about/">Who am I</a></li>
+          <li><a href="/tools/">Tools</a></li>
+          <li><a href="/packages/">R packages</a></li>
+          <li><a href="/3d/" aria-current="page">Imaging<span class="site-bar__long">&nbsp;projects</span></a></li>
+        </ul>
+      </nav>
+    </div>
+    <nav class="site-subnav" aria-label="Imaging projects">
+      <ul class="site-subnav__links">
+          <li><a href="/3d/">All projects</a></li>
+          <li><a href="/3d/xvr/" aria-current="page">X-ray to volume registration</a></li>
+          <li><a href="/3d/#alearrhythmia">aleArrhythmia</a></li>
+          <li><a href="/3d/#cinematic">Cinematic rendering</a></li>
+          <li><a href="/3d/#ct-ml">CT reconstruction with ML</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main" class="page-main wrap calc-page calc-page--wide">
+    <div class="page-head">
+      <h1>X-ray to volume registration</h1>
+      <p>Where was the C-arm standing when this radiograph was taken? The page simulates a radiograph from a real CT scan at a pose it does not tell you, then recovers that pose by rendering the CT over and over and matching the two images. Everything runs on your graphics card, in this tab.</p>
+    </div>
+
+    <section class="calc-panel xvr-panel" aria-labelledby="xvr-demo-title">
+      <h2 id="xvr-demo-title" class="calc-h2">Registration</h2>
+
+      <div class="xvr-views">
+        <figure class="xvr-view">
+          <canvas id="xvr-canvas-fixed" width="320" height="320" aria-label="The fixed radiograph, simulated at an unknown pose"></canvas>
+          <figcaption>Fixed radiograph<span>the image to match</span></figcaption>
+        </figure>
+        <figure class="xvr-view">
+          <canvas id="xvr-canvas-moving" width="320" height="320" aria-label="The moving digitally reconstructed radiograph at the current pose"></canvas>
+          <figcaption>Moving DRR<span>rendered at the current pose</span></figcaption>
+        </figure>
+        <figure class="xvr-view">
+          <canvas id="xvr-canvas-overlay" width="320" height="320" aria-label="The two images overlaid, red where only the fixed image is dense and cyan where only the moving image is dense"></canvas>
+          <figcaption>Overlay<span>grey where the two agree</span></figcaption>
+        </figure>
+      </div>
+
+      <p class="calc-status" id="xvr-status" role="status" aria-live="polite">Starting the renderer&hellip;</p>
+
+      <div class="xvr-toolbar">
+        <button type="button" class="calc-button calc-button--primary" id="xvr-register">Register</button>
+        <button type="button" class="calc-button" id="xvr-stop" disabled>Stop</button>
+        <button type="button" class="calc-button" id="xvr-perturb">Perturb pose</button>
+        <button type="button" class="calc-button" id="xvr-new">New radiograph</button>
+        <button type="button" class="calc-button" id="xvr-reveal">Reveal true pose</button>
+      </div>
+
+      <div class="xvr-columns">
+        <div class="xvr-sliders">
+          <h3 class="xvr-h3">Pose, six degrees of freedom</h3>
+          <div class="xvr-slider">
+            <label for="xvr-rx">Rotation X</label>
+            <input type="range" id="xvr-rx" min="-35" max="35" step="0.1" value="0">
+            <output id="xvr-rx-out" for="xvr-rx">0.0&deg;</output>
+          </div>
+          <div class="xvr-slider">
+            <label for="xvr-ry">Rotation Y</label>
+            <input type="range" id="xvr-ry" min="-35" max="35" step="0.1" value="0">
+            <output id="xvr-ry-out" for="xvr-ry">0.0&deg;</output>
+          </div>
+          <div class="xvr-slider">
+            <label for="xvr-rz">Rotation Z</label>
+            <input type="range" id="xvr-rz" min="-35" max="35" step="0.1" value="0">
+            <output id="xvr-rz-out" for="xvr-rz">0.0&deg;</output>
+          </div>
+          <div class="xvr-slider">
+            <label for="xvr-tx">Translation X</label>
+            <input type="range" id="xvr-tx" min="-80" max="80" step="0.5" value="0">
+            <output id="xvr-tx-out" for="xvr-tx">0.0 mm</output>
+          </div>
+          <div class="xvr-slider">
+            <label for="xvr-ty">Translation Y</label>
+            <input type="range" id="xvr-ty" min="-80" max="80" step="0.5" value="0">
+            <output id="xvr-ty-out" for="xvr-ty">0.0 mm</output>
+          </div>
+          <div class="xvr-slider">
+            <label for="xvr-tz">Translation Z</label>
+            <input type="range" id="xvr-tz" min="-80" max="80" step="0.5" value="0">
+            <output id="xvr-tz-out" for="xvr-tz">0.0 mm</output>
+          </div>
+          <p class="calc-note">True pose: <span id="xvr-truth">hidden</span></p>
+        </div>
+
+        <div class="xvr-metrics">
+          <h3 class="xvr-h3">Fit</h3>
+          <dl class="calc-stats xvr-stats">
+            <div><dt>Cross-correlation</dt><dd id="xvr-ncc">0.0000</dd></div>
+            <div><dt>Iterations</dt><dd id="xvr-iter">0</dd></div>
+            <div><dt>Rotation error</dt><dd id="xvr-rot">0.00&deg;</dd></div>
+            <div><dt>Translation error</dt><dd id="xvr-tra">0.0 mm</dd></div>
+            <div><dt>Time</dt><dd id="xvr-time">&mdash;</dd></div>
+          </dl>
+          <p class="xvr-plot-label" id="xvr-plot-label">Cross-correlation over the run</p>
+          <canvas id="xvr-plot" class="xvr-plot" role="img" aria-labelledby="xvr-plot-label"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section class="calc-panel" aria-labelledby="xvr-method-title">
+      <h2 id="xvr-method-title" class="calc-h2">How it works</h2>
+      <p>A digitally reconstructed radiograph is a line integral. For every detector pixel a ray leaves the X-ray source, crosses the CT volume and lands on the detector, and the pixel value is the sum of the linear attenuation coefficient along that ray. The fragment shader on this page marches each ray in 384 equal steps through a 3D texture holding the CT, which is the forward model that <a href="https://github.com/eigenvivek/DiffDRR" target="_blank" rel="noopener noreferrer">DiffDRR<span class="visually-hidden"> (opens in a new tab)</span></a> implements in PyTorch.</p>
+      <p>Registration then asks which of the six rigid pose parameters &mdash; three rotations and three translations of the C-arm about the isocentre &mdash; produce a DRR that looks like the fixed radiograph. Similarity is normalised cross-correlation over the whole image. The optimiser is Adam on the gradient of one minus that correlation, and the gradient comes from central differences: each iteration renders thirteen poses into one tiled framebuffer, reads it back once, and computes thirteen correlations. It searches coarse first, at 64 by 64 pixels, then refines at 112 by 112.</p>
+      <p>The fixed radiograph is itself a DRR, rendered at a pose drawn at random and hidden from the optimiser. That is the standard synthetic-target setup for measuring registration accuracy: because the true pose is known, the rotation and translation errors above are real errors rather than estimates.</p>
+      <h3 class="xvr-h3">What this is not</h3>
+      <p>The contribution of XVR is a neural network that regresses the pose directly, trained per patient in minutes, which removes the need for a good starting guess and makes the method fast enough for the operating room. That network is PyTorch and CUDA and does not run in a browser. What runs here is the differentiable-rendering half, the part <code>xvr register</code> uses to refine a pose, started from a deliberately perturbed one. Drag the sliders far enough and the failure mode the paper is about appears: the correlation surface has local maxima, and gradient descent alone settles into the wrong one.</p>
+    </section>
+
+    <section class="calc-panel" aria-labelledby="xvr-credit-title">
+      <h2 id="xvr-credit-title" class="calc-h2">Credit</h2>
+      <ul class="xvr-credits">
+        <li><strong>Method.</strong> Gopalakrishnan V and colleagues. Rapid patient-specific neural networks for X-ray to volume registration. <em>Nature</em>, 2026. <a href="https://doi.org/10.1038/s41586-026-11045-x" target="_blank" rel="noopener noreferrer">doi:10.1038/s41586-026-11045-x<span class="visually-hidden"> (opens in a new tab)</span></a></li>
+        <li><strong>Reference implementation.</strong> <a href="https://github.com/eigenvivek/xvr" target="_blank" rel="noopener noreferrer">eigenvivek/xvr<span class="visually-hidden"> (opens in a new tab)</span></a>, MIT licence, built on <a href="https://github.com/eigenvivek/DiffDRR" target="_blank" rel="noopener noreferrer">DiffDRR<span class="visually-hidden"> (opens in a new tab)</span></a>. This page is an independent browser reimplementation of the forward model and the optimisation step, not a port of that code.</li>
+        <li><strong>CT scan.</strong> Task03_Liver, case 100, from the <a href="http://medicaldecathlon.com/" target="_blank" rel="noopener noreferrer">Medical Segmentation Decathlon<span class="visually-hidden"> (opens in a new tab)</span></a>, licensed <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0<span class="visually-hidden"> (opens in a new tab)</span></a>, obtained through the 3D Slicer sample data collection. Cropped to the body, resampled to 2.6 mm isotropic and quantised to 8 bits for the web; the derived volume is shared under the same licence.</li>
+      </ul>
+    </section>
+  </main>
+
+  <script type="module" src="/js/xvr.js"></script>
+  <script type="module" src="/js/subnav.js"></script>
+</body>
+</html>

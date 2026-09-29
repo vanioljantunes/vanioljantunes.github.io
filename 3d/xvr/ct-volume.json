@@ -1,0 +1,16 @@
+{
+  "dims": [
+    138,
+    124,
+    184
+  ],
+  "spacing_mm": [
+    2.6,
+    2.6,
+    2.6
+  ],
+  "mu_max_per_mm": 0.04398341849446297,
+  "layout": "uint8, x fastest then y then z, value/255 * mu_max_per_mm = linear attenuation in 1/mm",
+  "source": "CTLiver (Medical Decathlon Task03_Liver imagesTr/liver_100.nii.gz), CC BY-SA 4.0, via the 3D Slicer sample data collection",
+  "processing": "cropped to the body above -400 HU, resampled to 2.6 mm isotropic, HU converted to linear attenuation and quantised to 8 bits"
+}
