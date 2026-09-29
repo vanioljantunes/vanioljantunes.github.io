@@ -2072,3 +2072,38 @@ a.tool:focus-visible {
 .xvr-flow + .xvr-h3 {
   margin-top: 2rem;
 }
+
+/* ---------- /3d/xvr/ keeps every word of prose black ---------- */
+/* Scoped to that page's <main>. Links and buttons keep the accent, so they
+   still read as things you can act on. */
+
+.xvr-black {
+  color: #000;
+}
+
+.xvr-black .page-head p,
+.xvr-black .calc-note,
+.xvr-black .calc-status,
+.xvr-black .calc-stats dt,
+.xvr-black .xvr-view figcaption span,
+.xvr-black .xvr-plot-label,
+.xvr-black .xvr-flow-intro,
+.xvr-black .xvr-flow__step p,
+.xvr-black .xvr-flow__num,
+.xvr-black .xvr-step p,
+.xvr-black .xvr-step__num {
+  color: #000;
+}
+
+.xvr-black a {
+  color: var(--accent);
+}
+
+/* Anchors styled as buttons keep the button's own colours, not the link's. */
+.xvr-black a.calc-button {
+  color: var(--accent-dark);
+}
+
+.xvr-black a.calc-button--primary {
+  color: var(--surface);
+}
