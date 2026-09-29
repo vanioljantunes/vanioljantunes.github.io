@@ -285,6 +285,29 @@
         <li><strong>CT scan.</strong> Task03_Liver, case 100, from the <a href="http://medicaldecathlon.com/" target="_blank" rel="noopener noreferrer">Medical Segmentation Decathlon<span class="visually-hidden"> (opens in a new tab)</span></a>, licensed <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0<span class="visually-hidden"> (opens in a new tab)</span></a>, obtained through the 3D Slicer sample data collection. Cropped to the body, resampled to 2.6 mm isotropic and quantised to 8 bits for the web; the derived volume is shared under the same licence.</li>
       </ul>
     </section>
+
+    <section class="calc-panel" aria-labelledby="xvr-faq-title">
+      <h2 id="xvr-faq-title" class="calc-h2">Questions</h2>
+      <div class="xvr-faq">
+        <details class="xvr-faq__item">
+          <summary>What is a DRR?</summary>
+          <p>A digitally reconstructed radiograph: an X-ray image simulated from a CT scan rather than taken with a machine. Send a ray from the source to each detector pixel, add up the density it crosses on the way through the CT, and that sum is the pixel. The middle panel above is a DRR, redrawn every time you move a slider.</p>
+        </details>
+        <details class="xvr-faq__item">
+          <summary>What is a voxel?</summary>
+          <p>A pixel with a third dimension. A CT scan is a stack of slices, and a voxel is one small box of that stack holding a single number: how strongly that box absorbs X-rays. The volume on this page is 138 by 124 by 184 voxels, each 2.6 mm on a side, which is about 3.1 million of them.</p>
+        </details>
+        <details class="xvr-faq__item">
+          <summary>What is PyTorch?</summary>
+          <p>A Python library for building and training neural networks, and the one most medical imaging research is written in. Two things about it matter here. It runs the arithmetic on a graphics card, and it does automatic differentiation: hand it a calculation and it works out the derivative of the answer with respect to any input, which is what lets a pose be optimised directly. <code>xvr</code> and nanoDRR are PyTorch. This page is not, which is why it has to estimate its gradients by nudging each parameter and re-rendering.</p>
+        </details>
+        <details class="xvr-faq__item">
+          <summary>What is a cross-correlation?</summary>
+          <p>A single number saying how similar two images are, from &minus;1 to 1. Subtract each image's mean brightness, multiply the two images together pixel by pixel, add up the result and divide by both standard deviations. That normalising is the useful part: it makes the score ignore overall brightness and contrast, so a simulated DRR can be compared with a real radiograph even though the two are made in completely different ways. 1 means identical, and the optimiser above climbs towards it.</p>
+        </details>
+      </div>
+    </section>
+
   </main>
 
   <script type="module" src="/js/xvr.js"></script>
