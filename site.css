@@ -3184,30 +3184,60 @@ a.tool:focus-visible {
 
 /* ----- Project rows ----- */
 
-/* Four bands shared across a row: status, title, description, material. Subgrid makes
-   every card take its band height from the tallest sibling, so the rules line up and the
-   status always sits in the same place. Row gap is zero and the rhythm comes from the
-   margins below, because a subgrid inherits its parent gutters into the card itself. */
-.projects {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
-  column-gap: 2.5rem;
-  row-gap: 0;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
 .proj {
   display: flex;
   flex-direction: column;
 }
 
-@supports (grid-template-rows: subgrid) {
-  .proj {
-    display: grid;
-    grid-row: span 4;
-    grid-template-rows: subgrid;
+/* ----- Project groups -----
+   Three named columns, one per field. Inside a column the projects stack, so the
+   subgrid band alignment above does not apply here: each card is a plain flex column
+   and the rhythm comes from the margin under its material list. */
+.proj-groups {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: 2.5rem;
+  row-gap: 2.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.proj-group__title {
+  margin: 0 0 1.1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--rule);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.proj-group__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The last card in a column has nothing under it, so its material list drops the
+   separating margin and the three columns end on a level base. */
+.proj-group__list > .proj:last-child .proj__needs,
+.proj-group__list > .proj:last-child .proj__none {
+  margin-bottom: 0;
+}
+
+@media (max-width: 900px) {
+  .proj-groups {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .proj-groups {
+    grid-template-columns: minmax(0, 1fr);
+    column-gap: 0;
+    row-gap: 2rem;
   }
 }
 
@@ -3305,14 +3335,6 @@ a.tool:focus-visible {
 }
 
 @media (max-width: 600px) {
-  /* row-gap must stay 0: a subgrid inherits the parent gutter between its own bands,
-     so any row gap here would open up inside each card. */
-  .projects {
-    grid-template-columns: minmax(0, 1fr);
-    column-gap: 0;
-    row-gap: 0;
-  }
-
   .ground {
     margin-bottom: 1.75rem;
   }
