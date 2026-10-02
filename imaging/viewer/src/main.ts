@@ -41,6 +41,10 @@ const VIEWPORT_ID = 'dv-main';
 const el = <T extends HTMLElement>(id: string): T | null =>
   document.getElementById(id) as T | null;
 
+/* The modality the preset buttons and the guide cards were last drawn for, so they are
+   rebuilt when the reader switches imaging type and not on every repaint. */
+let paintedModality: string | undefined;
+
 const state: {
   source: Source;
   catalog?: Catalog;
@@ -148,6 +152,15 @@ function paintPickers(): void {
   for (const p of PICKERS) {
     const select = el<HTMLSelectElement>(p.id);
     if (select) fillSelect(select, choices[p.key] ?? [], sel[p.key]);
+  }
+
+  /* What the controls do depends on the modality: Hounsfield windows belong to CT, and the
+     guide has to say something different about scrolling a 2-image mammogram. */
+  const group = sel.modality ?? 'CT';
+  if (group !== paintedModality) {
+    paintedModality = group;
+    buildPresetButtons(group);
+    buildGuide(group);
   }
 }
 
@@ -475,7 +488,6 @@ async function start(): Promise<void> {
   const credit = el('dv-attribution');
   if (credit) credit.textContent = state.source.attribution ?? '';
 
-  buildPresetButtons();
   wireControls(stage);
   wirePickers();
 

@@ -83,13 +83,6 @@
       </div>
     </div>
 
-    <p class="dv-note">
-      <b>Findings describe the cohort, not the image.</b> Each case comes from a research
-      collection whose entry criterion is the finding named above - every patient in a
-      glioblastoma collection has glioblastoma - so the label is true of the case, but it is
-      not a report written from these pixels. Nothing here is for diagnostic use.
-      <span id="dv-catalog-summary"></span>
-    </p>
 
     <p class="dv-status" id="dv-status" role="status" aria-live="polite">Starting</p>
 
@@ -136,13 +129,11 @@
 
     <p class="dv-provenance" id="dv-provenance"></p>
 
-    <p class="dv-hint">
-      Left drag windows the image, right drag zooms, middle drag pans, the wheel moves
-      through the stack. Arrow keys work too: click the image first, then Up and Down for
-      one slice, Page Up and Page Down for ten.
-    </p>
 
     <p class="dv-credit" id="dv-attribution"></p>
+
+    <h2 class="dv-h2">Using the viewer</h2>
+    <ul class="dv-cards" id="dv-guide"></ul>
 
     <h2 class="dv-h2">What this is</h2>
     <p>
@@ -156,6 +147,12 @@
       the MIT-licensed rendering engine that also sits underneath the
       <a href="https://github.com/OHIF/Viewers">OHIF Viewer</a>. OHIF itself is AGPL-3.0,
       so none of its code is used here.
+    </p>
+    <p>
+      The finding you pick names the entry criterion of the research collection a case came
+      from. Every patient in a glioblastoma collection has glioblastoma, so the label is true
+      of the case, but it is not a report written from the pixels on screen, and nothing here
+      is for diagnostic use. <span id="dv-catalog-summary"></span>
     </p>
     <p>
       Measurements, multiplanar reconstruction, a study browser and local file reading are
