@@ -24,6 +24,8 @@ export interface CatalogEntry {
   seriesUID: string;
   instances: number;
   instancesCapped?: boolean;
+  /* Filled in by assignIds() once the catalog is loaded. */
+  id?: string;
 }
 
 export interface Catalog {
@@ -82,6 +84,36 @@ export interface Selection {
   region?: string;
   lesion?: string;
   sequence?: string;
+  /* Which individual series, once the four levels above still leave several. */
+  caseId?: string;
+}
+
+/* A short handle for one series, used in the dropdown and in the URL. The tail of a
+   SOP-style UID is the part that actually varies, so it makes a compact id; if two ever
+   collide the full UID is used instead, which is unique by definition. */
+const ID_LENGTH = 12;
+
+export function assignIds(entries: CatalogEntry[]): Map<string, CatalogEntry> {
+  const byId = new Map<string, CatalogEntry>();
+  let collided = false;
+  for (const e of entries) {
+    const id = e.seriesUID.slice(-ID_LENGTH);
+    if (byId.has(id)) {
+      collided = true;
+      break;
+    }
+    byId.set(id, e);
+  }
+  if (!collided) {
+    for (const e of entries) e.id = e.seriesUID.slice(-ID_LENGTH);
+    return byId;
+  }
+  byId.clear();
+  for (const e of entries) {
+    e.id = e.seriesUID;
+    byId.set(e.seriesUID, e);
+  }
+  return byId;
 }
 
 /* Each level lists only what is still reachable given the levels above it, so the picker
@@ -122,6 +154,33 @@ export const lesionChoices = (entries: CatalogEntry[], sel: Selection): Choice[]
     filterEntries(entries, { modality: sel.modality, region: sel.region }),
     (e) => e.lesion
   );
+
+/* Every series left once the four levels are chosen. This is the control that was missing:
+   a combination such as liver / hepatocellular carcinoma / lava arc can hold several
+   studies, and without this only one of them could ever be opened. */
+export function caseChoices(entries: CatalogEntry[], sel: Selection): Choice[] {
+  const matches = filterEntries(entries, {
+    modality: sel.modality,
+    region: sel.region,
+    lesion: sel.lesion,
+    sequence: sel.sequence,
+  });
+  const ranked = [...matches].sort((a, b) => rankOf(a) - rankOf(b) || b.instances - a.instances);
+  const seenPatient = new Map<string, number>();
+  return ranked.map((e) => {
+    /* One patient can contribute several series with the same sequence name, so repeats are
+       numbered rather than shown as identical rows. */
+    const n = (seenPatient.get(e.patientId) ?? 0) + 1;
+    seenPatient.set(e.patientId, n);
+    const repeat = n > 1 ? ` (${n})` : '';
+    const images = e.instancesCapped ? `${e.instances}+` : String(e.instances);
+    return {
+      value: e.id ?? e.seriesUID,
+      label: `${e.patientId}${repeat} - ${images} images`,
+      count: 1,
+    };
+  });
+}
 
 export const sequenceChoices = (entries: CatalogEntry[], sel: Selection): Choice[] =>
   tally(
@@ -165,6 +224,12 @@ export function reconcile(entries: CatalogEntry[], sel: Selection): Selection {
       ? sel.sequence
       : resolve(entries, next)?.sequence ?? sequences[0]?.value;
 
+  const cases = caseChoices(entries, next);
+  next.caseId =
+    sel.caseId && cases.some((c) => c.value === sel.caseId)
+      ? sel.caseId
+      : cases[0]?.value;
+
   return next;
 }
 
@@ -205,6 +270,10 @@ const rankOf = (e: CatalogEntry): number => SEQUENCE_RANK[e.sequence] ?? DEFAULT
 export function resolve(entries: CatalogEntry[], sel: Selection): CatalogEntry | undefined {
   const matches = filterEntries(entries, sel);
   if (matches.length === 0) return undefined;
+  if (sel.caseId) {
+    const chosen = matches.find((e) => (e.id ?? e.seriesUID) === sel.caseId);
+    if (chosen) return chosen;
+  }
   return matches.reduce((best, e) => {
     const d = rankOf(e) - rankOf(best);
     if (d !== 0) return d < 0 ? e : best;

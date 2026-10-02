@@ -9,6 +9,8 @@ import { Enums, type Types } from '@cornerstonejs/core';
 import { sourceById, type Source } from './sources';
 import { TAG, isoDate, num, personName, str, type Dataset } from './dicomweb';
 import {
+  assignIds,
+  caseChoices,
   loadCatalog,
   lesionChoices,
   modalityChoices,
@@ -117,11 +119,39 @@ function paintOverlay(): void {
 /* ---------- the four pickers ---------- */
 
 const PICKERS = [
-  { id: 'dv-pick-modality', key: 'modality' as const },
-  { id: 'dv-pick-region', key: 'region' as const },
-  { id: 'dv-pick-lesion', key: 'lesion' as const },
-  { id: 'dv-pick-sequence', key: 'sequence' as const },
+  { id: 'dv-pick-modality', key: 'modality' as const, param: 'imaging' },
+  { id: 'dv-pick-region', key: 'region' as const, param: 'region' },
+  { id: 'dv-pick-lesion', key: 'lesion' as const, param: 'finding' },
+  { id: 'dv-pick-sequence', key: 'sequence' as const, param: 'sequence' },
+  { id: 'dv-pick-case', key: 'caseId' as const, param: 'case' },
 ];
+
+/* The selection lives in the query string so a particular case can be bookmarked or sent to
+   someone. replaceState rather than pushState: flipping through studies should not bury the
+   previous page under a stack of history entries the back button has to walk out of. */
+function selectionFromUrl(): Selection {
+  const q = new URLSearchParams(window.location.search);
+  const sel: Selection = {};
+  for (const p of PICKERS) {
+    const v = q.get(p.param);
+    if (v) sel[p.key] = v;
+  }
+  return sel;
+}
+
+function selectionToUrl(sel: Selection): void {
+  const q = new URLSearchParams();
+  for (const p of PICKERS) {
+    const v = sel[p.key];
+    if (v) q.set(p.param, v);
+  }
+  const query = q.toString();
+  window.history.replaceState(
+    null,
+    '',
+    query ? `${window.location.pathname}?${query}` : window.location.pathname
+  );
+}
 
 function fillSelect(select: HTMLSelectElement, choices: Choice[], selected?: string): void {
   select.replaceChildren();
@@ -147,6 +177,7 @@ function paintPickers(): void {
     region: regionChoices(entries, sel),
     lesion: lesionChoices(entries, sel),
     sequence: sequenceChoices(entries, sel),
+    caseId: caseChoices(entries, sel),
   };
 
   for (const p of PICKERS) {
@@ -156,6 +187,8 @@ function paintPickers(): void {
 
   /* What the controls do depends on the modality: Hounsfield windows belong to CT, and the
      guide has to say something different about scrolling a 2-image mammogram. */
+  selectionToUrl(sel);
+
   const group = sel.modality ?? 'CT';
   if (group !== paintedModality) {
     paintedModality = group;
@@ -509,8 +542,10 @@ async function start(): Promise<void> {
   setStatus('Loading the case index');
   try {
     const catalog = await loadCatalog();
+    assignIds(catalog.entries);
     state.catalog = catalog;
-    state.selection = reconcile(catalog.entries, {});
+    /* A link may already name a case; reconcile keeps whatever part of it is still valid. */
+    state.selection = reconcile(catalog.entries, selectionFromUrl());
     paintPickers();
 
     const summary = el('dv-catalog-summary');
