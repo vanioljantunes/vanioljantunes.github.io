@@ -1,7 +1,14 @@
 // Study track: render the deep-learning-drizzle catalogue, filter it, and play a
-// course playlist inside its own card. One iframe exists at a time.
+// course playlist inside its own card. One player exists at a time.
+//
+// The player runs through the YouTube IFrame API rather than a bare iframe, because
+// the catalogue only carries a playlist id: the API is what tells us the lectures in
+// that playlist, which one is playing, and how to step between them. Nothing reaches
+// YouTube until the reader presses play.
 
 const DATA_URL = '/study-track/courses.json';
+const YT_API = 'https://www.youtube.com/iframe_api';
+const THUMB = (id) => `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
 
 const railList = document.getElementById('st-rail-list');
 const railTotal = document.getElementById('st-rail-total');
@@ -17,6 +24,12 @@ const playableEl = document.getElementById('st-playable');
 
 let sections = [];
 let openCard = null;
+let player = null; // the one live YT.Player
+let hasBakedTitles = false;
+
+// Titles we have learned, by video id. The IFrame API only names the video that is
+// playing, so the strip fills in as lectures are visited unless titles were baked in.
+const titles = new Map();
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 
@@ -35,6 +48,8 @@ async function load() {
     console.error(err);
     return;
   }
+
+  hasBakedTitles = data.playlistTitles === true;
 
   sections = data.sections.map((s) => ({
     ...s,
@@ -91,6 +106,17 @@ function tag(text, off) {
   return t;
 }
 
+function icon(d) {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('aria-hidden', 'true');
+  svg.setAttribute('focusable', 'false');
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path.setAttribute('d', d);
+  svg.append(path);
+  return svg;
+}
+
 function courseCard(course) {
   const li = document.createElement('li');
   li.className = 'st-card';
@@ -122,17 +148,10 @@ function courseCard(course) {
     btn.className = 'st-play';
     btn.setAttribute('aria-expanded', 'false');
     btn.setAttribute('aria-controls', `${course.id}-player`);
-    const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    icon.setAttribute('viewBox', '0 0 24 24');
-    icon.setAttribute('aria-hidden', 'true');
-    icon.setAttribute('focusable', 'false');
-    const tri = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    tri.setAttribute('d', 'M8 5.5v13l11-6.5z');
-    icon.append(tri);
     const label = document.createElement('span');
     label.className = 'st-play__label';
     label.textContent = 'Play lectures';
-    btn.append(icon, label);
+    btn.append(icon('M8 5.5v13l11-6.5z'), label);
     btn.addEventListener('click', () => togglePlayer(li, course, btn));
     actions.append(btn);
   }
@@ -141,58 +160,205 @@ function courseCard(course) {
   for (const p of course.pages) actions.append(linkOut(p.label, p.url, 'st-link st-link--quiet'));
   li.append(actions);
 
-  const player = document.createElement('div');
-  player.className = 'st-player';
-  player.id = `${course.id}-player`;
-  player.hidden = true;
-  li.append(player);
+  const panel = document.createElement('div');
+  panel.className = 'st-player';
+  panel.id = `${course.id}-player`;
+  panel.hidden = true;
+  li.append(panel);
 
   return li;
 }
 
+/* ---------- The YouTube IFrame API ---------- */
+
+let ytPromise = null;
+
+function loadYouTubeApi() {
+  if (ytPromise) return ytPromise;
+  ytPromise = new Promise((resolve, reject) => {
+    if (window.YT && window.YT.Player) {
+      resolve(window.YT);
+      return;
+    }
+    // The API calls one global hook; chain anything already there rather than clobber it.
+    const previous = window.onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady = () => {
+      if (typeof previous === 'function') previous();
+      resolve(window.YT);
+    };
+    const s = document.createElement('script');
+    s.src = YT_API;
+    s.async = true;
+    s.addEventListener('error', () => reject(new Error('the YouTube player script did not load')));
+    document.head.append(s);
+  });
+  return ytPromise;
+}
+
+function mountPlayer(host, embed, onChange) {
+  return loadYouTubeApi().then(
+    (YT) =>
+      new Promise((resolve) => {
+        const vars = { rel: 0, playsinline: 1, origin: location.origin };
+        if (embed.kind === 'playlist') {
+          vars.list = embed.id;
+          vars.listType = 'playlist';
+        }
+        const p = new YT.Player(host, {
+          host: 'https://www.youtube-nocookie.com',
+          videoId: embed.kind === 'video' ? embed.id : undefined,
+          playerVars: vars,
+          events: {
+            onReady: () => resolve(p),
+            onStateChange: () => onChange(p),
+          },
+        });
+      }),
+  );
+}
+
+/* ---------- Lecture strip ---------- */
+
+// Baked titles, if a key was used to fetch them. Absent by default, and never requested
+// unless courses.json says the files exist, so no failed request is made for nothing.
+async function bakedTitles(playlistId) {
+  if (!hasBakedTitles) return null;
+  try {
+    const res = await fetch(`/study-track/playlists/${playlistId}.json`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    for (const item of data.items) titles.set(item.id, item.title);
+    return data.items;
+  } catch {
+    return null;
+  }
+}
+
+function lectureLabel(id, n) {
+  const known = titles.get(id);
+  return known ? `${n}. ${known}` : `Lecture ${n}`;
+}
+
+function renderStrip(strip, ids, onPick) {
+  strip.replaceChildren();
+  ids.forEach((id, n) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'st-lecture';
+    b.dataset.index = String(n);
+    b.addEventListener('click', () => onPick(n));
+
+    const img = document.createElement('img');
+    img.src = THUMB(id);
+    img.alt = '';
+    img.loading = 'lazy';
+    img.width = 160;
+    img.height = 90;
+
+    const num = document.createElement('span');
+    num.className = 'st-lecture__num';
+    num.textContent = String(n + 1).padStart(2, '0');
+
+    const name = document.createElement('span');
+    name.className = 'st-lecture__name';
+    name.textContent = lectureLabel(id, n + 1);
+
+    b.append(img, num, name);
+    b.setAttribute('aria-label', `Play ${lectureLabel(id, n + 1)}`);
+    strip.append(b);
+  });
+}
+
+// Refresh labels and the current marker. Titles arrive late, one per lecture visited.
+function syncStrip(strip, ids, current) {
+  for (const b of strip.querySelectorAll('.st-lecture')) {
+    const n = Number(b.dataset.index);
+    const label = lectureLabel(ids[n], n + 1);
+    b.querySelector('.st-lecture__name').textContent = label;
+    b.setAttribute('aria-label', `Play ${label}`);
+    if (n === current) {
+      b.setAttribute('aria-current', 'true');
+      b.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    } else {
+      b.removeAttribute('aria-current');
+    }
+  }
+}
+
+/* ---------- Open and close ---------- */
+
 function togglePlayer(card, course, btn) {
-  const player = card.querySelector('.st-player');
+  const panel = card.querySelector('.st-player');
   const isOpen = btn.getAttribute('aria-expanded') === 'true';
 
   if (openCard && openCard !== card) closePlayer(openCard);
-
   if (isOpen) {
     closePlayer(card);
     return;
   }
 
-  player.replaceChildren();
+  openPlayer(card, course, btn, panel, course.embeds[0]);
+}
 
-  const frame = document.createElement('iframe');
-  frame.src = course.embeds[0].src;
-  frame.title = `${course.name} lectures`;
-  frame.loading = 'lazy';
-  frame.allow = 'accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen';
-  frame.referrerPolicy = 'strict-origin-when-cross-origin';
-  frame.allowFullscreen = true;
+function openPlayer(card, course, btn, panel, embed) {
+  panel.replaceChildren();
 
+  // Several playlists on one course: a chip per playlist, as before.
   if (course.embeds.length > 1) {
     const switcher = document.createElement('p');
     switcher.className = 'st-player__switch';
-    course.embeds.forEach((e, i) => {
+    for (const e of course.embeds) {
       const b = document.createElement('button');
       b.type = 'button';
       b.className = 'st-chip';
-      b.textContent = e.label || `Playlist ${i + 1}`;
-      b.setAttribute('aria-pressed', String(i === 0));
+      b.textContent = e.label || 'Playlist';
+      b.setAttribute('aria-pressed', String(e === embed));
       b.addEventListener('click', () => {
-        frame.src = e.src;
-        for (const c of switcher.querySelectorAll('.st-chip')) c.setAttribute('aria-pressed', String(c === b));
+        if (e === embed) return;
+        destroyPlayer();
+        openPlayer(card, course, btn, panel, e);
       });
       switcher.append(b);
-    });
-    player.append(switcher);
+    }
+    panel.append(switcher);
   }
 
-  const wrap = document.createElement('div');
-  wrap.className = 'st-player__frame';
-  wrap.append(frame);
-  player.append(wrap);
+  const strip = document.createElement('div');
+  strip.className = 'st-strip';
+  strip.hidden = true;
+  strip.setAttribute('role', 'group');
+  strip.setAttribute('aria-label', `Lectures in ${course.name}`);
+  panel.append(strip);
+
+  const now = document.createElement('p');
+  now.className = 'st-now';
+  now.textContent = 'Loading the player…';
+  panel.append(now);
+
+  const stage = document.createElement('div');
+  stage.className = 'st-stage';
+
+  const prev = document.createElement('button');
+  prev.type = 'button';
+  prev.className = 'st-step st-step--prev';
+  prev.setAttribute('aria-label', 'Previous lecture');
+  prev.append(icon('m15 5-7 7 7 7'));
+  prev.disabled = true;
+
+  const next = document.createElement('button');
+  next.type = 'button';
+  next.className = 'st-step st-step--next';
+  next.setAttribute('aria-label', 'Next lecture');
+  next.append(icon('m9 5 7 7-7 7'));
+  next.disabled = true;
+
+  const frame = document.createElement('div');
+  frame.className = 'st-player__frame';
+  const host = document.createElement('div');
+  frame.append(host);
+
+  stage.append(prev, frame, next);
+  panel.append(stage);
 
   const close = document.createElement('button');
   close.type = 'button';
@@ -202,20 +368,73 @@ function togglePlayer(card, course, btn) {
     closePlayer(card);
     btn.focus();
   });
-  player.append(close);
+  panel.append(close);
 
-  player.hidden = false;
+  panel.hidden = false;
   btn.setAttribute('aria-expanded', 'true');
   btn.querySelector('.st-play__label').textContent = 'Stop lectures';
   card.classList.add('st-card--playing');
   openCard = card;
+
+  let ids = [];
+
+  function refresh(p) {
+    const list = p.getPlaylist();
+    if (Array.isArray(list) && list.length && list.join() !== ids.join()) {
+      ids = list;
+      renderStrip(strip, ids, (n) => p.playVideoAt(n));
+      strip.hidden = ids.length < 2;
+    }
+
+    const data = p.getVideoData ? p.getVideoData() : null;
+    if (data && data.video_id && data.title) titles.set(data.video_id, data.title);
+
+    const current = ids.length ? p.getPlaylistIndex() : -1;
+    if (ids.length) syncStrip(strip, ids, current);
+
+    const title = data && data.title ? data.title : '';
+    now.textContent = ids.length
+      ? `${current + 1} of ${ids.length}${title ? ` · ${title}` : ''}`
+      : title || 'Playing';
+
+    const stepping = ids.length > 1;
+    prev.disabled = !stepping || current <= 0;
+    next.disabled = !stepping || current < 0 || current >= ids.length - 1;
+  }
+
+  if (embed.kind === 'playlist') bakedTitles(embed.id);
+
+  mountPlayer(host, embed, refresh)
+    .then((p) => {
+      player = p;
+      prev.addEventListener('click', () => p.previousVideo());
+      next.addEventListener('click', () => p.nextVideo());
+      refresh(p);
+    })
+    .catch((err) => {
+      console.error(err);
+      now.textContent = 'The player could not start. Open the playlist on YouTube instead.';
+      stage.remove();
+    });
+}
+
+function destroyPlayer() {
+  if (player && typeof player.destroy === 'function') {
+    try {
+      player.destroy();
+    } catch {
+      // The player may already be gone with its card; nothing to clean up then.
+    }
+  }
+  player = null;
 }
 
 function closePlayer(card) {
-  const player = card.querySelector('.st-player');
+  destroyPlayer();
+  const panel = card.querySelector('.st-player');
   const btn = card.querySelector('.st-play');
-  player.replaceChildren(); // dropping the iframe stops playback
-  player.hidden = true;
+  panel.replaceChildren();
+  panel.hidden = true;
   if (btn) {
     btn.setAttribute('aria-expanded', 'false');
     btn.querySelector('.st-play__label').textContent = 'Play lectures';
@@ -223,6 +442,8 @@ function closePlayer(card) {
   card.classList.remove('st-card--playing');
   if (openCard === card) openCard = null;
 }
+
+/* ---------- Sections and filtering ---------- */
 
 function buildSections() {
   sectionsEl.replaceChildren();

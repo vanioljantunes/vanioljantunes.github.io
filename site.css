@@ -2799,3 +2799,158 @@ a.tool:focus-visible {
     transition: none;
   }
 }
+
+/* ----- Lecture strip and the stage around the player ----- */
+
+.st-strip {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0 0 0.75rem;
+  padding-bottom: 0.4rem;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scroll-snap-type: x proximity;
+}
+
+.st-lecture {
+  position: relative;
+  flex: none;
+  width: 9.5rem;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  scroll-snap-align: start;
+  overflow: hidden;
+}
+
+.st-lecture:hover {
+  border-color: var(--border-strong);
+}
+
+.st-lecture[aria-current] {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.st-lecture img {
+  width: 100%;
+  height: 5.35rem;
+  object-fit: cover;
+  background: var(--bg);
+}
+
+.st-lecture__num {
+  position: absolute;
+  top: 0.3rem;
+  left: 0.3rem;
+  padding: 0.05rem 0.35rem;
+  border-radius: 4px;
+  background: rgba(28, 36, 48, 0.82);
+  color: #ffffff;
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.st-lecture[aria-current] .st-lecture__num {
+  background: var(--accent);
+}
+
+.st-lecture__name {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  padding: 0.35rem 0.45rem 0.45rem;
+  font-size: 0.75rem;
+  line-height: 1.3;
+}
+
+.st-lecture[aria-current] .st-lecture__name {
+  color: var(--accent-dark);
+  font-weight: 600;
+}
+
+.st-now {
+  margin: 0 0 0.5rem;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.st-stage {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.st-step {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.st-step:hover:not(:disabled) {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent-dark);
+}
+
+.st-step:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.st-step:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.st-step svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.st-lecture:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Phones: the step buttons move under the video so it keeps the full width. */
+@media (max-width: 600px) {
+  .st-stage {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .st-stage .st-player__frame {
+    grid-column: 1 / -1;
+    order: -1;
+  }
+
+  .st-step {
+    width: 100%;
+    border-radius: 8px;
+  }
+
+  .st-lecture {
+    width: 8.5rem;
+  }
+}
