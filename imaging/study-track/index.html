@@ -41,11 +41,20 @@
           <li><a href="/about/">Who am I</a></li>
           <li><a href="/tools/">Tools</a></li>
           <li><a href="/packages/">R packages</a></li>
-          <li><a href="/imaging/">Imaging<span class="site-bar__long">&nbsp;projects</span></a></li>
-          <li><a href="/study-track/" aria-current="page">Study<span class="site-bar__long">&nbsp;track</span></a></li>
+          <li><a href="/imaging/" aria-current="true">Imaging<span class="site-bar__long">&nbsp;projects</span></a></li>
         </ul>
       </nav>
     </div>
+    <nav class="site-subnav" aria-label="Imaging projects">
+      <ul class="site-subnav__links">
+          <li><a href="/imaging/">All projects</a></li>
+          <li><a href="/imaging/xvr/">Find the C-arm position</a></li>
+          <li><a href="/imaging/study-track/" aria-current="page">Study track</a></li>
+          <li><a href="/imaging/#alearrhythmia">aleArrhythmia</a></li>
+          <li><a href="/imaging/#cinematic">Cinematic rendering</a></li>
+          <li><a href="/imaging/#ct-ml">CT reconstruction with ML</a></li>
+      </ul>
+    </nav>
   </header>
 
   <main id="main" class="page-main wrap st-page">
@@ -102,16 +111,17 @@
         <p class="st-empty" id="st-empty" hidden>No course matches those filters. <button type="button" class="st-linkbtn" id="st-empty-clear">Clear the filters</button></p>
 
         <p class="st-credit">
-          Catalogue from <a href="https://github.com/kmario23/deep-learning-drizzle" target="_blank" rel="noopener noreferrer">kmario23/deep-learning-drizzle<span class="visually-hidden"> (opens in a new tab)</span></a> (MIT), parsed by <code>scripts/parse-drizzle.mjs</code> into <a href="/study-track/courses.json">courses.json</a>. Videos play from YouTube in privacy-enhanced mode; the courses and their recordings belong to their universities and instructors.
+          Catalogue from <a href="https://github.com/kmario23/deep-learning-drizzle" target="_blank" rel="noopener noreferrer">kmario23/deep-learning-drizzle<span class="visually-hidden"> (opens in a new tab)</span></a> (MIT), parsed by <code>scripts/parse-drizzle.mjs</code> into <a href="/imaging/study-track/courses.json">courses.json</a>. Videos play from YouTube in privacy-enhanced mode; the courses and their recordings belong to their universities and instructors.
         </p>
       </div>
     </div>
   </main>
 
   <noscript>
-    <p class="wrap st-credit">This page needs JavaScript to render the catalogue. The raw data is at <a href="/study-track/courses.json">courses.json</a>, and the original list is at <a href="https://github.com/kmario23/deep-learning-drizzle">kmario23/deep-learning-drizzle</a>.</p>
+    <p class="wrap st-credit">This page needs JavaScript to render the catalogue. The raw data is at <a href="/imaging/study-track/courses.json">courses.json</a>, and the original list is at <a href="https://github.com/kmario23/deep-learning-drizzle">kmario23/deep-learning-drizzle</a>.</p>
   </noscript>
 
+  <script type="module" src="/js/subnav.js"></script>
   <script type="module" src="/js/study-track.js"></script>
 </body>
 </html>

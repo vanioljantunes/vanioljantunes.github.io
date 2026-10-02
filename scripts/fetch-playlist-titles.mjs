@@ -7,8 +7,8 @@
 // thumbnails, and each title appears once its lecture is visited. Running this only
 // replaces "Lecture 7" with the real name up front.
 //
-// Writes study-track/playlists/<playlistId>.json and sets "playlistTitles": true in
-// study-track/courses.json, which is the flag the page checks before asking for them.
+// Writes imaging/study-track/playlists/<playlistId>.json and sets "playlistTitles": true in
+// imaging/study-track/courses.json, which is the flag the page checks before asking for them.
 //
 // Quota: playlistItems.list costs 1 unit per page of 50 items. The default free quota
 // is 10,000 units a day, and the whole catalogue is well under that.
@@ -18,8 +18,8 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const COURSES = join(ROOT, 'study-track', 'courses.json');
-const OUT_DIR = join(ROOT, 'study-track', 'playlists');
+const COURSES = join(ROOT, 'imaging', 'study-track', 'courses.json');
+const OUT_DIR = join(ROOT, 'imaging', 'study-track', 'playlists');
 
 const KEY = process.env.YOUTUBE_API_KEY;
 if (!KEY) {

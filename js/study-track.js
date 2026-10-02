@@ -6,7 +6,7 @@
 // that playlist, which one is playing, and how to step between them. Nothing reaches
 // YouTube until the reader presses play.
 
-const DATA_URL = '/study-track/courses.json';
+const DATA_URL = '/imaging/study-track/courses.json';
 const YT_API = 'https://www.youtube.com/iframe_api';
 const THUMB = (id) => `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
 
@@ -199,20 +199,21 @@ function mountPlayer(host, embed, onChange) {
   return loadYouTubeApi().then(
     (YT) =>
       new Promise((resolve) => {
-        const vars = { rel: 0, playsinline: 1, origin: location.origin };
+        // The reader pressed play, so autoplay is wanted and allowed. A videoId key must
+        // be absent for a playlist, not undefined: the API rejects undefined as invalid.
+        const vars = { rel: 0, playsinline: 1, autoplay: 1, origin: location.origin };
+        const options = { host: 'https://www.youtube-nocookie.com', playerVars: vars };
         if (embed.kind === 'playlist') {
           vars.list = embed.id;
           vars.listType = 'playlist';
+        } else {
+          options.videoId = embed.id;
         }
-        const p = new YT.Player(host, {
-          host: 'https://www.youtube-nocookie.com',
-          videoId: embed.kind === 'video' ? embed.id : undefined,
-          playerVars: vars,
-          events: {
-            onReady: () => resolve(p),
-            onStateChange: () => onChange(p),
-          },
-        });
+        options.events = {
+          onReady: () => resolve(p),
+          onStateChange: () => onChange(p),
+        };
+        const p = new YT.Player(host, options);
       }),
   );
 }
@@ -224,7 +225,7 @@ function mountPlayer(host, embed, onChange) {
 async function bakedTitles(playlistId) {
   if (!hasBakedTitles) return null;
   try {
-    const res = await fetch(`/study-track/playlists/${playlistId}.json`);
+    const res = await fetch(`/imaging/study-track/playlists/${playlistId}.json`);
     if (!res.ok) return null;
     const data = await res.json();
     for (const item of data.items) titles.set(item.id, item.title);
@@ -410,6 +411,16 @@ function openPlayer(card, course, btn, panel, embed) {
       prev.addEventListener('click', () => p.previousVideo());
       next.addEventListener('click', () => p.nextVideo());
       refresh(p);
+      // The playlist is not always loaded the instant the player reports ready, and a
+      // paused player fires no state change, so poll briefly until the order shows up.
+      let tries = 0;
+      const poll = setInterval(() => {
+        if (player !== p || ids.length || ++tries > 20) {
+          clearInterval(poll);
+          return;
+        }
+        refresh(p);
+      }, 400);
     })
     .catch((err) => {
       console.error(err);

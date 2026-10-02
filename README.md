@@ -13,6 +13,7 @@ Live at: https://vanioljantunes.github.io
 | `about/research.html`, `stats.html`, `teaching.html`, `contact.html` | Older sub-pages (root copies redirect here) |
 | `tools/index.html` | Meta-analysis tools (ssHelper, upcoming tools) |
 | `packages/index.html` | R packages, linking to their GitHub repositories |
+| `imaging/study-track/index.html` | Study track: the deep-learning-drizzle lecture catalogue, searchable, with the playlists playing in the page |
 | `imaging/index.html` | Imaging projects (aleArrhythmia, cinematic rendering for 3D CT, CT reconstruction with machine learning), all in progress |
 
 ## Stack

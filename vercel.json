@@ -27,6 +27,26 @@
       "permanent": true
     },
     {
+      "source": "/study-track",
+      "destination": "/imaging/study-track",
+      "permanent": true
+    },
+    {
+      "source": "/study-track/",
+      "destination": "/imaging/study-track/",
+      "permanent": true
+    },
+    {
+      "source": "/study-track/:path*",
+      "destination": "/imaging/study-track/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/study-track/:path+/",
+      "destination": "/imaging/study-track/:path+/",
+      "permanent": true
+    },
+    {
       "source": "/tools/ssHelper",
       "destination": "/tools/ssHelper/",
       "permanent": true

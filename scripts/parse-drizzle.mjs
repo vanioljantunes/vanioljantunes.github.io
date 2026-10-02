@@ -1,4 +1,4 @@
-// Turn the kmario23/deep-learning-drizzle README into study-track/courses.json.
+// Turn the kmario23/deep-learning-drizzle README into imaging/study-track/courses.json.
 //
 //   node scripts/parse-drizzle.mjs [path-to-README.md]
 //
@@ -9,7 +9,7 @@
 import { writeFileSync, readFileSync } from 'node:fs';
 
 const SOURCE_RAW = 'https://raw.githubusercontent.com/kmario23/deep-learning-drizzle/master/README.md';
-const OUT = new URL('../study-track/courses.json', import.meta.url);
+const OUT = new URL('../imaging/study-track/courses.json', import.meta.url);
 
 // Headings that carry a course table but are not topic sections.
 const SKIP_SECTIONS = new Set(['Contents', 'To-Do', 'Around the Web', 'Contributions', 'Support']);
