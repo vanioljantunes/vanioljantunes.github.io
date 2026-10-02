@@ -65,6 +65,53 @@ async function load() {
   )}. ${data.counts.withEmbed} play in the page.`;
   apply();
   watchSections();
+  followUrl();
+}
+
+/* ---------- Arriving from a link ---------- */
+
+// A project page cites a lecture as ?list=<playlistId>&i=<n>, and a topic as ?topic=<slug>.
+// The citation is keyed on the playlist id rather than the course id because course ids are
+// positional: re-parsing the README would silently repoint every link.
+function followUrl() {
+  const params = new URLSearchParams(location.search);
+  const list = params.get('list');
+  const topic = params.get('topic') || (location.hash ? decodeURIComponent(location.hash.slice(1)) : '');
+
+  if (list) {
+    for (const s of sections) {
+      for (const course of s.courses) {
+        const embed = course.embeds.find((e) => e.id === list);
+        if (!embed) continue;
+        const at = Number.parseInt(params.get('i') ?? '', 10);
+        openCited(course, embed, Number.isInteger(at) && at > 0 ? at : 0);
+        return;
+      }
+    }
+  }
+
+  // Also covers a bare #topic: the catalogue is built after load, so the browser resolved
+  // the hash against an empty page and scrolled nowhere.
+  if (topic) {
+    const sec = sectionsEl.querySelector(`.st-section[data-slug="${CSS.escape(topic)}"]`);
+    if (sec) sec.scrollIntoView({ block: 'start' });
+  }
+}
+
+function openCited(course, embed, startAt) {
+  // Narrow to the course by name, which also shows its sibling years, then open the exact card.
+  qEl.value = course.name;
+  apply();
+
+  const card = sectionsEl.querySelector(`#${course.id}`);
+  if (!card) return;
+  const btn = card.querySelector('.st-play');
+  if (!btn) {
+    card.scrollIntoView({ block: 'center' });
+    return;
+  }
+  openPlayer(card, course, btn, card.querySelector('.st-player'), embed, startAt);
+  card.scrollIntoView({ block: 'start' });
 }
 
 function buildRail() {
@@ -298,10 +345,10 @@ function togglePlayer(card, course, btn) {
     return;
   }
 
-  openPlayer(card, course, btn, panel, course.embeds[0]);
+  openPlayer(card, course, btn, panel, course.embeds[0], 0);
 }
 
-function openPlayer(card, course, btn, panel, embed) {
+function openPlayer(card, course, btn, panel, embed, startAt = 0) {
   panel.replaceChildren();
 
   // Several playlists on one course: a chip per playlist, as before.
@@ -378,6 +425,7 @@ function openPlayer(card, course, btn, panel, embed) {
   openCard = card;
 
   let ids = [];
+  let jumpTo = startAt;
 
   function refresh(p) {
     const list = p.getPlaylist();
@@ -385,6 +433,13 @@ function openPlayer(card, course, btn, panel, embed) {
       ids = list;
       renderStrip(strip, ids, (n) => p.playVideoAt(n));
       strip.hidden = ids.length < 2;
+      // A cited lecture can only be reached once the playlist itself has loaded.
+      if (jumpTo > 0 && jumpTo < ids.length) {
+        p.playVideoAt(jumpTo);
+        jumpTo = 0;
+        return;
+      }
+      jumpTo = 0;
     }
 
     const data = p.getVideoData ? p.getVideoData() : null;

@@ -35,17 +35,59 @@ const { MouseBindings } = ToolEnums;
 let engine: RenderingEngine | undefined;
 let started = false;
 
-/** Window/level presets, in Hounsfield units. */
-export const PRESETS = [
-  { id: 'soft', label: 'Soft tissue', center: 40, width: 400 },
-  { id: 'lung', label: 'Lung', center: -600, width: 1500 },
-  { id: 'bone', label: 'Bone', center: 300, width: 1500 },
-  { id: 'brain', label: 'Brain', center: 40, width: 80 },
-  { id: 'mediastinum', label: 'Mediastinum', center: 50, width: 350 },
-  { id: 'liver', label: 'Liver', center: 60, width: 160 },
-] as const;
+/* Window presets, per modality.
+ *
+ * A Hounsfield unit is a CT quantity: it is defined against water and air, and a CT scanner
+ * is calibrated so that -1000 is air and 0 is water. MR, mammography and plain radiography
+ * have no such absolute scale - their pixel values are whatever the detector and the
+ * reconstruction produced - so a "soft tissue 40/400" button is meaningless on them. Those
+ * modalities get presets derived from the image actually on screen instead.
+ */
 
-export type PresetId = (typeof PRESETS)[number]['id'];
+export type PresetKind = 'hu' | 'scan' | 'full' | 'tight';
+
+export interface Preset {
+  id: string;
+  label: string;
+  kind: PresetKind;
+  /* Only for 'hu' presets. */
+  center?: number;
+  width?: number;
+  hint?: string;
+}
+
+const CT_PRESETS: readonly Preset[] = [
+  { id: 'soft', label: 'Soft tissue', kind: 'hu', center: 40, width: 400 },
+  { id: 'lung', label: 'Lung', kind: 'hu', center: -600, width: 1500 },
+  { id: 'bone', label: 'Bone', kind: 'hu', center: 300, width: 1500 },
+  { id: 'brain', label: 'Brain', kind: 'hu', center: 40, width: 80 },
+  { id: 'mediastinum', label: 'Mediastinum', kind: 'hu', center: 50, width: 350 },
+  { id: 'liver', label: 'Liver', kind: 'hu', center: 60, width: 160 },
+];
+
+/* For everything without an absolute scale: what the scan itself asked for, the whole
+   range of the image, and a deliberately narrow window for low-contrast detail. */
+const RELATIVE_PRESETS: readonly Preset[] = [
+  { id: 'scan', label: 'As acquired', kind: 'scan', hint: 'The window stored in the file' },
+  { id: 'full', label: 'Full range', kind: 'full', hint: 'Darkest to brightest pixel' },
+  { id: 'tight', label: 'High contrast', kind: 'tight', hint: 'Narrow window, more contrast' },
+];
+
+const PRESET_SETS: Record<string, readonly Preset[]> = {
+  CT: CT_PRESETS,
+  MR: RELATIVE_PRESETS,
+  MG: RELATIVE_PRESETS,
+  XR: RELATIVE_PRESETS,
+  PT: RELATIVE_PRESETS,
+  NM: RELATIVE_PRESETS,
+  US: RELATIVE_PRESETS,
+};
+
+export const presetsFor = (modalityGroup: string): readonly Preset[] =>
+  PRESET_SETS[modalityGroup] ?? RELATIVE_PRESETS;
+
+/* Hounsfield units only mean anything on CT, so only CT may describe a window in them. */
+export const usesHounsfield = (modalityGroup: string): boolean => modalityGroup === 'CT';
 
 /* Starting Cornerstone means core, then the DICOM loader (which spins up decode workers),
    then the tools library.
@@ -167,8 +209,10 @@ export async function showSeries(
   viewport.render();
 }
 
-/* A series usually carries the window the scanner or the technologist chose. Honour it,
-   and fall back to a soft-tissue window only when the tags are absent. */
+/* A series usually carries the window the scanner or the technologist chose. Honour it.
+   When the tags are absent, fall back to the full range of the image rather than to a CT
+   soft-tissue window: that window is in Hounsfield units, and on an MR or a mammogram,
+   which have no such scale, it can map the whole image to flat black. */
 export function applyDefaultWindow(
   viewport: Types.IStackViewport,
   ds: Dataset | undefined
@@ -179,8 +223,9 @@ export function applyDefaultWindow(
     setWindow(viewport, center, width);
     return;
   }
-  const soft = PRESETS[0];
-  setWindow(viewport, soft.center, soft.width);
+  const range = pixelRange(viewport);
+  if (!range) return;
+  setWindow(viewport, (range.min + range.max) / 2, range.max - range.min);
 }
 
 export function setWindow(
@@ -193,10 +238,52 @@ export function setWindow(
   viewport.render();
 }
 
-export function applyPreset(viewport: Types.IStackViewport, id: PresetId): void {
-  const preset = PRESETS.find((p) => p.id === id);
-  if (!preset) return;
-  setWindow(viewport, preset.center, preset.width);
+/* The displayed range of the image on screen. Large volumes are sampled rather than fully
+   scanned: this runs on a button press and an exact extreme is not worth a pause. */
+function pixelRange(
+  viewport: Types.IStackViewport
+): { min: number; max: number } | undefined {
+  const data = viewport.getImageData();
+  const scalar = data?.scalarData as ArrayLike<number> | undefined;
+  if (!scalar || scalar.length === 0) return undefined;
+
+  const step = Math.max(1, Math.floor(scalar.length / 200000));
+  let min = Infinity;
+  let max = -Infinity;
+  for (let i = 0; i < scalar.length; i += step) {
+    const v = scalar[i] as number;
+    if (v < min) min = v;
+    if (v > max) max = v;
+  }
+  if (!Number.isFinite(min) || !Number.isFinite(max) || max <= min) return undefined;
+  return { min, max };
+}
+
+export function applyPreset(
+  viewport: Types.IStackViewport,
+  preset: Preset,
+  ds?: Dataset
+): void {
+  if (preset.kind === 'hu') {
+    if (preset.center !== undefined && preset.width !== undefined) {
+      setWindow(viewport, preset.center, preset.width);
+    }
+    return;
+  }
+
+  if (preset.kind === 'scan') {
+    applyDefaultWindow(viewport, ds);
+    return;
+  }
+
+  const range = pixelRange(viewport);
+  if (!range) {
+    /* Nothing to measure yet, so leave the window alone rather than blanking the image. */
+    return;
+  }
+  const centre = (range.min + range.max) / 2;
+  const span = range.max - range.min;
+  setWindow(viewport, centre, preset.kind === 'tight' ? span * 0.45 : span);
 }
 
 /** Current window as centre and width, for the overlay. */

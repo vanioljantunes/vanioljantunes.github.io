@@ -3027,3 +3027,187 @@ a.tool:focus-visible {
 .dv-provenance:empty {
   display: none;
 }
+
+/* ----- Imaging index: the study track as the section's foundation ----- */
+
+.found {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1rem 1.25rem;
+  align-items: start;
+  margin: 0 0 2.75rem;
+  padding: 1.5rem 1.75rem 1.75rem;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.found__icon {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+}
+
+.found__icon svg {
+  width: 30px;
+  height: 30px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.found__kicker {
+  margin: 0 0 0.2rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.found__title {
+  margin: 0 0 0.4rem;
+  font-size: 1.375rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.found__title a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.found__title a:hover {
+  color: var(--accent-dark);
+  text-decoration: underline;
+}
+
+.found__lede {
+  margin: 0 0 0.9rem;
+  max-width: 62ch;
+  color: var(--muted);
+}
+
+.found__topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.found__topics a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0.2rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--accent-dark);
+  font-size: 0.8125rem;
+  text-decoration: none;
+}
+
+.found__topics a:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.found__cta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.5rem 1.1rem;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #ffffff;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.found__cta:hover {
+  background: var(--accent-dark);
+}
+
+.found__count {
+  color: var(--muted);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.projects-head {
+  margin: 0 0 1.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* The card title is a link now, so the material list below it can hold links of its own. */
+.tool-link {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.tool-link:hover {
+  color: var(--accent-dark);
+  text-decoration: underline;
+}
+
+.tool-needs {
+  margin: 0.75rem 0 0;
+  padding: 0.7rem 0 0;
+  border-top: 1px solid var(--border);
+  width: 100%;
+  max-width: 26ch;
+  margin-inline: auto;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  text-align: left;
+}
+
+.tool-needs__head {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tool-needs ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tool-needs li {
+  margin-bottom: 0.3rem;
+  line-height: 1.35;
+}
+
+.tool-needs a {
+  color: var(--accent-dark);
+}
+
+.tool-needs__none {
+  font-style: italic;
+}
+
+@media (max-width: 600px) {
+  .found {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 1.25rem;
+  }
+}

@@ -22,7 +22,6 @@ import {
   type Selection,
 } from './catalog';
 import {
-  PRESETS,
   applyPreset,
   initCornerstone,
   loadSeries,
@@ -30,9 +29,11 @@ import {
   purgeCache,
   readWindow,
   resetViewport,
+  presetsFor,
   showSeries,
+  usesHounsfield,
   type LoadedSeries,
-  type PresetId,
+  type Preset,
 } from './viewport';
 
 const VIEWPORT_ID = 'dv-main';
@@ -57,11 +58,15 @@ const state: {
 
 /* ---------- status ---------- */
 
+/* Status is a transient line, not a permanent panel. While something is loading or has
+   failed it says so; once a series is on screen the overlay and the provenance line already
+   carry everything it was repeating, so it gets out of the way. */
 function setStatus(message: string, kind: 'info' | 'error' | 'done' = 'info'): void {
   const node = el('dv-status');
   if (!node) return;
-  node.textContent = message;
+  node.textContent = kind === 'done' ? '' : message;
   node.dataset.kind = kind;
+  node.hidden = kind === 'done';
   node.setAttribute('aria-live', kind === 'error' ? 'assertive' : 'polite');
 }
 
@@ -210,23 +215,217 @@ function wirePickers(): void {
   }
 }
 
+/* ---------- how to drive it ---------- */
+
+/* Small line-art icons drawn here rather than pulled from an icon set, so the page keeps
+   its single stylesheet and no third-party asset. Each is a 24x24 mouse or key outline with
+   the relevant part filled. */
+const MOUSE_BODY = '<rect x="7" y="2.5" width="10" height="19" rx="5" fill="none" stroke="currentColor" stroke-width="1.6"/>';
+
+const ICONS: Record<string, string> = {
+  left:
+    MOUSE_BODY +
+    '<path d="M7.8 7.5V8a4.2 4.2 0 0 1 4.2-4.2V7.5z" fill="currentColor"/>' +
+    '<path d="M12 3.3v4.4H7.8" fill="currentColor"/>',
+  right:
+    MOUSE_BODY +
+    '<path d="M12 3.3v4.4h4.2V7.5A4.2 4.2 0 0 0 12 3.3z" fill="currentColor"/>',
+  wheel:
+    MOUSE_BODY +
+    '<rect x="11.1" y="6" width="1.8" height="4.5" rx="0.9" fill="currentColor"/>' +
+    '<path d="M12 1 10.6 2.9h2.8zM12 23l1.4-1.9h-2.8z" fill="currentColor"/>',
+  middle:
+    MOUSE_BODY +
+    '<rect x="11.1" y="6" width="1.8" height="4.5" rx="0.9" fill="currentColor"/>',
+  keys:
+    '<rect x="2" y="13" width="6" height="6" rx="1.4" fill="none" stroke="currentColor" stroke-width="1.5"/>' +
+    '<rect x="9" y="13" width="6" height="6" rx="1.4" fill="currentColor"/>' +
+    '<rect x="16" y="13" width="6" height="6" rx="1.4" fill="none" stroke="currentColor" stroke-width="1.5"/>' +
+    '<rect x="9" y="5" width="6" height="6" rx="1.4" fill="none" stroke="currentColor" stroke-width="1.5"/>',
+  window:
+    '<circle cx="12" cy="12" r="8.4" fill="none" stroke="currentColor" stroke-width="1.6"/>' +
+    '<path d="M12 3.6a8.4 8.4 0 0 1 0 16.8z" fill="currentColor"/>',
+};
+
+interface GuideCard {
+  icon: keyof typeof ICONS | string;
+  title: string;
+  body: string;
+}
+
+const CARD_ZOOM: GuideCard = {
+  icon: 'right',
+  title: 'Right drag',
+  body: 'Zoom in and out. The zoom percentage shows in the bottom right of the image.',
+};
+
+const CARD_PAN: GuideCard = {
+  icon: 'middle',
+  title: 'Middle drag',
+  body: 'Slide the image around once you are zoomed in past the edge of the frame.',
+};
+
+const CARD_KEYS: GuideCard = {
+  icon: 'keys',
+  title: 'Arrow keys',
+  body: 'Click the image first. Up and Down move one slice, Page Up and Page Down move ten.',
+};
+
+/* What the controls mean genuinely differs by modality, so the cards do too: windowing on CT
+   is a statement about Hounsfield units, and on MR it is only brightness and contrast. */
+const GUIDES: Record<string, GuideCard[]> = {
+  CT: [
+    {
+      icon: 'left',
+      title: 'Left drag',
+      body:
+        'Sets the window. Left and right moves the centre, up and down the width, choosing ' +
+        'which Hounsfield units are black and which are white.',
+    },
+    {
+      icon: 'wheel',
+      title: 'Scroll wheel',
+      body: 'Moves through the slices, from the top of the scan to the bottom.',
+    },
+    CARD_ZOOM,
+    CARD_PAN,
+    {
+      icon: 'window',
+      title: 'Window buttons',
+      body:
+        'Standard CT windows. Lung shows air and vessels, bone shows cortex and trabeculae, ' +
+        'soft tissue shows organs. The same slice looks like a different study in each.',
+    },
+    CARD_KEYS,
+  ],
+  MR: [
+    {
+      icon: 'left',
+      title: 'Left drag',
+      body:
+        'Sets brightness and contrast. MR pixel values have no absolute scale, so unlike CT ' +
+        'there is no fixed window that means the same thing on every scan.',
+    },
+    {
+      icon: 'wheel',
+      title: 'Scroll wheel',
+      body: 'Moves through the slices of the sequence you picked.',
+    },
+    CARD_ZOOM,
+    CARD_PAN,
+    {
+      icon: 'window',
+      title: 'Window buttons',
+      body:
+        'As acquired uses the window stored in the file. Full range maps the darkest and ' +
+        'brightest pixel to black and white. High contrast narrows it to bring out subtle detail.',
+    },
+    CARD_KEYS,
+  ],
+  MG: [
+    {
+      icon: 'left',
+      title: 'Left drag',
+      body:
+        'Adjusts brightness and contrast, which is how calcifications are made to stand out ' +
+        'from the surrounding tissue.',
+    },
+    {
+      icon: 'right',
+      title: 'Right drag',
+      body:
+        'Zoom. Mammograms are very high resolution and the findings are often small, so this ' +
+        'is the control that matters most here.',
+    },
+    CARD_PAN,
+    {
+      icon: 'wheel',
+      title: 'Scroll wheel',
+      body:
+        'A mammogram study is only a handful of images, so scrolling moves between those few ' +
+        'views rather than through a stack of slices.',
+    },
+    CARD_KEYS,
+  ],
+  XR: [
+    {
+      icon: 'left',
+      title: 'Left drag',
+      body:
+        'Adjusts brightness and contrast. On a chest radiograph this is what brings out lung ' +
+        'markings or, pulled the other way, the spine behind the heart.',
+    },
+    CARD_ZOOM,
+    CARD_PAN,
+    {
+      icon: 'wheel',
+      title: 'Scroll wheel',
+      body:
+        'A radiograph study is one or two images, so there is usually nothing to scroll ' +
+        'through here.',
+    },
+  ],
+};
+
+const guideFor = (modalityGroup: string): GuideCard[] => GUIDES[modalityGroup] ?? GUIDES.MR ?? [];
+
+function buildGuide(modalityGroup: string): void {
+  const host = el('dv-guide');
+  if (!host) return;
+  host.replaceChildren();
+
+  for (const card of guideFor(modalityGroup)) {
+    const item = document.createElement('li');
+    item.className = 'dv-card';
+
+    const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    icon.setAttribute('viewBox', '0 0 24 24');
+    icon.setAttribute('aria-hidden', 'true');
+    icon.setAttribute('focusable', 'false');
+    icon.innerHTML = ICONS[card.icon] ?? '';
+
+    const title = document.createElement('h3');
+    title.textContent = card.title;
+
+    const body = document.createElement('p');
+    body.textContent = card.body;
+
+    item.append(icon, title, body);
+    host.append(item);
+  }
+}
+
 /* ---------- view controls ---------- */
 
-function buildPresetButtons(): void {
+/* The dataset under the slice on screen, which 'As acquired' needs to read its window from. */
+function currentDataset(): Dataset | undefined {
+  const { viewport, stack } = state;
+  if (!viewport || !stack) return undefined;
+  return stack.instances[viewport.getCurrentImageIdIndex()];
+}
+
+function buildPresetButtons(modalityGroup: string): void {
   const host = el('dv-presets');
   if (!host) return;
   host.replaceChildren();
 
-  for (const preset of PRESETS) {
+  const hu = usesHounsfield(modalityGroup);
+  const label = el('dv-presets-label');
+  if (label) label.textContent = hu ? 'Window (HU)' : 'Window';
+
+  for (const preset of presetsFor(modalityGroup)) {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'dv-chip';
     button.textContent = preset.label;
     button.dataset.preset = preset.id;
-    button.title = `Centre ${preset.center}, width ${preset.width} HU`;
+    button.title =
+      preset.kind === 'hu'
+        ? `Centre ${preset.center}, width ${preset.width} HU`
+        : (preset.hint ?? preset.label);
     button.addEventListener('click', () => {
       if (!state.viewport) return;
-      applyPreset(state.viewport, preset.id as PresetId);
+      applyPreset(state.viewport, preset as Preset, currentDataset());
       paintOverlay();
     });
     host.append(button);
