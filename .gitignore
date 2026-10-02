@@ -18,7 +18,8 @@ Python/
 
 # Local Node dev deps (used for screenshot scripts, not part of site)
 node_modules/
-package-lock.json
+# package-lock.json is tracked: it pins the versions that produced the committed
+# imaging/viewer/app.js, so the bundle can be rebuilt exactly.
 .tmp_*.mjs
 
 # Vercel CLI link

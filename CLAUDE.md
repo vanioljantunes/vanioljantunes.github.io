@@ -15,7 +15,9 @@ have their own repositories (table below); this repo only links to or proxies th
 
 ## Stack
 
-Static HTML + CSS + small vanilla JS. No build step, no framework, no bundler. `site.css` and
+Static HTML + CSS + small vanilla JS. No framework, and no build step anywhere except
+`imaging/viewer/`, which is bundled from TypeScript by esbuild into committed output
+(`npm run build:viewer`); Vercel still builds nothing. `site.css` and
 `site-bar.css` style the pages; the About page keeps inline styles. Motion 13.4 and anime.js 4.5
 load from jsDelivr. Design system: Warm Editorial (Georgia serif, warm paper, terracotta accent).
 

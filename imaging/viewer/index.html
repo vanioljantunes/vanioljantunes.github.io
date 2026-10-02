@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DICOM viewer | Vanio Antunes</title>
+  <meta name="description" content="A DICOM viewer that runs entirely in the browser: public imaging studies scrolled, windowed and measured with Cornerstone3D, with no server and nothing uploaded.">
+  <link rel="icon" href="/favicon.ico?v=2" sizes="48x48">
+  <link rel="icon" href="/favicon-32.png?v=2" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
+  <link rel="stylesheet" href="/site-bar.css">
+  <link rel="stylesheet" href="/site.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-bar">
+    <div class="site-bar__inner">
+      <div class="site-bar__id">
+        <a class="site-bar__brand" href="/"><img src="/img/vanio-antunes.jpg" width="32" height="32" alt=""><span class="site-bar__name">Vanio Antunes</span></a>
+        <ul class="site-bar__social" aria-label="Profiles">
+          <li>
+          <a href="https://scholar.google.com/citations?user=JOZkTg0AAAAJ&amp;hl=en" target="_blank" rel="noopener noreferrer" aria-label="Google Scholar (opens in a new tab)">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269zM12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></svg>
+          </a>
+          </li>
+          <li>
+          <a href="https://www.linkedin.com/in/vanio-antunes/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn (opens in a new tab)">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.370 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </a>
+          </li>
+          <li>
+          <a href="https://x.com/VanioAntunes" target="_blank" rel="noopener noreferrer" aria-label="X (opens in a new tab)">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          </li>
+        </ul>
+      </div>
+      <nav aria-label="Main">
+        <ul class="site-bar__links">
+          <li><a href="/about/">Who am I</a></li>
+          <li><a href="/tools/">Tools</a></li>
+          <li><a href="/packages/">R packages</a></li>
+          <li><a href="/imaging/" aria-current="page">Imaging<span class="site-bar__long">&nbsp;projects</span></a></li>
+        </ul>
+      </nav>
+    </div>
+    <nav class="site-subnav" aria-label="Imaging projects">
+      <ul class="site-subnav__links">
+          <li><a href="/imaging/">All projects</a></li>
+          <li><a href="/imaging/xvr/">X-ray to volume registration</a></li>
+          <li><a href="/imaging/viewer/" aria-current="page">DICOM viewer</a></li>
+          <li><a href="/imaging/#alearrhythmia">aleArrhythmia</a></li>
+          <li><a href="/imaging/#cinematic">Cinematic rendering</a></li>
+          <li><a href="/imaging/#ct-ml">CT reconstruction with ML</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main" class="page-main wrap">
+    <div class="page-head">
+      <h1>DICOM viewer</h1>
+      <p>Clinical imaging read in the browser. No server, no plugin, nothing uploaded.</p>
+    </div>
+
+    <p class="dv-status" id="dv-status" role="status" aria-live="polite">Starting</p>
+
+    <div class="dv-toolbar" role="toolbar" aria-label="Viewer controls">
+      <div class="dv-group" role="group" aria-label="Window presets">
+        <span class="dv-group__label" id="dv-presets-label">Window</span>
+        <div class="dv-chips" id="dv-presets" aria-labelledby="dv-presets-label"></div>
+      </div>
+      <div class="dv-group" role="group" aria-label="View">
+        <span class="dv-group__label">View</span>
+        <div class="dv-chips">
+          <button type="button" class="dv-chip" id="dv-invert">Invert</button>
+          <button type="button" class="dv-chip" id="dv-reset">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-frame">
+      <!-- Cornerstone renders its canvas into this element. tabindex makes the stack
+           keyboard-scrollable; the overlay sits above it and ignores pointer events. -->
+      <div class="dv-stage" id="dv-stage" tabindex="0" role="img"
+           aria-label="CT series. Use the arrow keys to move through slices."></div>
+
+      <div class="dv-overlay" aria-hidden="true">
+        <div class="dv-overlay__tl">
+          <span id="dv-patient">-</span>
+          <span id="dv-study">-</span>
+          <span id="dv-series">-</span>
+        </div>
+        <div class="dv-overlay__tr">
+          <span id="dv-modality">-</span>
+          <span id="dv-date">-</span>
+        </div>
+        <div class="dv-overlay__bl">
+          <span>Slice <b id="dv-slice">-</b></span>
+          <span>Thickness <b id="dv-thickness">-</b></span>
+        </div>
+        <div class="dv-overlay__br">
+          <span id="dv-window">-</span>
+          <span>Zoom <b id="dv-zoom">-</b></span>
+        </div>
+      </div>
+    </div>
+
+    <p class="dv-hint">
+      Left drag windows the image, right drag zooms, middle drag pans, the wheel moves
+      through the stack. Arrow keys work too: click the image first, then Up and Down for
+      one slice, Page Up and Page Down for ten.
+    </p>
+
+    <p class="dv-credit" id="dv-attribution"></p>
+
+    <h2 class="dv-h2">What this is</h2>
+    <p>
+      The image above is a real chest CT, pulled slice by slice from a public archive over
+      DICOMweb and decoded in a web worker on your own machine. Pixel values are true
+      Hounsfield units, so the window presets mean what they mean on a workstation.
+    </p>
+    <p>
+      It is built on <a href="https://github.com/cornerstonejs/cornerstone3D">Cornerstone3D</a>,
+      the MIT-licensed rendering engine that also sits underneath the
+      <a href="https://github.com/OHIF/Viewers">OHIF Viewer</a>. OHIF itself is AGPL-3.0,
+      so none of its code is used here.
+    </p>
+    <p>
+      Measurements, multiplanar reconstruction, a study browser and local file reading are
+      the next pieces. Segmentation editing, structured reports and hanging protocols are
+      out of scope: this is a demonstration, not a reporting workstation, and nothing here
+      is for diagnostic use.
+    </p>
+  </main>
+
+  <script type="module" src="/imaging/viewer/app.js"></script>
+  <script type="module" src="/js/subnav.js"></script>
+</body>
+</html>
