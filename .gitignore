@@ -29,3 +29,6 @@ node_modules/
 
 # Local planning notes
 .claude/
+
+# local heart-twin compute workspace: datasets, venv, raw outputs. Never committed.
+.tmp_twin/
