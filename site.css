@@ -2511,7 +2511,7 @@ a.tool:focus-visible {
   padding: 0.3rem 0.6rem;
   border: 1px solid var(--rule);
   border-radius: 6px;
-  color: var(--muted);
+  color: var(--accent);
   font-size: 0.8125rem;
   text-decoration: none;
 }
@@ -2521,7 +2521,7 @@ a.tool:focus-visible {
 }
 
 .st-link--quiet {
-  color: var(--muted);
+  color: var(--accent-dark);
 }
 
 /* ----- In-card player ----- */
@@ -3086,7 +3086,6 @@ a.tool:focus-visible {
 
 .ground__line {
   margin: 0 0 0.4rem;
-  max-width: 62ch;
   font-size: 1rem;
   line-height: 1.5;
 }
@@ -3097,13 +3096,12 @@ a.tool:focus-visible {
 
 .ground__topics {
   margin: 0;
-  max-width: 62ch;
   color: var(--muted);
   font-size: 0.875rem;
 }
 
 .ground__topics a {
-  color: var(--muted);
+  color: var(--accent);
   text-decoration-color: var(--border);
 }
 
@@ -3129,29 +3127,32 @@ a.tool:focus-visible {
   gap: 0.3rem;
 }
 
+/* The icon hangs in the margin rather than sitting in the flow, so a title that wraps
+   to two lines does not leave it stranded on a line of its own. */
 .proj__head {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  align-items: baseline;
+  position: relative;
   margin: 0;
+  padding-left: 1.9rem;
   font-size: 1.0625rem;
   line-height: 1.3;
   letter-spacing: -0.01em;
 }
 
 .proj__head a {
-  color: var(--text);
+  color: var(--accent);
   text-decoration: none;
 }
 
 .proj__head a:hover {
+  color: var(--accent-dark);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
 /* Status reads as a word, not a badge: one small capitalised label, no pill, no fill. */
 .proj__status {
+  margin-left: 0.45rem;
+  white-space: nowrap;
   color: var(--faint);
   font-size: 0.6875rem;
   font-weight: 600;
@@ -3190,8 +3191,8 @@ a.tool:focus-visible {
 /* The lecture is the link; the reason sits under it in grey, so neither fights the other. */
 .proj__needs a {
   display: block;
-  color: var(--text);
-  text-decoration-color: var(--border-strong);
+  color: var(--accent);
+  text-decoration-color: var(--border);
   text-underline-offset: 3px;
 }
 
@@ -3224,4 +3225,29 @@ a.tool:focus-visible {
   .ground {
     margin-bottom: 1.75rem;
   }
+}
+
+/* The imaging intro and groundwork run the full column rather than the 60ch
+   measure the other pages use, so the sentence is not broken up early. */
+.imaging-page .page-head p {
+  max-width: none;
+}
+
+/* The project icon, kept from the card layout and set beside the title. */
+.proj__icon {
+  position: absolute;
+  left: 0;
+  top: 0.1em;
+  width: 22px;
+  height: 22px;
+  color: var(--faint);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.proj:hover .proj__icon {
+  color: var(--accent);
 }
