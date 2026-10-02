@@ -2635,28 +2635,21 @@ a.tool:focus-visible {
    makes mid-grey soft tissue look washed out.
    --------------------------------------------------------------------------- */
 
+/* Status is only present while loading or after a failure; a successful load hides it,
+   because the overlay and the provenance line already say what is on screen. */
 .dv-status {
-  margin: 0 0 1rem;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--border-strong);
-  border-radius: var(--radius);
-  background: var(--surface);
-  color: var(--text);
-  font-size: 0.9rem;
+  margin: 0 0 0.9rem;
+  color: var(--muted);
+  font-size: 0.86rem;
 }
 
-.dv-status[data-kind='done'] {
-  border-left-color: var(--accent);
-  background: var(--accent-soft);
+.dv-status[hidden] {
+  display: none;
 }
 
-/* A failed load is the one state the reader must not mistake for a slow one, so it
-   gets its own colour rather than only a different wording. */
 .dv-status[data-kind='error'] {
-  border-left-color: #a3231c;
-  background: #fdf2f1;
-  color: #6b1712;
+  color: #8c1d16;
+  font-weight: 600;
 }
 
 .dv-toolbar {
@@ -3005,18 +2998,6 @@ a.tool:focus-visible {
   cursor: default;
 }
 
-.dv-note {
-  margin: 0 0 1rem;
-  padding: 0.6rem 0.75rem;
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--accent);
-  border-radius: var(--radius);
-  background: var(--accent-soft);
-  color: var(--text);
-  font-size: 0.86rem;
-  line-height: 1.5;
-}
-
 .dv-provenance {
   margin: 0.5rem 0 0;
   color: var(--muted);
@@ -3209,5 +3190,65 @@ a.tool:focus-visible {
   .found {
     grid-template-columns: minmax(0, 1fr);
     padding: 1.25rem;
+  }
+
+  /* The count wraps around the button at this width; give it its own line. */
+  .found__count {
+    display: block;
+    margin-top: 0.6rem;
+  }
+}
+
+/* How-to cards under the viewer. Contents are rebuilt per modality, so the grid has to
+   cope with four to six items without leaving a ragged last row. */
+
+.dv-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.75rem;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.dv-card {
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  grid-template-rows: auto auto;
+  gap: 0.15rem 0.6rem;
+  /* Cards in a row stretch to the tallest, so the rows are pinned to the top; otherwise a
+     short card floats its body down the middle and the grid reads as ragged. */
+  align-content: start;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.dv-card svg {
+  grid-row: 1 / span 2;
+  width: 24px;
+  height: 24px;
+  margin-top: 0.1rem;
+  color: var(--accent);
+}
+
+.dv-card h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.dv-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 640px) {
+  .dv-cards {
+    grid-template-columns: 1fr;
   }
 }

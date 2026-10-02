@@ -50,6 +50,7 @@
           <li><a href="/imaging/">All projects</a></li>
           <li><a href="/imaging/xvr/" aria-current="page">Find the C-arm position</a></li>
           <li><a href="/imaging/study-track/">Study track</a></li>
+          <li><a href="/imaging/viewer/">DICOM viewer</a></li>
           <li><a href="/imaging/#alearrhythmia">aleArrhythmia</a></li>
           <li><a href="/imaging/#cinematic">Cinematic rendering</a></li>
           <li><a href="/imaging/#ct-ml">CT reconstruction with ML</a></li>
@@ -275,6 +276,16 @@
         <li><strong>Runtime.</strong> Set <em>Runtime &rarr; Change runtime type &rarr; T4 GPU</em> before running. It works on CPU, slowly.</li>
         <li><strong>A starting guess.</strong> <code>xvr register</code> is a local optimiser, exactly like the demo above. It needs an initial pose in the right neighbourhood, or a patient-specific network from <code>xvr train</code> to supply one. The notebook covers both.</li>
         <li><strong>Your data leaves your computer.</strong> Colab runs on Google's machines. Do not upload identifiable patient data without the approvals that requires.</li>
+      </ul>
+    </section>
+
+    <section class="calc-panel" aria-labelledby="xvr-needs-title">
+      <h2 id="xvr-needs-title" class="calc-h2">What you need to know</h2>
+      <p>Three lectures from the <a href="/imaging/study-track/">study track</a> cover what this page assumes. Each link opens the course there and starts on that lecture.</p>
+      <ul class="xvr-credits">
+        <li><strong><a href="/imaging/study-track/?list=PLTBdjV_4f-EJn6udZ34tht9EVIW7lbeo4&amp;i=1">Multiple View Geometry, lecture 2</a></strong> (Daniel Cremers, TUM). Rigid-body motion and SE(3): the six numbers the optimiser solves for here are the ones this lecture builds.</li>
+        <li><strong><a href="/imaging/study-track/?list=PLTBdjV_4f-EJn6udZ34tht9EVIW7lbeo4&amp;i=2">Multiple View Geometry, lecture 3</a></strong> (Daniel Cremers, TUM). Perspective projection. A DRR is this projection with attenuation integrated along each ray, instead of a surface being sampled.</li>
+        <li><strong><a href="/imaging/study-track/?list=PLTRCr47yTx5iXIYSneX3LKf16upaw59wa&amp;i=11">Uncertainty in registration with MCMC</a></strong> (William M. Wells III, MISS 2016). Registration posed as an optimisation over a similarity measure, which is what Register does on this page with normalised cross-correlation.</li>
       </ul>
     </section>
 
