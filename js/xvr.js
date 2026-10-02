@@ -9,8 +9,8 @@
    The trained pose regressor of XVR is a PyTorch model and does not run here;
    this page is the differentiable-rendering half of the method. */
 
-const VOL_URL = '/3d/xvr/ct-volume.bin';
-const META_URL = '/3d/xvr/ct-volume.json';
+const VOL_URL = '/imaging/xvr/ct-volume.bin';
+const META_URL = '/imaging/xvr/ct-volume.json';
 
 /* C-arm geometry, in millimetres. */
 const SID = 700;          // source to isocentre

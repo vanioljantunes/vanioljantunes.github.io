@@ -41,17 +41,18 @@
           <li><a href="/about/">Who am I</a></li>
           <li><a href="/tools/">Tools</a></li>
           <li><a href="/packages/">R packages</a></li>
-          <li><a href="/3d/" aria-current="page">Imaging<span class="site-bar__long">&nbsp;projects</span></a></li>
+          <li><a href="/imaging/" aria-current="page">Imaging<span class="site-bar__long">&nbsp;projects</span></a></li>
+          <li><a href="/study-track/">Study<span class="site-bar__long">&nbsp;track</span></a></li>
         </ul>
       </nav>
     </div>
     <nav class="site-subnav" aria-label="Imaging projects">
       <ul class="site-subnav__links">
-          <li><a href="/3d/">All projects</a></li>
-          <li><a href="/3d/xvr/" aria-current="page">X-ray to volume registration</a></li>
-          <li><a href="/3d/#alearrhythmia">aleArrhythmia</a></li>
-          <li><a href="/3d/#cinematic">Cinematic rendering</a></li>
-          <li><a href="/3d/#ct-ml">CT reconstruction with ML</a></li>
+          <li><a href="/imaging/">All projects</a></li>
+          <li><a href="/imaging/xvr/" aria-current="page">X-ray to volume registration</a></li>
+          <li><a href="/imaging/#alearrhythmia">aleArrhythmia</a></li>
+          <li><a href="/imaging/#cinematic">Cinematic rendering</a></li>
+          <li><a href="/imaging/#ct-ml">CT reconstruction with ML</a></li>
       </ul>
     </nav>
   </header>
@@ -266,8 +267,8 @@
       <h2 id="xvr-colab-title" class="calc-h2">Run it on your own scans</h2>
       <p>The demo above is fixed to one CT. To register your own data you need the real thing, on a GPU. This notebook installs <code>xvr</code> on a free Colab runtime, takes a CT volume and a radiograph you upload, and runs <code>xvr register</code> on them.</p>
       <p class="xvr-colab-cta">
-        <a class="calc-button calc-button--primary" href="https://colab.research.google.com/github/vanioljantunes/vanioljantunes.github.io/blob/main/3d/xvr/xvr-colab.ipynb" target="_blank" rel="noopener noreferrer">Open the notebook in Colab<span class="visually-hidden"> (opens in a new tab)</span></a>
-        <a class="calc-button" href="/3d/xvr/xvr-colab.ipynb" download>Download the notebook</a>
+        <a class="calc-button calc-button--primary" href="https://colab.research.google.com/github/vanioljantunes/vanioljantunes.github.io/blob/main/imaging/xvr/xvr-colab.ipynb" target="_blank" rel="noopener noreferrer">Open the notebook in Colab<span class="visually-hidden"> (opens in a new tab)</span></a>
+        <a class="calc-button" href="/imaging/xvr/xvr-colab.ipynb" download>Download the notebook</a>
       </p>
       <ul class="xvr-colab-list">
         <li><strong>What you need.</strong> A CT or MR volume as NIfTI (<code>.nii</code> or <code>.nii.gz</code>), one radiograph, and the geometry of the machine that took it: source-to-detector distance, detector pixel spacing and image size. Those are in the DICOM header of most fluoroscopy images.</li>

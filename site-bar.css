@@ -154,7 +154,7 @@
     font-size: 0.75rem;
   }
 
-  /* "3D projects" becomes "3D" so four links fit on one row. */
+  /* "Imaging projects" becomes "Imaging" so the links fit on one row. */
   .site-bar__long {
     display: none;
   }
@@ -164,7 +164,7 @@
     gap: 0.25rem;
   }
 
-  /* Never a second row: with four links they scroll sideways inside the bar. */
+  /* Never a second row: the links scroll sideways inside the bar. */
   .site-bar__inner > nav {
     min-width: 0;
   }
