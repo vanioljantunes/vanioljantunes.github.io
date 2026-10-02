@@ -1,19 +1,33 @@
 /* Page entry point for the DICOM viewer.
  *
- * Phase one: open one public series, scroll it, window it. The study list, the series
- * rail, measurements and MPR come next, and the modules it imports are shaped to take them.
+ * Four cascading pickers choose the study - imaging type, region, finding, sequence - and
+ * the chosen series is streamed from the archive into a stack viewport.
  */
 
 import { Enums, type Types } from '@cornerstonejs/core';
 
-import { DEMO, sourceById, type Source } from './sources';
+import { sourceById, type Source } from './sources';
 import { TAG, isoDate, num, personName, str, type Dataset } from './dicomweb';
+import {
+  loadCatalog,
+  lesionChoices,
+  modalityChoices,
+  reconcile,
+  regionChoices,
+  resolve,
+  sequenceChoices,
+  type Catalog,
+  type CatalogEntry,
+  type Choice,
+  type Selection,
+} from './catalog';
 import {
   PRESETS,
   applyPreset,
   initCornerstone,
   loadSeries,
   mountStackViewport,
+  purgeCache,
   readWindow,
   resetViewport,
   showSeries,
@@ -28,10 +42,17 @@ const el = <T extends HTMLElement>(id: string): T | null =>
 
 const state: {
   source: Source;
+  catalog?: Catalog;
+  selection: Selection;
+  entry?: CatalogEntry;
   stack?: LoadedSeries;
   viewport?: Types.IStackViewport;
+  /* Incremented on every load so a slow fetch cannot overwrite a newer one. */
+  loadToken: number;
 } = {
-  source: sourceById(DEMO.sourceId),
+  source: sourceById('idc'),
+  selection: {},
+  loadToken: 0,
 };
 
 /* ---------- status ---------- */
@@ -41,13 +62,11 @@ function setStatus(message: string, kind: 'info' | 'error' | 'done' = 'info'): v
   if (!node) return;
   node.textContent = message;
   node.dataset.kind = kind;
-  /* An error is the one case a user may miss, having looked away while a series loaded. */
   node.setAttribute('aria-live', kind === 'error' ? 'assertive' : 'polite');
 }
 
-function describe(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
-}
+const describe = (error: unknown): string =>
+  error instanceof Error ? error.message : String(error);
 
 /* ---------- overlay ---------- */
 
@@ -56,9 +75,8 @@ function text(id: string, value: string): void {
   if (node) node.textContent = value;
 }
 
-/* The corner readout a workstation shows. Patient and study on the left, geometry and
-   display settings on the right. An absent tag renders as a dash rather than an empty
-   gap, so it stays clear that the field exists and the server simply did not fill it. */
+/* The corner readout a workstation shows. An absent tag renders as a dash rather than an
+   empty gap, so it stays clear the field exists and the server simply did not fill it. */
 function paintOverlay(): void {
   const { viewport, stack } = state;
   if (!viewport || !stack) return;
@@ -72,7 +90,6 @@ function paintOverlay(): void {
   text('dv-series', dash(str(ds, TAG.SeriesDescription)));
   text('dv-date', dash(isoDate(ds, TAG.StudyDate)));
   text('dv-modality', dash(str(ds, TAG.Modality)));
-
   text('dv-slice', `${index + 1} / ${stack.imageIds.length}`);
 
   const thickness = num(ds, TAG.SliceThickness);
@@ -88,7 +105,112 @@ function paintOverlay(): void {
   text('dv-zoom', Number.isFinite(zoom) ? `${(zoom * 100).toFixed(0)}%` : '-');
 }
 
-/* ---------- controls ---------- */
+/* ---------- the four pickers ---------- */
+
+const PICKERS = [
+  { id: 'dv-pick-modality', key: 'modality' as const },
+  { id: 'dv-pick-region', key: 'region' as const },
+  { id: 'dv-pick-lesion', key: 'lesion' as const },
+  { id: 'dv-pick-sequence', key: 'sequence' as const },
+];
+
+function fillSelect(select: HTMLSelectElement, choices: Choice[], selected?: string): void {
+  select.replaceChildren();
+  for (const c of choices) {
+    const option = document.createElement('option');
+    option.value = c.value;
+    /* The count tells the reader how much there is behind a choice before they commit. */
+    option.textContent = c.count > 1 ? `${c.label} (${c.count})` : c.label;
+    if (c.value === selected) option.selected = true;
+    select.append(option);
+  }
+  select.disabled = choices.length <= 1;
+}
+
+function paintPickers(): void {
+  const catalog = state.catalog;
+  if (!catalog) return;
+  const sel = state.selection;
+  const entries = catalog.entries;
+
+  const choices: Record<string, Choice[]> = {
+    modality: modalityChoices(entries),
+    region: regionChoices(entries, sel),
+    lesion: lesionChoices(entries, sel),
+    sequence: sequenceChoices(entries, sel),
+  };
+
+  for (const p of PICKERS) {
+    const select = el<HTMLSelectElement>(p.id);
+    if (select) fillSelect(select, choices[p.key] ?? [], sel[p.key]);
+  }
+}
+
+function describeEntry(entry: CatalogEntry): string {
+  const count = entry.instancesCapped
+    ? `${entry.instances}+ images`
+    : `${entry.instances} images`;
+  return `${entry.patientId}, ${count}`;
+}
+
+async function openSelected(): Promise<void> {
+  const { catalog, viewport } = state;
+  if (!catalog || !viewport) return;
+
+  const entry = resolve(catalog.entries, state.selection);
+  if (!entry) {
+    setStatus('No series matches that combination', 'error');
+    return;
+  }
+  state.entry = entry;
+
+  const token = state.loadToken + 1;
+  state.loadToken = token;
+
+  setStatus(`Loading ${entry.sequence} - ${describeEntry(entry)}`);
+  text('dv-provenance', `${entry.collection} - ${entry.patientId}`);
+
+  try {
+    /* A previous series can be hundreds of megabytes of decoded pixels. */
+    purgeCache();
+    const stack = await loadSeries(state.source, entry.studyUID, entry.seriesUID);
+    if (token !== state.loadToken) return; // a newer selection won
+
+    state.stack = stack;
+    await showSeries(viewport, stack);
+    if (token !== state.loadToken) return;
+
+    paintOverlay();
+    setStatus(
+      `${entry.lesion}, ${entry.sequence} - ${stack.imageIds.length} images` +
+        (stack.uniformGeometry ? ', evenly spaced' : ', spacing uneven'),
+      'done'
+    );
+  } catch (error) {
+    if (token !== state.loadToken) return;
+    setStatus(`Could not load that series: ${describe(error)}`, 'error');
+  }
+}
+
+function wirePickers(): void {
+  for (const p of PICKERS) {
+    const select = el<HTMLSelectElement>(p.id);
+    if (!select) continue;
+    select.addEventListener('change', () => {
+      const catalog = state.catalog;
+      if (!catalog) return;
+      /* Reconcile before repainting: changing the region can strand the finding below it. */
+      state.selection = reconcile(catalog.entries, {
+        ...state.selection,
+        [p.key]: select.value,
+      });
+      paintPickers();
+      void openSelected();
+    });
+  }
+}
+
+/* ---------- view controls ---------- */
 
 function buildPresetButtons(): void {
   const host = el('dv-presets');
@@ -126,8 +248,7 @@ function wireControls(stage: HTMLDivElement): void {
     viewport.render();
   });
 
-  /* Arrow keys page through slices. The stage is focusable so this works without a mouse,
-     which is the difference between a demo and something a reader can actually drive. */
+  /* Arrow keys page through slices, so the stack is usable without a mouse. */
   stage.addEventListener('keydown', (event) => {
     const { viewport, stack } = state;
     if (!viewport || !stack) return;
@@ -152,11 +273,12 @@ async function start(): Promise<void> {
   const stage = el<HTMLDivElement>('dv-stage');
   if (!stage) return;
 
-  const node = el('dv-attribution');
-  if (node) node.textContent = state.source.attribution ?? '';
+  const credit = el('dv-attribution');
+  if (credit) credit.textContent = state.source.attribution ?? '';
 
   buildPresetButtons();
   wireControls(stage);
+  wirePickers();
 
   setStatus('Starting the renderer');
   try {
@@ -169,33 +291,29 @@ async function start(): Promise<void> {
   const viewport = mountStackViewport(stage, VIEWPORT_ID);
   state.viewport = viewport;
 
-  /* Repaint the readout when the slice, the window or the camera changes, rather than
-     polling. VOI_MODIFIED covers the window/level drag, CAMERA_MODIFIED zoom and pan. */
   stage.addEventListener(Enums.Events.STACK_NEW_IMAGE, paintOverlay);
   stage.addEventListener(Enums.Events.VOI_MODIFIED, paintOverlay);
   stage.addEventListener(Enums.Events.CAMERA_MODIFIED, paintOverlay);
 
-  setStatus(`Loading ${DEMO.label}`);
+  setStatus('Loading the case index');
   try {
-    const stack = await loadSeries(
-      state.source,
-      DEMO.studyInstanceUID,
-      DEMO.seriesInstanceUID
-    );
-    state.stack = stack;
+    const catalog = await loadCatalog();
+    state.catalog = catalog;
+    state.selection = reconcile(catalog.entries, {});
+    paintPickers();
 
-    await showSeries(viewport, stack);
-    paintOverlay();
-
-    setStatus(
-      stack.uniformGeometry
-        ? `${stack.imageIds.length} slices, evenly spaced`
-        : `${stack.imageIds.length} slices, spacing uneven so volume views stay off`,
-      'done'
-    );
+    const summary = el('dv-catalog-summary');
+    if (summary) {
+      summary.textContent =
+        `${catalog.counts.series} series from ${catalog.counts.collections} ` +
+        `collections, indexed ${catalog.generated}.`;
+    }
   } catch (error) {
-    setStatus(`Could not load that series: ${describe(error)}`, 'error');
+    setStatus(`Could not load the case index: ${describe(error)}`, 'error');
+    return;
   }
+
+  await openSelected();
 }
 
 void start();

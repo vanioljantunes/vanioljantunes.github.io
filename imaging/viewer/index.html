@@ -63,6 +63,34 @@
       <p>Clinical imaging read in the browser. No server, no plugin, nothing uploaded.</p>
     </div>
 
+
+    <div class="dv-pickers">
+      <div class="dv-pick">
+        <label for="dv-pick-modality">Imaging</label>
+        <select id="dv-pick-modality"></select>
+      </div>
+      <div class="dv-pick">
+        <label for="dv-pick-region">Region</label>
+        <select id="dv-pick-region"></select>
+      </div>
+      <div class="dv-pick">
+        <label for="dv-pick-lesion">Finding</label>
+        <select id="dv-pick-lesion"></select>
+      </div>
+      <div class="dv-pick">
+        <label for="dv-pick-sequence">Sequence</label>
+        <select id="dv-pick-sequence"></select>
+      </div>
+    </div>
+
+    <p class="dv-note">
+      <b>Findings describe the cohort, not the image.</b> Each case comes from a research
+      collection whose entry criterion is the finding named above - every patient in a
+      glioblastoma collection has glioblastoma - so the label is true of the case, but it is
+      not a report written from these pixels. Nothing here is for diagnostic use.
+      <span id="dv-catalog-summary"></span>
+    </p>
+
     <p class="dv-status" id="dv-status" role="status" aria-live="polite">Starting</p>
 
     <div class="dv-toolbar" role="toolbar" aria-label="Viewer controls">
@@ -106,6 +134,8 @@
       </div>
     </div>
 
+    <p class="dv-provenance" id="dv-provenance"></p>
+
     <p class="dv-hint">
       Left drag windows the image, right drag zooms, middle drag pans, the wheel moves
       through the stack. Arrow keys work too: click the image first, then Up and Down for
@@ -116,9 +146,10 @@
 
     <h2 class="dv-h2">What this is</h2>
     <p>
-      The image above is a real chest CT, pulled slice by slice from a public archive over
-      DICOMweb and decoded in a web worker on your own machine. Pixel values are true
-      Hounsfield units, so the window presets mean what they mean on a workstation.
+      Every image above is real patient data, pulled slice by slice from a public research
+      archive over DICOMweb and decoded in a web worker on your own machine. On CT the pixel
+      values are true Hounsfield units, so the window presets mean what they mean on a
+      workstation.
     </p>
     <p>
       It is built on <a href="https://github.com/cornerstonejs/cornerstone3D">Cornerstone3D</a>,
