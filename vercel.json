@@ -12,8 +12,18 @@
       "permanent": true
     },
     {
+      "source": "/3d/",
+      "destination": "/imaging/",
+      "permanent": true
+    },
+    {
       "source": "/3d/:path*",
       "destination": "/imaging/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/3d/:path+/",
+      "destination": "/imaging/:path+/",
       "permanent": true
     },
     {
