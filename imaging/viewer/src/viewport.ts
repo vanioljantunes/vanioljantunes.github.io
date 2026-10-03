@@ -10,6 +10,7 @@ import {
   RenderingEngine,
   Enums,
   cache,
+  imageLoadPoolManager,
   type Types,
 } from '@cornerstonejs/core';
 import { init as loaderInit, wadors } from '@cornerstonejs/dicom-image-loader';
@@ -132,6 +133,9 @@ export async function initCornerstone(): Promise<RenderingEngine> {
   group.setToolActive(StackScrollTool.toolName, {
     bindings: [{ mouseButton: MouseBindings.Wheel }],
   });
+
+  configureCache();
+  configureRequestPool();
 
   engine = new RenderingEngine(ENGINE_ID);
   started = true;
@@ -304,8 +308,29 @@ export function resetViewport(viewport: Types.IStackViewport, ds?: Dataset): voi
   viewport.render();
 }
 
-/* Switching series leaves the previous one in the image cache, which for a 277-slice CT
-   is a few hundred megabytes. Callers drop it when they move on. */
+/* Decoded slices are kept rather than thrown away when the reader switches series: going
+   back to a study already looked at is then instant, which is most of what caching can do
+   here given the archive sends no cache headers of its own. The ceiling keeps a few large
+   series in memory and lets Cornerstone evict the oldest beyond that; purging everything on
+   every switch, which is what this used to do, made every revisit pay full price again. */
+const CACHE_CEILING_BYTES = 900 * 1024 * 1024;
+
+export function configureCache(): void {
+  cache.setMaxCacheSize(CACHE_CEILING_BYTES);
+}
+
+/* Cornerstone ships conservative request limits: six concurrent for interaction and five
+   for prefetch, numbers that suit the old six-connections-per-host rule of HTTP/1.1. The
+   archive is HTTP/2, where one connection carries many streams, and the cost per slice here
+   is latency rather than bandwidth, so a low ceiling leaves the link idle. Measured at the
+   default of five, filling the slices around the reader took about ten seconds; these
+   numbers are what bring that inside a few. */
+export function configureRequestPool(): void {
+  imageLoadPoolManager.setMaxSimultaneousRequests(Enums.RequestType.Interaction, 10);
+  imageLoadPoolManager.setMaxSimultaneousRequests(Enums.RequestType.Prefetch, 16);
+  imageLoadPoolManager.setMaxSimultaneousRequests(Enums.RequestType.Thumbnail, 8);
+}
+
 export function purgeCache(): void {
   cache.purgeCache();
 }

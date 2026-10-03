@@ -3364,3 +3364,54 @@ a.tool:focus-visible {
 .proj:hover .proj__icon {
   color: var(--accent);
 }
+
+/* Loading bar for the slice prefetch. It sits above the image rather than over it: the
+   corner readouts and the control bar already occupy the edges inside the frame. */
+
+.dv-progress {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  margin: 0 0 0.6rem;
+}
+
+.dv-progress[hidden] {
+  display: none;
+}
+
+.dv-progress__track {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--border);
+}
+
+.dv-progress__fill {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+  transition: width 180ms var(--ease-out);
+}
+
+.dv-progress[data-state='complete'] .dv-progress__fill {
+  background: #2f7d4f;
+}
+
+.dv-progress__text {
+  min-width: 15ch;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dv-progress__fill {
+    transition: none;
+  }
+}

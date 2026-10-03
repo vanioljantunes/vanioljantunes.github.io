@@ -23,12 +23,12 @@ import {
   type Choice,
   type Selection,
 } from './catalog';
+import { prefetchStack, type PrefetchHandle } from './prefetch';
 import {
   applyPreset,
   initCornerstone,
   loadSeries,
   mountStackViewport,
-  purgeCache,
   readWindow,
   resetViewport,
   presetsFor,
@@ -54,6 +54,7 @@ const state: {
   entry?: CatalogEntry;
   stack?: LoadedSeries;
   viewport?: Types.IStackViewport;
+  prefetch?: PrefetchHandle;
   /* Incremented on every load so a slow fetch cannot overwrite a newer one. */
   loadToken: number;
 } = {
@@ -78,6 +79,45 @@ function setStatus(message: string, kind: 'info' | 'error' | 'done' = 'info'): v
 
 const describe = (error: unknown): string =>
   error instanceof Error ? error.message : String(error);
+
+/* ---------- loading bar ---------- */
+
+/* The bar reports the whole series, but says separately when the slices around the reader
+   are in hand, because that is when scrolling actually becomes smooth. Waiting for 100%
+   on a 277-slice study would mean waiting tens of seconds for something already usable. */
+function setProgress(loaded: number, total: number, readyNearby: boolean): void {
+  const wrap = el('dv-progress');
+  const fill = el('dv-progress-fill');
+  const label = el('dv-progress-text');
+  if (!wrap || !fill || !label) return;
+
+  const pct = total > 0 ? Math.round((loaded / total) * 100) : 0;
+  wrap.hidden = false;
+  wrap.setAttribute('aria-valuenow', String(pct));
+  fill.style.width = `${pct}%`;
+  label.textContent = readyNearby
+    ? `Ready to scroll - caching the rest, ${pct}%`
+    : `Loading slices, ${pct}%`;
+
+  if (loaded >= total && total > 0) {
+    wrap.dataset.state = 'complete';
+    label.textContent = `All ${total} images cached`;
+    /* Leave the finished bar up briefly, then let the image have the space back. */
+    window.setTimeout(() => {
+      if (wrap.dataset.state === 'complete') wrap.hidden = true;
+    }, 1600);
+  } else {
+    wrap.dataset.state = 'loading';
+  }
+}
+
+function hideProgress(): void {
+  const wrap = el('dv-progress');
+  if (wrap) {
+    wrap.hidden = true;
+    wrap.dataset.state = 'idle';
+  }
+}
 
 /* ---------- overlay ---------- */
 
@@ -221,9 +261,12 @@ async function openSelected(): Promise<void> {
   setStatus(`Loading ${entry.sequence} - ${describeEntry(entry)}`);
   text('dv-provenance', `${entry.collection} - ${entry.patientId}`);
 
+  /* Stop the previous series pulling bandwidth away from the one now being asked for. */
+  state.prefetch?.cancel();
+  state.prefetch = undefined;
+  hideProgress();
+
   try {
-    /* A previous series can be hundreds of megabytes of decoded pixels. */
-    purgeCache();
     const stack = await loadSeries(state.source, entry.studyUID, entry.seriesUID);
     if (token !== state.loadToken) return; // a newer selection won
 
@@ -232,6 +275,14 @@ async function openSelected(): Promise<void> {
     if (token !== state.loadToken) return;
 
     paintOverlay();
+
+    /* The first slice is on screen; pull the rest in behind it, nearest first, so that
+       scrolling stops costing a round trip per slice. */
+    const startIndex = viewport.getCurrentImageIdIndex();
+    state.prefetch = prefetchStack(stack.imageIds, startIndex, (p) => {
+      if (token !== state.loadToken) return;
+      setProgress(p.loaded, p.total, p.readyNearby);
+    });
     setStatus(
       `${entry.lesion}, ${entry.sequence} - ${stack.imageIds.length} images` +
         (stack.uniformGeometry ? ', evenly spaced' : ', spacing uneven'),
