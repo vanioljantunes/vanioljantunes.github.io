@@ -2725,12 +2725,16 @@ a.tool:focus-visible {
   outline-offset: 2px;
 }
 
-/* Below this width the bar would cover most of the image, so it returns to the page. */
+/* Below this width the bar would cover most of the image, so it returns to the page.
+   It also stops being a bar: a label beside a group of chips that wraps onto three rows
+   reads as debris. Each group becomes its own block with the label above its buttons. */
 @media (max-width: 860px) {
   .dv-controls {
     position: static;
     transform: none;
-    gap: 0.5rem 1.2rem;
+    flex-direction: column;
+    gap: 0.7rem;
+    align-items: stretch;
     justify-content: flex-start;
     max-width: none;
     margin-top: 0.6rem;
@@ -2738,6 +2742,22 @@ a.tool:focus-visible {
     border: 0;
     background: none;
     backdrop-filter: none;
+  }
+
+  .dv-group {
+    flex-direction: column;
+    gap: 0.3rem;
+    align-items: stretch;
+  }
+
+  .dv-controls .dv-chips {
+    gap: 0.35rem;
+  }
+
+  /* Full-height targets, since a thumb is not a mouse pointer. */
+  .dv-controls .dv-chip {
+    min-height: 34px;
+    padding: 0.35rem 0.75rem;
   }
 
   .dv-group__label {

@@ -37,6 +37,26 @@ const NEARBY_RADIUS = 12;
    than by the browser. */
 const CONCURRENCY = 16;
 
+/* Phones are a different proposition from a desktop. A mobile browser will discard a tab
+   that grows too large, and a discarded tab looks exactly like an image that never loaded,
+   so on a small device the viewer deliberately fetches less: fewer requests at once, and a
+   bounded number of slices around the reader rather than the whole series. Scrolling to the
+   end of a long study then costs a round trip per slice again, which is slower but survives.
+   deviceMemory is Chromium-only, so a coarse pointer with a narrow screen is the fallback
+   signal; neither is exact, and both err towards treating an unknown device as small. */
+export function isSmallDevice(): boolean {
+  const mem = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
+  if (typeof mem === 'number' && mem > 0 && mem <= 4) return true;
+  if (typeof window.matchMedia !== 'function') return false;
+  return window.matchMedia('(pointer: coarse)').matches && window.innerWidth <= 900;
+}
+
+const SMALL_CONCURRENCY = 6;
+
+/* How many slices a small device will hold for one series. 120 at 512 by 512 and two bytes
+   a pixel is about 60 MB decoded, which leaves room for the page around it. */
+const SMALL_MAX_SLICES = 120;
+
 /** Indices ordered outward from `start`, so the reader's neighbourhood loads first. */
 export function outwardOrder(total: number, start: number): number[] {
   if (total <= 0) return [];
@@ -63,8 +83,15 @@ export function prefetchStack(
   startIndex: number,
   onProgress: (p: PrefetchProgress) => void
 ): PrefetchHandle {
-  const total = imageIds.length;
-  const order = outwardOrder(total, startIndex);
+  const small = isSmallDevice();
+  const concurrency = small ? SMALL_CONCURRENCY : CONCURRENCY;
+
+  /* On a small device only the slices around the reader are fetched, so the bar counts
+     those rather than the whole series: a bar that stops at forty percent and never moves
+     would read as a failure when it is a deliberate limit. */
+  const full = outwardOrder(imageIds.length, startIndex);
+  const order = small ? full.slice(0, SMALL_MAX_SLICES) : full;
+  const total = order.length;
 
   let cancelled = false;
   let loaded = 0;
@@ -103,7 +130,7 @@ export function prefetchStack(
   }
 
   const workers: Promise<void>[] = [];
-  for (let i = 0; i < Math.min(CONCURRENCY, Math.max(total, 1)); i += 1) {
+  for (let i = 0; i < Math.min(concurrency, Math.max(total, 1)); i += 1) {
     workers.push(worker());
   }
 

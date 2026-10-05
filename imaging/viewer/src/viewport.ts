@@ -26,6 +26,7 @@ import {
 } from '@cornerstonejs/tools';
 
 import { TAG, buildStack, num, seriesMetadata, type Dataset } from './dicomweb';
+import { isSmallDevice } from './prefetch';
 import type { Source } from './sources';
 
 export const ENGINE_ID = 'dv-engine';
@@ -315,8 +316,14 @@ export function resetViewport(viewport: Types.IStackViewport, ds?: Dataset): voi
    every switch, which is what this used to do, made every revisit pay full price again. */
 const CACHE_CEILING_BYTES = 900 * 1024 * 1024;
 
+/* A phone will not tolerate anything like the desktop ceiling. Mobile browsers discard a
+   tab whose memory grows too far, and a discarded tab presents as a viewer that simply
+   never shows an image, so the limit here is deliberately well under what the device would
+   allow before intervening. */
+const SMALL_CACHE_CEILING_BYTES = 180 * 1024 * 1024;
+
 export function configureCache(): void {
-  cache.setMaxCacheSize(CACHE_CEILING_BYTES);
+  cache.setMaxCacheSize(isSmallDevice() ? SMALL_CACHE_CEILING_BYTES : CACHE_CEILING_BYTES);
 }
 
 /* Cornerstone ships conservative request limits: six concurrent for interaction and five
@@ -326,9 +333,10 @@ export function configureCache(): void {
    default of five, filling the slices around the reader took about ten seconds; these
    numbers are what bring that inside a few. */
 export function configureRequestPool(): void {
-  imageLoadPoolManager.setMaxSimultaneousRequests(Enums.RequestType.Interaction, 10);
-  imageLoadPoolManager.setMaxSimultaneousRequests(Enums.RequestType.Prefetch, 16);
-  imageLoadPoolManager.setMaxSimultaneousRequests(Enums.RequestType.Thumbnail, 8);
+  const small = isSmallDevice();
+  imageLoadPoolManager.setMaxSimultaneousRequests(Enums.RequestType.Interaction, small ? 4 : 10);
+  imageLoadPoolManager.setMaxSimultaneousRequests(Enums.RequestType.Prefetch, small ? 6 : 16);
+  imageLoadPoolManager.setMaxSimultaneousRequests(Enums.RequestType.Thumbnail, small ? 4 : 8);
 }
 
 export function purgeCache(): void {
