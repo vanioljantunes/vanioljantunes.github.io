@@ -148,6 +148,68 @@ function requireEngine(): RenderingEngine {
   return engine;
 }
 
+/* Cornerstone measures the element when the viewport is enabled, and if it reads a height of
+ * zero it warns "Viewport is too small" and skips rendering from then on. It does not try
+ * again, so the image area stays black for good even though the series loads perfectly.
+ *
+ * On WebKit that is a live race rather than a theoretical one: the module script can run
+ * before the frame has been laid out, and the same page measured 1122 by 0 on one load and
+ * 356 by 383 on the next. Chromium happens to settle sooner, which is why it never showed
+ * there. So the element is measured until it has a real size before anything is mounted on
+ * it.
+ */
+export function waitForElementSize(
+  element: HTMLElement,
+  timeoutMs = 4000
+): Promise<boolean> {
+  const hasSize = (): boolean => {
+    const r = element.getBoundingClientRect();
+    return r.width > 1 && r.height > 1;
+  };
+  if (hasSize()) return Promise.resolve(true);
+
+  return new Promise((resolve) => {
+    const started = performance.now();
+    const poll = (): void => {
+      if (hasSize()) {
+        resolve(true);
+        return;
+      }
+      if (performance.now() - started > timeoutMs) {
+        /* Give up waiting and mount anyway: a viewer that renders badly is still better
+           than one that never mounts, and the resize observer below can recover it. */
+        resolve(false);
+        return;
+      }
+      requestAnimationFrame(poll);
+    };
+    requestAnimationFrame(poll);
+  });
+}
+
+/* Keep the renderer in step with the element afterwards. A phone changes this surface more
+   than a desktop does: rotating the device, and the browser's own toolbar sliding away as
+   the page scrolls, both resize the frame after the viewer has started. */
+export function observeElementSize(element: HTMLElement): () => void {
+  const onResize = (): void => {
+    const r = element.getBoundingClientRect();
+    if (r.width > 1 && r.height > 1) engine?.resize(true, true);
+  };
+
+  if (typeof ResizeObserver === 'function') {
+    const ro = new ResizeObserver(onResize);
+    ro.observe(element);
+    return () => ro.disconnect();
+  }
+
+  window.addEventListener('resize', onResize);
+  window.addEventListener('orientationchange', onResize);
+  return () => {
+    window.removeEventListener('resize', onResize);
+    window.removeEventListener('orientationchange', onResize);
+  };
+}
+
 /** Turn a div into a stack viewport and attach it to the shared tool group. */
 export function mountStackViewport(
   element: HTMLDivElement,

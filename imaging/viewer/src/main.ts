@@ -29,11 +29,13 @@ import {
   initCornerstone,
   loadSeries,
   mountStackViewport,
+  observeElementSize,
   readWindow,
   resetViewport,
   presetsFor,
   showSeries,
   usesHounsfield,
+  waitForElementSize,
   type LoadedSeries,
   type Preset,
 } from './viewport';
@@ -583,8 +585,16 @@ async function start(): Promise<void> {
     return;
   }
 
+  /* Mount only once the frame has a real size. Enabling a viewport on a zero-height element
+     makes Cornerstone give up on rendering it permanently. */
+  const sized = await waitForElementSize(stage);
+  if (!sized) {
+    setStatus('The viewer could not measure its own frame; the image may not appear', 'error');
+  }
+
   const viewport = mountStackViewport(stage, VIEWPORT_ID);
   state.viewport = viewport;
+  observeElementSize(stage);
 
   stage.addEventListener(Enums.Events.STACK_NEW_IMAGE, paintOverlay);
   stage.addEventListener(Enums.Events.VOI_MODIFIED, paintOverlay);
