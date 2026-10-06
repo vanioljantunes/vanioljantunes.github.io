@@ -133,6 +133,75 @@ def source_sop(frame_groups, index: int) -> str | None:
         return None
 
 
+def source_grids(study: str, series: str) -> dict[str, dict]:
+    """Each source slice's own grid: where its first pixel sits and which way its axes run."""
+    url = f"{ROOT}/studies/{study}/series/{series}/metadata"
+    request = urllib.request.Request(url, headers={"Accept": "application/dicom+json"})
+    with urllib.request.urlopen(request, timeout=300) as response:
+        meta = json.loads(response.read())
+    grids = {}
+    for item in meta:
+        try:
+            grids[item["00080018"]["Value"][0]] = {
+                "origin": np.array([float(x) for x in item["00200032"]["Value"]]),
+                "iop": np.array([float(x) for x in item["00200037"]["Value"]]),
+                "spacing": [float(x) for x in item["00280030"]["Value"]],
+                "rows": int(item["00280010"]["Value"][0]),
+                "cols": int(item["00280011"]["Value"][0]),
+            }
+        except KeyError:
+            continue
+    return grids
+
+
+def place_on_source(mask: np.ndarray, seg_grid: dict, src: dict) -> np.ndarray | None:
+    """Put a mask drawn on the SEG's own grid onto the source slice's grid.
+
+    The two grids are not the same thing, and assuming they were is what put the kidneys in
+    the bowel. This segmentation declares an orientation of (1,0,0,0,-1,0) against the
+    source's (1,0,0,0,1,0): its rows run the other way, so its row 0 is the source's last
+    row. Rather than special-case that, work out where each mask row and column actually
+    lands by projecting the mask's own axes onto the source's, and give up loudly if the
+    result is not a whole number of source pixels.
+    """
+    x_src, y_src = src["iop"][:3], src["iop"][3:]
+    row_mm, col_mm = src["spacing"]
+    x_seg, y_seg = seg_grid["iop"][:3], seg_grid["iop"][3:]
+    seg_row_mm, seg_col_mm = seg_grid["spacing"]
+
+    def source_index(a: int, b: int) -> tuple[float, float]:
+        offset = (
+            seg_grid["origin"] - src["origin"] + b * seg_col_mm * x_seg + a * seg_row_mm * y_seg
+        )
+        return float(offset @ y_src) / row_mm, float(offset @ x_src) / col_mm
+
+    i0, j0 = source_index(0, 0)
+    i1, _ = source_index(1, 0)
+    _, j1 = source_index(0, 1)
+    di, dj = i1 - i0, j1 - j0
+
+    # Anything other than a whole-pixel step means the mask would need resampling, which is a
+    # different and lossier job than this script does.
+    for step in (di, dj):
+        if abs(abs(step) - 1) > 1e-3:
+            return None
+    for start in (i0, j0):
+        if abs(start - round(start)) > 1e-3:
+            return None
+
+    rows_seg, cols_seg = mask.shape
+    rows_i = np.rint(i0 + di * np.arange(rows_seg)).astype(int)
+    cols_i = np.rint(j0 + dj * np.arange(cols_seg)).astype(int)
+    keep_r = (rows_i >= 0) & (rows_i < src["rows"])
+    keep_c = (cols_i >= 0) & (cols_i < src["cols"])
+    if not keep_r.any() or not keep_c.any():
+        return None
+
+    out = np.zeros((src["rows"], src["cols"]), dtype=mask.dtype)
+    out[np.ix_(rows_i[keep_r], cols_i[keep_c])] = mask[np.ix_(np.where(keep_r)[0], np.where(keep_c)[0])]
+    return out
+
+
 def extract(case: dict) -> dict | None:
     print(f"  {case['id']}: fetching segmentation")
     try:
@@ -164,8 +233,45 @@ def extract(case: dict) -> dict | None:
         pass
 
     frame_groups = getattr(ds, "PerFrameFunctionalGroupsSequence", [])
+    shared = (getattr(ds, "SharedFunctionalGroupsSequence", None) or [None])[0]
+
+    # The SEG carries its own grid, which need not match the slices it was drawn on.
+    if source_series is None:
+        print("    failed: the segmentation does not say which series it belongs to")
+        return None
+    grids = source_grids(case["study"], source_series)
+    print(f"    source series has {len(grids)} slices")
+
+    def seg_grid_for(index: int) -> dict | None:
+        group = frame_groups[index]
+        orientation = None
+        for holder in (group, shared):
+            seq = getattr(holder, "PlaneOrientationSequence", None) if holder else None
+            if seq:
+                orientation = [float(x) for x in seq[0].ImageOrientationPatient]
+                break
+        spacing = None
+        for holder in (group, shared):
+            seq = getattr(holder, "PixelMeasuresSequence", None) if holder else None
+            if seq and getattr(seq[0], "PixelSpacing", None):
+                spacing = [float(x) for x in seq[0].PixelSpacing]
+                break
+        try:
+            origin = [float(x) for x in group.PlanePositionSequence[0].ImagePositionPatient]
+        except Exception:
+            origin = None
+        if orientation is None or spacing is None or origin is None:
+            return None
+        return {
+            "origin": np.array(origin),
+            "iop": np.array(orientation),
+            "spacing": spacing,
+        }
+
     slices: dict[str, dict[str, list[int]]] = {}
     unmapped = 0
+    misplaced = 0
+    out_rows = out_cols = None
 
     for i in range(frames.shape[0]):
         try:
@@ -181,7 +287,19 @@ def extract(case: dict) -> dict | None:
             unmapped += 1
             continue
 
-        encoded = rle(frames[i])
+        src = grids.get(sop)
+        seg_grid = seg_grid_for(i)
+        if src is None or seg_grid is None:
+            unmapped += 1
+            continue
+
+        placed = place_on_source(frames[i], seg_grid, src)
+        if placed is None:
+            misplaced += 1
+            continue
+        out_rows, out_cols = placed.shape
+
+        encoded = rle(placed)
         if not encoded:
             continue  # an empty mask on this slice carries no information
         slices.setdefault(sop, {})[str(seg_number)] = encoded
@@ -190,7 +308,11 @@ def extract(case: dict) -> dict | None:
         f"    {len(segments)} segments, {frames.shape[0]} frames, "
         f"{len(slices)} slices with masks"
         + (f", {unmapped} frames unmapped" if unmapped else "")
+        + (f", {misplaced} frames the grid could not place" if misplaced else "")
     )
+    if not slices:
+        print("    failed: nothing could be placed on the source grid")
+        return None
 
     return {
         "case": {
@@ -203,8 +325,8 @@ def extract(case: dict) -> dict | None:
             "segSeriesUID": case["seg"],
             "sourceSeriesUID": source_series,
             "modality": str(getattr(ds, "Modality", "SEG")),
-            "rows": int(frames.shape[1]),
-            "cols": int(frames.shape[2]),
+            "rows": int(out_rows or frames.shape[1]),
+            "cols": int(out_cols or frames.shape[2]),
         },
         "segments": [segments[k] for k in sorted(segments)],
         "slices": slices,
