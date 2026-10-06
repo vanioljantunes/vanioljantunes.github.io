@@ -3210,17 +3210,60 @@ a.tool:focus-visible {
 }
 
 /* ----- Project groups -----
-   Three named columns, one per field. Inside a column the projects stack, so the
-   subgrid band alignment above does not apply here: each card is a plain flex column
-   and the rhythm comes from the margin under its material list. */
+   Three named columns, one per field, with the projects stacked inside each one.
+
+   The whole block is a single row grid: title, group note, then four bands per project
+   (status, title, description, material). Every level below re-exposes those rows with
+   subgrid, so the nth project in one column takes its band heights from the nth project
+   in the others and the rules under the descriptions line up across all three. Row gap
+   stays zero, because a subgrid inherits the parent gutter between its own bands; the
+   rhythm comes from the margins under the material lists instead.
+
+   Row count below is 2 + 4 x the longest column (four projects), so it needs updating
+   when a column grows past four. */
 .proj-groups {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(18, auto);
   column-gap: 2.5rem;
-  row-gap: 2.5rem;
+  row-gap: 0;
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+@media (min-width: 901px) {
+@supports (grid-template-rows: subgrid) {
+  .proj-group {
+    display: grid;
+    grid-row: 1 / -1;
+    grid-template-rows: subgrid;
+  }
+
+  .proj-group__title {
+    grid-row: 1;
+  }
+
+  .proj-group__note {
+    grid-row: 2;
+  }
+
+  .proj-group__list {
+    display: grid;
+    grid-row: 3 / -1;
+    grid-template-rows: subgrid;
+  }
+
+  .proj-group__list > .proj {
+    display: grid;
+    grid-row: span 4;
+    grid-template-rows: subgrid;
+  }
+
+  .proj-group__list > .proj > * {
+    align-self: start;
+  }
+}
 }
 
 .proj-group__title {
@@ -3231,7 +3274,7 @@ a.tool:focus-visible {
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--text);
 }
 
 .proj-group__list {
@@ -3250,12 +3293,15 @@ a.tool:focus-visible {
 @media (max-width: 900px) {
   .proj-groups {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: none;
+    row-gap: 2.5rem;
   }
 }
 
 @media (max-width: 600px) {
   .proj-groups {
     grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
     column-gap: 0;
     row-gap: 2rem;
   }
@@ -3296,7 +3342,7 @@ a.tool:focus-visible {
 }
 
 .proj__status--live {
-  color: var(--accent-dark);
+  color: var(--text);
 }
 
 .proj__desc {
@@ -3364,6 +3410,19 @@ a.tool:focus-visible {
    measure the other pages use, so the sentence is not broken up early. */
 .imaging-page .page-head p {
   max-width: none;
+}
+
+/* Every run of prose on this page reads in the body colour rather than the greys the
+   rest of the site uses for supporting text. Links keep the accent. */
+.imaging-page,
+.imaging-page .eyebrow,
+.imaging-page .page-head p,
+.imaging-page .ground__line,
+.imaging-page .proj__status,
+.imaging-page .proj__desc,
+.imaging-page .proj__why,
+.imaging-page .proj__none {
+  color: var(--text);
 }
 
 /* The project icon, kept from the card layout and set beside the title. */
@@ -3463,6 +3522,6 @@ a.tool:focus-visible {
 
 .proj-group__note {
   margin: -0.2rem 0 0.7rem;
-  color: var(--muted);
+  color: var(--text);
   font-size: 0.85rem;
 }
