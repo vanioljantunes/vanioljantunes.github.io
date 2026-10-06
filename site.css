@@ -2670,6 +2670,10 @@ a.tool:focus-visible {
   bottom: 0.55rem;
   left: 50%;
   transform: translateX(-50%);
+  /* Without this the bar is shrink-wrapped into the space from the 50% offset to the right
+     edge, so it can never be wider than half the frame and wraps into a tall block that
+     covers the image. max-content lets it use the full width up to max-width instead. */
+  width: max-content;
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem 1.1rem;
@@ -2731,6 +2735,7 @@ a.tool:focus-visible {
 @media (max-width: 860px) {
   .dv-controls {
     position: static;
+    width: auto;
     transform: none;
     flex-direction: column;
     gap: 0.7rem;
@@ -3524,4 +3529,156 @@ a.tool:focus-visible {
   margin: -0.2rem 0 0.7rem;
   color: var(--text);
   font-size: 0.85rem;
+}
+
+/* Identify a structure: box over the image, explanation beside it.
+   The masks are published segmentations extracted offline, not drawn by the page. */
+
+.dv-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 20rem;
+  gap: 1rem;
+  align-items: start;
+}
+
+/* The highlight of whatever was named. It never takes pointer events: the drag layer above
+   it does that, and only while the tool is on. */
+.dv-seg-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.dv-seg-layer {
+  position: absolute;
+  inset: 0;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.dv-seg-layer[hidden] {
+  display: none;
+}
+
+.dv-seg-box {
+  position: absolute;
+  border: 1px dashed rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.12);
+  pointer-events: none;
+}
+
+.dv-chip--on {
+  border-color: var(--accent) !important;
+  background: var(--accent) !important;
+  color: #fff !important;
+}
+
+.dv-seg-panel {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.dv-seg-panel[hidden] {
+  display: none;
+}
+
+.dv-seg-panel__title {
+  margin: 0 0 0.5rem;
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.dv-seg-panel h3 {
+  margin: 0 0 0.3rem;
+  font-size: 1.05rem;
+}
+
+.dv-seg-panel p {
+  margin: 0 0 0.6rem;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+/* Lesion and normal are the first thing to read, so they are a badge rather than a sentence. */
+.dv-seg-kind {
+  display: inline-block;
+  margin-bottom: 0.6rem !important;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.dv-seg-kind[data-kind='lesion'] {
+  background: #fdecea;
+  color: #8c1d16;
+}
+
+.dv-seg-kind[data-kind='normal'] {
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+}
+
+.dv-seg-also,
+.dv-seg-source,
+.dv-seg-none {
+  color: var(--muted);
+  font-size: 0.78rem !important;
+}
+
+.dv-seg-source {
+  margin-bottom: 0 !important;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.dv-seg-hint {
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.dv-seg-hint:empty {
+  display: none;
+}
+
+/* Below this width the panel goes under the image rather than beside it. */
+@media (max-width: 1000px) {
+  .dv-workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* The control bar floats over the image, so its own box must not intercept drags meant for
+   the picture underneath. Only the controls themselves take pointer events; the gaps between
+   them, and the padding around them, stay transparent to the image. */
+.dv-controls {
+  pointer-events: none;
+}
+
+.dv-controls > * {
+  pointer-events: auto;
+}
+
+.dv-seg-list {
+  margin: 0.4rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.3rem;
+}
+
+.dv-seg-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: space-between;
 }

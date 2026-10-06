@@ -27,6 +27,18 @@ import {
 import { prefetchStack, type PrefetchHandle } from './prefetch';
 import { pageModality, profileFor, type ModalityProfile } from './modality';
 import {
+  canvasPointToImage,
+  hitTest,
+  loadSegCase,
+  masksForSlice,
+  paintMask,
+  segmentationFor,
+  type IndexEntry,
+  type SegCase,
+  type SegmentInfo,
+  type SliceMasks,
+} from './segmentation';
+import {
   applyPreset,
   initCornerstone,
   loadSeries,
@@ -68,12 +80,19 @@ const state: {
   profile?: ModalityProfile;
   /* The profile of the series actually displayed, which drives the controls and readouts. */
   seriesProfile?: ModalityProfile;
+  /* Published segmentation for the series on screen, when one exists. */
+  segEntry?: IndexEntry;
+  segCase?: SegCase;
+  segMasks?: SliceMasks;
+  segSliceSop?: string;
+  identifying: boolean;
   /* Incremented on every load so a slow fetch cannot overwrite a newer one. */
   loadToken: number;
 } = {
   source: sourceById('idc'),
   selection: {},
   loadToken: 0,
+  identifying: false,
 };
 
 /* ---------- status ---------- */
@@ -333,6 +352,8 @@ async function openSelected(): Promise<void> {
 
     /* The first slice is on screen; pull the rest in behind it, nearest first, so that
        scrolling stops costing a round trip per slice. */
+    void prepareSegmentation(entry.seriesUID, token);
+
     const startIndex = viewport.getCurrentImageIdIndex();
     state.prefetch = prefetchStack(stack.imageIds, startIndex, (p) => {
       if (token !== state.loadToken) return;
@@ -571,6 +592,310 @@ function buildGuide(modalityGroup: string): void {
   }
 }
 
+/* ---------- identify a structure ---------- */
+
+/* What each segment is. Written for the structures the two published cases actually
+   contain, rather than generated, because a wrong sentence about anatomy is worse than no
+   sentence. Nothing here is a diagnosis: it describes what the named structure is and how
+   it behaves on this kind of image. */
+const EXPLANATIONS: Record<string, string> = {
+  Kidney:
+    'A paired retroperitoneal organ. After intravenous contrast the cortex enhances first ' +
+    'and brightly, the medulla a little later, which is why a kidney on a contrast scan can ' +
+    'look striped depending on when the images were taken.',
+  Mass:
+    'A solid lesion occupying space within the organ. On CT what separates a solid mass from ' +
+    'a cyst is enhancement: a mass takes up contrast and rises in density after injection, ' +
+    'because it has a blood supply of its own.',
+  Cyst:
+    'A fluid-filled space. It sits close to water density, near zero Hounsfield units, has a ' +
+    'thin wall, and does not enhance after contrast. That lack of enhancement is what marks ' +
+    'it out from a solid mass.',
+  Breast:
+    'The whole breast volume. On MR it is imaged with the patient prone so the tissue hangs ' +
+    'clear of the chest wall, which separates breast tissue from the muscle behind it.',
+  'Breast Fibroglandular Tissue':
+    'The glandular and supporting tissue, as opposed to fat. It takes up contrast gently and ' +
+    'symmetrically, and how much of it there is varies greatly between women, which affects ' +
+    'how easily a lesion can be seen against it.',
+  Lung:
+    'Aerated lung. It is mostly air, so it sits at the very bottom of the Hounsfield scale ' +
+    'near -800, which is why it reads as black on a soft-tissue window and needs a lung ' +
+    'window to show its internal structure.',
+  'FDG-Avid Tumor':
+    'Tissue taking up the injected glucose analogue quickly. Cells consuming a lot of ' +
+    'glucose accumulate the tracer, so they appear bright on PET. Uptake marks metabolic ' +
+    'activity, which is not the same thing as a diagnosis: inflammation and infection are ' +
+    'avid too.',
+};
+
+function explain(segment: SegmentInfo): string {
+  return (
+    EXPLANATIONS[segment.label] ??
+    'This structure is named by the published segmentation; no description has been written ' +
+      'for it yet.'
+  );
+}
+
+function segOverlayCanvas(): HTMLCanvasElement | null {
+  const canvas = el<HTMLCanvasElement>('dv-seg-canvas');
+  const stage = el<HTMLDivElement>('dv-stage');
+  if (!canvas || !stage) return null;
+  const rect = stage.getBoundingClientRect();
+  if (canvas.width !== Math.round(rect.width) || canvas.height !== Math.round(rect.height)) {
+    canvas.width = Math.round(rect.width);
+    canvas.height = Math.round(rect.height);
+  }
+  return canvas;
+}
+
+function clearSegOverlay(): void {
+  const canvas = segOverlayCanvas();
+  const ctx = canvas ? canvas.getContext('2d') : null;
+  if (canvas && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+/* Masks belong to one slice, so they are reloaded whenever the slice changes. */
+function refreshSliceMasks(): void {
+  const { viewport, stack, segCase } = state;
+  if (!viewport || !stack || !segCase) {
+    state.segMasks = undefined;
+    return;
+  }
+  const index = viewport.getCurrentImageIdIndex();
+  const sop = str(stack.instances[index], TAG.SOPInstanceUID);
+  if (sop === state.segSliceSop) return;
+  state.segSliceSop = sop;
+  state.segMasks = masksForSlice(segCase, sop);
+  clearSegOverlay();
+
+  const count = Object.keys(state.segMasks).length;
+  const hint = el('dv-seg-hint');
+  if (hint) {
+    hint.textContent = count
+      ? count + ' structure' + (count > 1 ? 's' : '') + ' outlined on this slice'
+      : 'Nothing is outlined on this slice; scroll to find one';
+  }
+}
+
+/* Shown as soon as a series with published outlines opens, before anything is drawn. The
+   reader otherwise has no way to know the structures are there at all. */
+function showSegIdle(): void {
+  const panel = el('dv-seg-panel');
+  const body = el('dv-seg-body');
+  const { segCase } = state;
+  if (!panel || !body || !segCase) return;
+  panel.hidden = false;
+  body.replaceChildren();
+
+  const how = document.createElement('p');
+  how.textContent =
+    'This study comes with published outlines. Press Identify, then drag a box round a ' +
+    'structure in the image and it is named here.';
+
+  const heading = document.createElement('h3');
+  heading.textContent = 'Outlined in this study';
+
+  const list = document.createElement('ul');
+  list.className = 'dv-seg-list';
+  for (const segment of segCase.segments) {
+    const item = document.createElement('li');
+    const name = document.createElement('span');
+    name.textContent = segment.label;
+    const kind = document.createElement('span');
+    kind.className = 'dv-seg-kind';
+    kind.dataset.kind = segment.kind;
+    kind.textContent = segment.kind === 'lesion' ? 'Lesion' : 'Normal structure';
+    item.append(name, kind);
+    list.append(item);
+  }
+
+  body.append(how, heading, list);
+}
+
+function showSegPanel(hits: ReturnType<typeof hitTest>): void {
+  const panel = el('dv-seg-panel');
+  const body = el('dv-seg-body');
+  if (!panel || !body) return;
+  panel.hidden = false;
+  body.replaceChildren();
+
+  const best = hits[0];
+  if (!best) {
+    const none = document.createElement('p');
+    none.className = 'dv-seg-none';
+    none.textContent =
+      'Nothing segmented inside that box. Only the published structures can be identified, ' +
+      'so an unmarked area returns nothing.';
+    body.append(none);
+    clearSegOverlay();
+    return;
+  }
+
+  const heading = document.createElement('h3');
+  heading.textContent = best.segment.label;
+
+  const kind = document.createElement('p');
+  kind.className = 'dv-seg-kind';
+  kind.dataset.kind = best.segment.kind;
+  kind.textContent = best.segment.kind === 'lesion' ? 'Lesion' : 'Normal structure';
+
+  const text = document.createElement('p');
+  text.textContent = explain(best.segment);
+
+  body.append(heading, kind, text);
+
+  if (hits.length > 1) {
+    const also = document.createElement('p');
+    also.className = 'dv-seg-also';
+    also.textContent =
+      'Also in the box: ' + hits.slice(1).map((h) => h.segment.label).join(', ') + '.';
+    body.append(also);
+  }
+
+  const source = document.createElement('p');
+  source.className = 'dv-seg-source';
+  source.textContent =
+    'Outline from the published segmentation of this study, not drawn by this page.';
+  body.append(source);
+
+  /* Highlight what was named, so the words and the picture agree. */
+  const { viewport, stack, segCase, segMasks } = state;
+  const canvas = segOverlayCanvas();
+  if (viewport && stack && segCase && segMasks && canvas) {
+    const mask = segMasks[String(best.segment.number)];
+    const imageId = stack.imageIds[viewport.getCurrentImageIdIndex()];
+    if (mask && imageId) {
+      paintMask(
+        canvas,
+        viewport,
+        imageId,
+        mask,
+        segCase.case.rows,
+        segCase.case.cols,
+        best.segment.kind
+      );
+    }
+  }
+}
+
+/* The box is drawn on a layer above the image, which also stops the drag reaching
+   Cornerstone underneath and windowing the picture while a box is being drawn. */
+function wireIdentify(): void {
+  const layer = el<HTMLDivElement>('dv-seg-layer');
+  const rubber = el<HTMLDivElement>('dv-seg-box');
+  const button = el<HTMLButtonElement>('dv-identify');
+  if (!layer || !rubber || !button) return;
+
+  button.addEventListener('click', () => {
+    state.identifying = !state.identifying;
+    button.setAttribute('aria-pressed', String(state.identifying));
+    button.classList.toggle('dv-chip--on', state.identifying);
+    layer.hidden = !state.identifying;
+    const panel = el('dv-seg-panel');
+    if (panel && !state.identifying) panel.hidden = true;
+    if (!state.identifying) clearSegOverlay();
+  });
+
+  let start: [number, number] | null = null;
+
+  layer.addEventListener('pointerdown', (event) => {
+    const rect = layer.getBoundingClientRect();
+    start = [event.clientX - rect.left, event.clientY - rect.top];
+    rubber.hidden = false;
+    rubber.style.left = start[0] + 'px';
+    rubber.style.top = start[1] + 'px';
+    rubber.style.width = '0px';
+    rubber.style.height = '0px';
+    layer.setPointerCapture(event.pointerId);
+  });
+
+  layer.addEventListener('pointermove', (event) => {
+    if (!start) return;
+    const rect = layer.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    rubber.style.left = Math.min(start[0], x) + 'px';
+    rubber.style.top = Math.min(start[1], y) + 'px';
+    rubber.style.width = Math.abs(x - start[0]) + 'px';
+    rubber.style.height = Math.abs(y - start[1]) + 'px';
+  });
+
+  layer.addEventListener('pointerup', (event) => {
+    if (!start) return;
+    const rect = layer.getBoundingClientRect();
+    const end: [number, number] = [event.clientX - rect.left, event.clientY - rect.top];
+    rubber.hidden = true;
+    const from = start;
+    start = null;
+
+    const { viewport, stack, segCase, segMasks } = state;
+    if (!viewport || !stack || !segCase || !segMasks) return;
+    const imageId = stack.imageIds[viewport.getCurrentImageIdIndex()];
+    if (!imageId) return;
+
+    const a = canvasPointToImage(viewport, imageId, from);
+    const b = canvasPointToImage(viewport, imageId, end);
+    /* A box the engine cannot place still has to answer, otherwise the panel keeps the
+       previous structure and reads as though it described this box. */
+    if (!a || !b) {
+      showSegPanel([]);
+      return;
+    }
+    /* A click rather than a drag still means something: treat it as a small box. */
+    const pad = Math.abs(b[0] - a[0]) < 3 && Math.abs(b[1] - a[1]) < 3 ? 4 : 0;
+
+    const hits = hitTest(
+      segMasks,
+      segCase.segments,
+      { x0: a[0] - pad, y0: a[1] - pad, x1: b[0] + pad, y1: b[1] + pad },
+      segCase.case.rows,
+      segCase.case.cols
+    );
+    showSegPanel(hits);
+
+    /* Drawing on the layer takes focus off the stage, which is what the arrow keys scroll
+       with. Give it back, so a box and then a slice change is one continuous gesture. */
+    el('dv-stage')?.focus({ preventScroll: true });
+  });
+}
+
+/* Called when a series finishes loading: does it have a published segmentation? */
+async function prepareSegmentation(seriesUID: string, token: number): Promise<void> {
+  const button = el<HTMLButtonElement>('dv-identify');
+  const wrap = el('dv-seg-controls');
+  state.segEntry = undefined;
+  state.segCase = undefined;
+  state.segMasks = undefined;
+  state.segSliceSop = undefined;
+  state.identifying = false;
+  clearSegOverlay();
+  if (button) {
+    button.setAttribute('aria-pressed', 'false');
+    button.classList.remove('dv-chip--on');
+  }
+  const layer = el('dv-seg-layer');
+  if (layer) layer.hidden = true;
+  const panel = el('dv-seg-panel');
+  if (panel) panel.hidden = true;
+  if (wrap) wrap.hidden = true;
+
+  const entry = await segmentationFor(seriesUID);
+  if (!entry || token !== state.loadToken) return;
+
+  try {
+    const data = await loadSegCase(entry);
+    if (token !== state.loadToken) return;
+    state.segEntry = entry;
+    state.segCase = data;
+    if (wrap) wrap.hidden = false;
+    refreshSliceMasks();
+    showSegIdle();
+  } catch {
+    /* A missing segmentation file simply means the tool stays hidden. */
+  }
+}
+
 /* ---------- view controls ---------- */
 
 /* The dataset under the slice on screen, which 'As acquired' needs to read its window from. */
@@ -653,6 +978,7 @@ async function start(): Promise<void> {
 
   wireControls(stage);
   wirePickers();
+  wireIdentify();
 
   setStatus('Starting the renderer');
   try {
@@ -674,6 +1000,8 @@ async function start(): Promise<void> {
   observeElementSize(stage);
 
   stage.addEventListener(Enums.Events.STACK_NEW_IMAGE, paintOverlay);
+  stage.addEventListener(Enums.Events.STACK_NEW_IMAGE, refreshSliceMasks);
+  stage.addEventListener(Enums.Events.CAMERA_MODIFIED, clearSegOverlay);
   stage.addEventListener(Enums.Events.VOI_MODIFIED, paintOverlay);
   stage.addEventListener(Enums.Events.CAMERA_MODIFIED, paintOverlay);
 

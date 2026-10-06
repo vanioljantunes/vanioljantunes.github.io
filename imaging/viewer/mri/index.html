@@ -98,6 +98,7 @@
       <span class="dv-progress__text" id="dv-progress-text"></span>
     </div>
 
+    <div class="dv-workspace">
     <div class="dv-viewer">
       <div class="dv-frame">
         <!-- Cornerstone renders its canvas into this element. tabindex makes the stack
@@ -125,6 +126,13 @@
             <span>Zoom <b id="dv-zoom">-</b></span>
           </div>
         </div>
+        <canvas class="dv-seg-canvas" id="dv-seg-canvas" aria-hidden="true"></canvas>
+
+        <!-- Only present while the identify tool is on. It sits above the image so a drag
+             draws a box instead of reaching Cornerstone underneath and windowing. -->
+        <div class="dv-seg-layer" id="dv-seg-layer" hidden>
+          <div class="dv-seg-box" id="dv-seg-box" hidden></div>
+        </div>
       </div>
 
       <div class="dv-controls" role="toolbar" aria-label="Viewer controls">
@@ -139,9 +147,22 @@
             <button type="button" class="dv-chip" id="dv-reset">Reset</button>
           </div>
         </div>
+        <div class="dv-group" id="dv-seg-controls" role="group" aria-label="Structures" hidden>
+          <span class="dv-group__label">Structures</span>
+          <div class="dv-chips">
+            <button type="button" class="dv-chip" id="dv-identify" aria-pressed="false">Identify</button>
+          </div>
+        </div>
       </div>
     </div>
 
+      <aside class="dv-seg-panel" id="dv-seg-panel" aria-live="polite" hidden>
+        <h2 class="dv-seg-panel__title">Structure</h2>
+        <div id="dv-seg-body"></div>
+      </aside>
+    </div>
+
+    <p class="dv-seg-hint" id="dv-seg-hint"></p>
     <p class="dv-provenance" id="dv-provenance"></p>
     <p class="dv-modality-note" id="dv-modality-note"></p>
 
