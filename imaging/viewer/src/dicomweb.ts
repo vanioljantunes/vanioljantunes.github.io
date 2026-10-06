@@ -43,6 +43,8 @@ export const TAG = {
   ConvolutionKernel: '00181210',
   TransducerData: '00185010',
   ViewPosition: '00185101',
+  Units: '00541001',
+  Radiopharmaceutical: '00180031',
   StudyInstanceUID: '0020000D',
   SeriesInstanceUID: '0020000E',
   StudyID: '00200010',

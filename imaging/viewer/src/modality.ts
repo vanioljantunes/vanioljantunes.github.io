@@ -101,6 +101,25 @@ const PROFILES: Record<string, ModalityProfile> = {
       'than a fixed axial, coronal or sagittal one.',
   },
 
+  /* PET has no page of its own: it is grouped with CT, because a PET/CT is one session and
+     splitting it would put half a study on each of two pages. It still needs its own entry
+     here, since the controls follow the series rather than the page and a Hounsfield window
+     means nothing on a PET. */
+  PT: {
+    group: 'PT',
+    title: 'PET',
+    blurb: 'Positron emission tomography, read with the CT of the same session.',
+    pickerLabel: 'Acquisition',
+    extra: [
+      { label: 'Units', tag: TAG.Units },
+      { label: 'Tracer', tag: TAG.Radiopharmaceutical },
+    ],
+    note:
+      'PET measures metabolism rather than structure: tissue that consumes glucose quickly ' +
+      'takes up the tracer and shows bright. It is read alongside the CT of the same ' +
+      'session, which supplies the anatomy the PET lacks.',
+  },
+
   MG: {
     group: 'MG',
     title: 'Mammography viewer',

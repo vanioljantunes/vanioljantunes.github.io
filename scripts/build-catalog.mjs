@@ -108,7 +108,13 @@ const SEQUENCE_RULES = [
   [/attenuation|\bctac\b/i, 'Attenuation corrected'],
   [/flair/i, 'FLAIR'],
   [/\badc\b/i, 'ADC map'],
-  [/\b(dti|dwi|diffusion|advdiff|bval)\b/i, 'Diffusion'],
+  [/\b(dti|dwi|diffusion|diff|advdiff|bval)\b/i, 'Diffusion'],
+  [/\bstir\b/i, 'STIR'],
+  [/\bmip\b/i, 'MIP'],
+  /* Scanners also write a subtraction as the two series it was made from, as in
+     "(2672/11/1..52)-(2672/9/1..52)", which names no technique at all. The hyphen is already
+     a space by the time the rules run, so the pattern matches the normalised form. */
+  [/\bsub\b|subtract|^\([\d/.]+\)\s+\([\d/.]+\)$/i, 'Subtraction'],
   [/\b(perf|bolus|perfusion)\b/i, 'Perfusion'],
   [/\bswi\b|susceptibility/i, 'Susceptibility'],
   [/\bt1\b.*(post|gad|contrast)|post.*\bt1\b/i, 'T1 post-contrast'],
@@ -137,7 +143,7 @@ const SEQUENCE_RULES = [
    scan is the same study type, so they are named for what they are. */
 const PARAMETER_STRING = /^[\d.]+(,[^,]*){6,}$/;
 
-function sequenceLabel(description, modality) {
+export function sequenceLabel(description, modality) {
   const raw = (description || '').trim();
   if (!raw) return modality + ' series';
   if (PARAMETER_STRING.test(raw)) return 'Low-dose CT';
@@ -354,7 +360,14 @@ async function main() {
   console.log('  ' + entries.length + ' series across ' + picked.size + ' collections');
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+/* Importable without crawling, so the relabelling script can reuse the rules above rather
+   than keep a second copy of them that would drift. */
+const invokedDirectly =
+  process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+
+if (invokedDirectly) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}

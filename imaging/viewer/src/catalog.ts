@@ -55,10 +55,18 @@ const MODALITY_NAMES: Record<string, string> = {
 
 export const modalityName = (code: string): string => MODALITY_NAMES[code] ?? code;
 
-/* CR and DX are both plain radiography and a reader has no reason to tell them apart in a
-   picker, so they share one entry; the real code stays on the entry. */
-export const modalityGroup = (code: string): string =>
-  code === 'CR' || code === 'DX' ? 'XR' : code;
+/* Modalities are grouped the way they are read, not the way DICOM codes them.
+   CR and DX are both plain radiography and no reader distinguishes them in a picker.
+   PET belongs with CT because it is almost never acquired or read alone: a PET/CT is one
+   session on one couch, the CT saying where a thing is and the PET how active it is, and
+   splitting them would put half a study on each of two pages.
+   The real modality code stays on the entry, because what the controls should do still
+   depends on it: a Hounsfield window means nothing on a PET. */
+export const modalityGroup = (code: string): string => {
+  if (code === 'CR' || code === 'DX') return 'XR';
+  if (code === 'PT') return 'CT';
+  return code;
+};
 
 const groupName = (group: string): string =>
   group === 'XR' ? 'X-ray' : modalityName(group);

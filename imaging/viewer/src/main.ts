@@ -51,6 +51,11 @@ const el = <T extends HTMLElement>(id: string): T | null =>
    rebuilt when the reader switches imaging type and not on every repaint. */
 let paintedModality: string | undefined;
 
+/* The modality of the series on screen, which is not always the modality of the page: the
+   CT viewer also carries the PET half of a PET/CT, and a Hounsfield window means nothing
+   there. The controls follow this rather than the page. */
+let paintedSeriesModality: string | undefined;
+
 const state: {
   source: Source;
   catalog?: Catalog;
@@ -61,6 +66,8 @@ const state: {
   prefetch?: PrefetchHandle;
   /* Set on a single-modality page; undefined on the combined viewer. */
   profile?: ModalityProfile;
+  /* The profile of the series actually displayed, which drives the controls and readouts. */
+  seriesProfile?: ModalityProfile;
   /* Incremented on every load so a slow fetch cannot overwrite a newer one. */
   loadToken: number;
 } = {
@@ -173,7 +180,7 @@ function paintExtraFields(ds: Dataset | undefined): void {
   if (!host) return;
   host.replaceChildren();
 
-  const profile = state.profile;
+  const profile = state.seriesProfile ?? state.profile;
   if (!profile) return;
 
   for (const field of profile.extra) {
@@ -268,9 +275,20 @@ function paintPickers(): void {
   const group = sel.modality ?? 'CT';
   if (group !== paintedModality) {
     paintedModality = group;
-    buildPresetButtons(group);
-    buildGuide(group);
+    syncControlsTo(group);
   }
+}
+
+/* Point the window presets, the how-to cards and the extra readouts at one modality. */
+function syncControlsTo(modalityCode: string): void {
+  if (modalityCode === paintedSeriesModality) return;
+  paintedSeriesModality = modalityCode;
+  state.seriesProfile = profileFor(modalityCode);
+  buildPresetButtons(modalityCode);
+  buildGuide(modalityCode);
+
+  const note = el('dv-modality-note');
+  if (note) note.textContent = state.seriesProfile?.note ?? state.profile?.note ?? '';
 }
 
 function describeEntry(entry: CatalogEntry): string {
@@ -290,6 +308,7 @@ async function openSelected(): Promise<void> {
     return;
   }
   state.entry = entry;
+  syncControlsTo(entry.modality);
 
   const token = state.loadToken + 1;
   state.loadToken = token;
@@ -477,6 +496,30 @@ const GUIDES: Record<string, GuideCard[]> = {
       body:
         'A mammogram study is only a handful of images, so scrolling moves between those few ' +
         'views rather than through a stack of slices.',
+    },
+    CARD_KEYS,
+  ],
+  PT: [
+    {
+      icon: 'left',
+      title: 'Left drag',
+      body:
+        'Sets brightness and contrast. A PET carries counts rather than calibrated numbers, ' +
+        'so there is no fixed window as there is on CT.',
+    },
+    {
+      icon: 'wheel',
+      title: 'Scroll wheel',
+      body: 'Moves through the slices, usually head to thigh on a whole-body study.',
+    },
+    CARD_ZOOM,
+    CARD_PAN,
+    {
+      icon: 'window',
+      title: 'Window buttons',
+      body:
+        'Full range shows the brightest uptake in the study, which is often the bladder or ' +
+        'the brain rather than the lesion. High contrast is usually the more useful of the two.',
     },
     CARD_KEYS,
   ],
