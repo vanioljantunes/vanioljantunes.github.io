@@ -48,15 +48,31 @@
     <nav class="site-subnav" aria-label="Imaging projects">
       <ul class="site-subnav__links">
           <li><a href="/imaging/" aria-current="page">All projects</a></li>
-          <li><a href="/imaging/xvr/">Find the C-arm position</a></li>
+          <li class="subnav-menu">
+            <button type="button" class="subnav-menu__button" aria-expanded="false" aria-controls="subnav-col-ai">AI Imaging/Segmentation<svg class="subnav-menu__chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></button>
+            <ul class="subnav-menu__list" id="subnav-col-ai" hidden>
+              <li><a href="/imaging/viewer/ct/">CT viewer</a></li>
+              <li><a href="/imaging/viewer/mri/">MRI viewer</a></li>
+              <li><a href="/imaging/viewer/xray/">X-ray viewer</a></li>
+              <li><a href="/imaging/viewer/us/">Ultrasound viewer</a></li>
+              <li><a href="/imaging/viewer/">All modalities</a></li>
+            </ul>
+          </li>
+          <li class="subnav-menu">
+            <button type="button" class="subnav-menu__button" aria-expanded="false" aria-controls="subnav-col-3d">3D reconstruction<svg class="subnav-menu__chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></button>
+            <ul class="subnav-menu__list" id="subnav-col-3d" hidden>
+              <li><a href="/imaging/xvr/">Find the C-arm position</a></li>
+              <li><a href="#cinematic">Cinematic rendering for 3D CT</a></li>
+            </ul>
+          </li>
+          <li class="subnav-menu">
+            <button type="button" class="subnav-menu__button" aria-expanded="false" aria-controls="subnav-col-ml">Machine Learning<svg class="subnav-menu__chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></button>
+            <ul class="subnav-menu__list" id="subnav-col-ml" hidden>
+              <li><a href="#alearrhythmia">aleArrhythmia</a></li>
+              <li><a href="#ct-ml">CT reconstruction with machine learning</a></li>
+            </ul>
+          </li>
           <li><a href="/imaging/study-track/">Study track</a></li>
-          <li><a href="/imaging/viewer/ct/">CT</a></li>
-          <li><a href="/imaging/viewer/mri/">MRI</a></li>
-          <li><a href="/imaging/viewer/xray/">X-ray</a></li>
-          <li><a href="/imaging/viewer/us/">Ultrasound</a></li>
-          <li><a href="#alearrhythmia">aleArrhythmia</a></li>
-          <li><a href="#cinematic">Cinematic rendering</a></li>
-          <li><a href="#ct-ml">CT reconstruction with ML</a></li>
       </ul>
     </nav>
   </header>
