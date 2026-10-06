@@ -3435,3 +3435,34 @@ a.tool:focus-visible {
     transition: none;
   }
 }
+
+/* Modality-specific readouts, shown under the date in the top-right corner of the image. */
+.dv-overlay__extra {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.3rem;
+  opacity: 0.85;
+}
+
+.dv-overlay__extra:empty {
+  display: none;
+}
+
+/* One line explaining what is peculiar about this modality, under the image. */
+.dv-modality-note {
+  margin: 0.4rem 0 0;
+  max-width: 68ch;
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.dv-modality-note:empty {
+  display: none;
+}
+
+.proj-group__note {
+  margin: -0.2rem 0 0.7rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}

@@ -50,7 +50,10 @@
           <li><a href="/imaging/" aria-current="page">All projects</a></li>
           <li><a href="/imaging/xvr/">Find the C-arm position</a></li>
           <li><a href="/imaging/study-track/">Study track</a></li>
-          <li><a href="/imaging/viewer/">DICOM viewer</a></li>
+          <li><a href="/imaging/viewer/ct/">CT</a></li>
+          <li><a href="/imaging/viewer/mri/">MRI</a></li>
+          <li><a href="/imaging/viewer/xray/">X-ray</a></li>
+          <li><a href="/imaging/viewer/us/">Ultrasound</a></li>
           <li><a href="#alearrhythmia">aleArrhythmia</a></li>
           <li><a href="#cinematic">Cinematic rendering</a></li>
           <li><a href="#ct-ml">CT reconstruction with ML</a></li>
@@ -73,14 +76,39 @@
     <ul class="proj-groups" aria-label="Projects">
       <li class="proj-group">
         <h2 class="proj-group__title">AI Imaging/Segmentation</h2>
+        <p class="proj-group__note">All four share one engine; the <a href="/imaging/viewer/">combined viewer</a> shows every modality at once.</p>
         <ul class="proj-group__list">
           <li class="proj">
             <p class="proj__status proj__status--live">Beta</p>
-            <h3 class="proj__head"><svg class="proj__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="2.5" y="4" width="19" height="14" rx="1.6"/><path d="M2.5 14.5l4.5-4 3.5 3 3-3.5 8 7"/><circle cx="8.5" cy="8.5" r="1.3"/><path d="M8 21h8"/></svg><a href="/imaging/viewer/">DICOM viewer</a></h3>
-            <p class="proj__desc">Read and window DICOM studies in the browser.</p>
+            <h3 class="proj__head"><svg class="proj__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="3.6"/></svg><a href="/imaging/viewer/ct/">CT viewer</a></h3>
+            <p class="proj__desc">Hounsfield windows, lung to bone, on real chest, liver and kidney studies.</p>
             <ul class="proj__needs">
               <li><a href="/imaging/study-track/?list=PL_VeUGLULXQux1dV4iA3XuMX6AueJmGGa&amp;i=11">Schnabel, Medical imaging meets deep learning</a><span class="proj__why">What the modalities are and what they measure.</span></li>
               <li><a href="/imaging/study-track/?list=PLTRCr47yTx5iXIYSneX3LKf16upaw59wa&amp;i=14">Rueckert, Segmentation and reconstruction</a><span class="proj__why">What is done with a volume once it is loaded.</span></li>
+            </ul>
+          </li>
+          <li class="proj">
+            <p class="proj__status proj__status--live">Beta</p>
+            <h3 class="proj__head"><svg class="proj__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 20V9a6 6 0 0 1 12 0v11"/><path d="M6 14h4V9M18 14h-4V9"/></svg><a href="/imaging/viewer/mri/">MRI viewer</a></h3>
+            <p class="proj__desc">Switch the weighting and watch brain, breast, liver and prostate change with it.</p>
+            <ul class="proj__needs">
+              <li><a href="/imaging/study-track/?list=PL_VeUGLULXQux1dV4iA3XuMX6AueJmGGa&amp;i=11">Schnabel, Medical imaging meets deep learning</a><span class="proj__why">What the modalities are and what they measure.</span></li>
+            </ul>
+          </li>
+          <li class="proj">
+            <p class="proj__status proj__status--live">Beta</p>
+            <h3 class="proj__head"><svg class="proj__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v18"/><path d="M6 7c3 1.4 9 1.4 12 0M5.4 11c3.4 1.6 9.8 1.6 13.2 0M6 15c3 1.4 9 1.4 12 0"/></svg><a href="/imaging/viewer/xray/">X-ray viewer</a></h3>
+            <p class="proj__desc">Chest radiographs, where every structure overlaps and the view decides what shows.</p>
+            <ul class="proj__needs">
+              <li><a href="/imaging/study-track/?list=PL_VeUGLULXQux1dV4iA3XuMX6AueJmGGa&amp;i=11">Schnabel, Medical imaging meets deep learning</a><span class="proj__why">What the modalities are and what they measure.</span></li>
+            </ul>
+          </li>
+          <li class="proj">
+            <p class="proj__status proj__status--live">Beta</p>
+            <h3 class="proj__head"><svg class="proj__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3.5 4.5 19a16 16 0 0 0 15 0z" fill="none"/><path d="M7.2 12.5c3 1.5 6.6 1.5 9.6 0M8.6 16c2.2 1 4.6 1 6.8 0"/></svg><a href="/imaging/viewer/us/">Ultrasound viewer</a></h3>
+            <p class="proj__desc">Hand-held studies: prostate biopsy guidance and intraoperative brain imaging.</p>
+            <ul class="proj__needs">
+              <li><a href="/imaging/study-track/?list=PL_VeUGLULXQux1dV4iA3XuMX6AueJmGGa&amp;i=11">Schnabel, Medical imaging meets deep learning</a><span class="proj__why">What the modalities are and what they measure.</span></li>
             </ul>
           </li>
         </ul>

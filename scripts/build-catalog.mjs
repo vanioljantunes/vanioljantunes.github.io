@@ -44,6 +44,9 @@ const minInstances = (modality) => MIN_INSTANCES[modality] ?? MIN_INSTANCES_DEFA
 const COLLECTIONS = [
   { id: 'upenn-gbm', match: /^UPENN-GBM/i, region: 'Brain', lesion: 'Glioblastoma' },
   { id: 'remind', match: /^ReMIND/i, region: 'Brain', lesion: 'Brain tumour, intraoperative' },
+  /* The collection name states the organ and nothing else, so the finding says so rather
+     than guessing at a diagnosis. */
+  { id: 'liver-us', match: /^LiverUS/i, region: 'Liver', lesion: 'Not stated by the collection' },
   { id: 'lidc', match: /^LIDC-IDRI/i, region: 'Chest', lesion: 'Pulmonary nodules' },
   { id: 'nlst', match: /^\d{6}$/, region: 'Chest', lesion: 'Lung cancer screening' },
   { id: 'midrc', match: /^MIDRC-RICORD/i, region: 'Chest', lesion: 'COVID-19 pneumonia' },
@@ -187,11 +190,14 @@ async function main() {
   const picked = new Map();
   let seenStudies = 0;
 
-  for (let p = 0; p < PAGES; p += 1) {
-    const offset = Math.round((p / PAGES) * SPAN);
+  async function sweep(pages, modality) {
+   const hint = modality || 'any';
+   for (let p = 0; p < pages; p += 1) {
+    const offset = Math.round((p / pages) * SPAN);
+    const filter = modality ? '&ModalitiesInStudy=' + modality : '';
     let rows;
     try {
-      rows = await qido('/studies?limit=' + PAGE_SIZE + '&offset=' + offset + '&includefield=all');
+      rows = await qido('/studies?limit=' + PAGE_SIZE + '&offset=' + offset + filter + '&includefield=all');
     } catch (err) {
       console.warn('  page ' + p + ' (offset ' + offset + ') failed: ' + err.message);
       continue;
@@ -202,7 +208,8 @@ async function main() {
       const patientId = val(r, '00100020');
       const cls = classify(patientId);
       if (!cls) continue;
-      const bucket = picked.get(cls.id) || [];
+      const bucketKey = cls.id + '|' + hint;
+      const bucket = picked.get(bucketKey) || [];
       if (bucket.length >= PER_COLLECTION) continue;
       bucket.push({
         collection: cls.id,
@@ -213,17 +220,29 @@ async function main() {
         studyDate: val(r, '00080020'),
         studyDescription: val(r, '00081030'),
       });
-      picked.set(cls.id, bucket);
+      picked.set(bucketKey, bucket);
     }
 
     if (p % 10 === 0) {
       let total = 0;
       for (const b of picked.values()) total += b.length;
       console.log(
-        '  page ' + p + '/' + PAGES + ' offset ' + offset +
-          '  seen ' + seenStudies + '  kept ' + total + ' in ' + picked.size + ' collections'
+        '  ' + hint + ' page ' + p + '/' + pages + ' offset ' + offset +
+          '  seen ' + seenStudies + '  kept ' + total + ' in ' + picked.size + ' buckets'
       );
     }
+   }
+  }
+
+  await sweep(PAGES, null);
+
+  /* A generic sweep is dominated by whatever the archive holds most of, which is CT and MR.
+     The modalities that make their own viewer worth having are rare by comparison, so each
+     gets its own pass; the server will filter by modality even though it will not search on
+     anything else. */
+  for (const m of ['US', 'CR', 'DX', 'MG', 'PT', 'NM']) {
+    console.log('targeted sweep: ' + m);
+    await sweep(Math.max(12, Math.round(PAGES / 4)), m);
   }
 
   const candidates = [];
@@ -250,9 +269,22 @@ async function main() {
       }))
       .filter((s) => s.seriesUID && s.modality && !NON_IMAGE.has(s.modality));
 
+    /* Up to three series of each modality, rather than the first four of the study. A
+       prostate biopsy study holds MR and US together and the plain slice took only the MR,
+       which is why the catalogue had no ultrasound in it at all. */
+    const byModality = new Map();
+    for (const s of imageSeries) {
+      const list = byModality.get(s.modality) || [];
+      if (list.length >= 3) continue;
+      list.push(s);
+      byModality.set(s.modality, list);
+    }
+    const chosen = [];
+    for (const list of byModality.values()) chosen.push(...list);
+
     /* Counting instances is the only way this server will say how long a series is, so it
        happens here, offline, rather than letting the browser discover duds. */
-    for (const s of imageSeries.slice(0, 4)) {
+    for (const s of chosen) {
       let count = 0;
       try {
         const inst = await qido(

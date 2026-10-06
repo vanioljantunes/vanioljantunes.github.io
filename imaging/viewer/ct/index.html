@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DICOM viewer | Vanio Antunes</title>
-  <meta name="description" content="Clinical imaging read in the browser. No server, no plugin, nothing uploaded.">
+  <title>CT viewer | Vanio Antunes</title>
+  <meta name="description" content="Computed tomography read in the browser: real patient studies from a public research archive, windowed in Hounsfield units the way a workstation does.">
   <link rel="icon" href="/favicon.ico?v=2" sizes="48x48">
   <link rel="icon" href="/favicon-32.png?v=2" type="image/png" sizes="32x32">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
   <link rel="stylesheet" href="/site-bar.css">
   <link rel="stylesheet" href="/site.css">
 </head>
-<body>
+<body data-modality="CT">
   <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-bar">
@@ -49,19 +49,19 @@
       <ul class="site-subnav__links">
           <li><a href="/imaging/">All projects</a></li>
           <li><a href="/imaging/xvr/">Find the C-arm position</a></li>
-          <li><a href="/imaging/viewer/ct/">CT</a></li>
+          <li><a href="/imaging/viewer/ct/" aria-current="page">CT</a></li>
           <li><a href="/imaging/viewer/mri/">MRI</a></li>
           <li><a href="/imaging/viewer/xray/">X-ray</a></li>
           <li><a href="/imaging/viewer/us/">Ultrasound</a></li>
-          <li><a href="/imaging/viewer/" aria-current="page">All modalities</a></li>
+          <li><a href="/imaging/viewer/">All modalities</a></li>
       </ul>
     </nav>
   </header>
 
   <main id="main" class="page-main wrap">
     <div class="page-head">
-      <h1>DICOM viewer</h1>
-      <p>Clinical imaging read in the browser. No server, no plugin, nothing uploaded.</p>
+      <h1>CT viewer</h1>
+      <p>Computed tomography read in the browser: real patient studies from a public research archive, windowed in Hounsfield units the way a workstation does.</p>
     </div>
 
 

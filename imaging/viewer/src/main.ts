@@ -11,6 +11,7 @@ import { TAG, isoDate, num, personName, str, type Dataset } from './dicomweb';
 import {
   assignIds,
   caseChoices,
+  modalityGroup,
   loadCatalog,
   lesionChoices,
   modalityChoices,
@@ -24,6 +25,7 @@ import {
   type Selection,
 } from './catalog';
 import { prefetchStack, type PrefetchHandle } from './prefetch';
+import { pageModality, profileFor, type ModalityProfile } from './modality';
 import {
   applyPreset,
   initCornerstone,
@@ -57,6 +59,8 @@ const state: {
   stack?: LoadedSeries;
   viewport?: Types.IStackViewport;
   prefetch?: PrefetchHandle;
+  /* Set on a single-modality page; undefined on the combined viewer. */
+  profile?: ModalityProfile;
   /* Incremented on every load so a slow fetch cannot overwrite a newer one. */
   loadToken: number;
 } = {
@@ -156,6 +160,36 @@ function paintOverlay(): void {
 
   const zoom = viewport.getZoom();
   text('dv-zoom', Number.isFinite(zoom) ? `${(zoom * 100).toFixed(0)}%` : '-');
+
+  paintExtraFields(ds);
+}
+
+/* The fields that only matter for one modality: TR and TE on MR, kVp and kernel on CT, the
+   view on a radiograph, the probe on ultrasound. A field the server left empty is dropped
+   rather than shown as a dash, because unlike the shared rows these are not expected on
+   every study and a column of dashes would just be noise. */
+function paintExtraFields(ds: Dataset | undefined): void {
+  const host = el('dv-extra');
+  if (!host) return;
+  host.replaceChildren();
+
+  const profile = state.profile;
+  if (!profile) return;
+
+  for (const field of profile.extra) {
+    let value = '';
+    if (field.decimals !== undefined) {
+      const n = num(ds, field.tag);
+      if (n !== undefined) value = n.toFixed(field.decimals);
+    } else {
+      value = str(ds, field.tag).trim();
+    }
+    if (!value) continue;
+
+    const row = document.createElement('span');
+    row.textContent = `${field.label} ${value}${field.unit ?? ''}`;
+    host.append(row);
+  }
 }
 
 /* ---------- the four pickers ---------- */
@@ -604,6 +638,27 @@ async function start(): Promise<void> {
   try {
     const catalog = await loadCatalog();
     assignIds(catalog.entries);
+
+    /* A single-modality page keeps only its own series, so every picker below it counts and
+       filters within that modality and the imaging picker itself has nothing left to do. */
+    const locked = pageModality();
+    if (locked) {
+      state.profile = profileFor(locked);
+      catalog.entries = catalog.entries.filter((e) => modalityGroup(e.modality) === locked);
+      if (catalog.entries.length === 0) {
+        setStatus('No studies of this kind are in the index yet', 'error');
+        return;
+      }
+      const picker = el('dv-pick-modality')?.closest('.dv-pick');
+      if (picker instanceof HTMLElement) picker.hidden = true;
+
+      const label = document.querySelector('label[for="dv-pick-sequence"]');
+      if (label && state.profile) label.textContent = state.profile.pickerLabel;
+
+      const note = el('dv-modality-note');
+      if (note && state.profile?.note) note.textContent = state.profile.note;
+    }
+
     state.catalog = catalog;
     /* A link may already name a case; reconcile keeps whatever part of it is still valid. */
     state.selection = reconcile(catalog.entries, selectionFromUrl());
