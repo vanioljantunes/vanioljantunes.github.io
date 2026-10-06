@@ -37,6 +37,10 @@ const OUT = resolve(repoRoot, arg('--out', 'imaging/viewer/catalog.json'));
    radiograph or a mammogram is one to four images by nature. A single floor of 20 silently
    excluded every CR, DX and MG study in the archive. */
 const MIN_INSTANCES = { CR: 1, DX: 1, MG: 1, XA: 1, RF: 1, US: 4 };
+
+/* --only US runs the targeted sweep for one modality and skips the general one, which is
+   otherwise dominated by CT and MR and would spend most of a run finding neither. */
+const ONLY = arg('--only', '');
 const MIN_INSTANCES_DEFAULT = 20;
 const minInstances = (modality) => MIN_INSTANCES[modality] ?? MIN_INSTANCES_DEFAULT;
 
@@ -234,15 +238,16 @@ async function main() {
    }
   }
 
-  await sweep(PAGES, null);
+  if (!ONLY) await sweep(PAGES, null);
 
   /* A generic sweep is dominated by whatever the archive holds most of, which is CT and MR.
      The modalities that make their own viewer worth having are rare by comparison, so each
      gets its own pass; the server will filter by modality even though it will not search on
      anything else. */
-  for (const m of ['US', 'CR', 'DX', 'MG', 'PT', 'NM']) {
+  const targeted = ONLY ? ONLY.split(',') : ['US', 'CR', 'DX', 'MG', 'PT', 'NM'];
+  for (const m of targeted) {
     console.log('targeted sweep: ' + m);
-    await sweep(Math.max(12, Math.round(PAGES / 4)), m);
+    await sweep(ONLY ? PAGES : Math.max(12, Math.round(PAGES / 4)), m);
   }
 
   const candidates = [];

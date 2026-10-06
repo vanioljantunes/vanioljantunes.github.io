@@ -32,3 +32,6 @@ node_modules/
 
 # local heart-twin compute workspace: datasets, venv, raw outputs. Never committed.
 .tmp_twin/
+
+# Local python env for the segmentation extraction script
+.venv-seg/
