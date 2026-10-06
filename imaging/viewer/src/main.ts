@@ -261,7 +261,10 @@ function fillSelect(select: HTMLSelectElement, choices: Choice[], selected?: str
     const option = document.createElement('option');
     option.value = c.value;
     /* The count tells the reader how much there is behind a choice before they commit. */
-    option.textContent = c.count > 1 ? `${c.label} (${c.count})` : c.label;
+    const counted = c.count > 1 ? `${c.label} (${c.count})` : c.label;
+    /* Three series out of several hundred carry outlines. Without saying which, the reader
+       has to open them one by one to find the structures. */
+    option.textContent = c.outlined ? `${counted} - outlined` : counted;
     if (c.value === selected) option.selected = true;
     select.append(option);
   }
@@ -880,8 +883,15 @@ async function prepareSegmentation(seriesUID: string, token: number): Promise<vo
   if (panel) panel.hidden = true;
   if (wrap) wrap.hidden = true;
 
+  const hint = el('dv-seg-hint');
   const entry = await segmentationFor(seriesUID);
-  if (!entry || token !== state.loadToken) return;
+  if (!entry || token !== state.loadToken) {
+    if (hint && token === state.loadToken) {
+      hint.textContent =
+        'No published outlines for this series. The pickers mark the ones that have them.';
+    }
+    return;
+  }
 
   try {
     const data = await loadSegCase(entry);
