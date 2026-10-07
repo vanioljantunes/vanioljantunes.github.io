@@ -40,7 +40,12 @@ from pathlib import Path
 import nibabel as nib
 import numpy as np
 from pydicom.dataset import Dataset, FileMetaDataset
-from pydicom.uid import CTImageStorage, ExplicitVRLittleEndian, generate_uid
+from pydicom.uid import (
+    CTImageStorage,
+    ExplicitVRLittleEndian,
+    JPEGLSLossless,
+    generate_uid,
+)
 
 # What ImageCHD's label values mean. The README names seven and says to ignore anything
 # else, so anything else is dropped rather than guessed at.
@@ -70,7 +75,12 @@ def rle(mask: np.ndarray) -> list[int]:
 
 
 def write_series(
-    volume: np.ndarray, case_id: str, pixel_mm: float, slice_mm: float, out_dir: Path
+    volume: np.ndarray,
+    case_id: str,
+    pixel_mm: float,
+    slice_mm: float,
+    out_dir: Path,
+    compress: bool,
 ) -> list[str]:
     """One CT file per slice. Returns the SOP Instance UIDs in slice order."""
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -128,10 +138,13 @@ def write_series(
         ds.Columns = cols
         ds.SamplesPerPixel = 1
         ds.PhotometricInterpretation = "MONOCHROME2"
+        # Stored unsigned over 12 bits, which is how the source holds it and how CT is
+        # ordinarily encoded; the intercept is what turns it into Hounsfield units. Keeping
+        # it unsigned also stays on the well-trodden path for the JPEG-LS encoder.
         ds.BitsAllocated = 16
-        ds.BitsStored = 16
-        ds.HighBit = 15
-        ds.PixelRepresentation = 1  # signed: Hounsfield units go below zero
+        ds.BitsStored = 12
+        ds.HighBit = 11
+        ds.PixelRepresentation = 0
         ds.RescaleIntercept = str(INTERCEPT)
         ds.RescaleSlope = "1"
         ds.RescaleType = "HU"
@@ -139,7 +152,9 @@ def write_series(
         ds.WindowCenter = "200"
         ds.WindowWidth = "700"
 
-        ds.PixelData = np.ascontiguousarray(volume[:, :, n], dtype=np.int16).tobytes()
+        ds.PixelData = np.ascontiguousarray(volume[:, :, n], dtype=np.uint16).tobytes()
+        if compress:
+            ds.compress(JPEGLSLossless)
         ds.save_as(out_dir / f"{n + 1:04d}.dcm", enforce_file_format=True)
 
     return sops
@@ -156,20 +171,32 @@ def main() -> int:
     ap.add_argument("--region", default="Heart")
     ap.add_argument("--collection", default="imagechd")
     ap.add_argument("--out", required=True, type=Path)
+    ap.add_argument(
+        "--no-compress",
+        action="store_true",
+        help="write the pixels uncompressed, which roughly doubles the series on disk",
+    )
     args = ap.parse_args()
 
     raw = np.asanyarray(nib.load(str(args.image)).dataobj)
     # Transpose each slice so columns run to the patient's left and rows run posteriorly.
-    volume = np.ascontiguousarray(np.transpose(raw, (1, 0, 2))).astype(np.int16)
+    volume = np.ascontiguousarray(np.transpose(raw, (1, 0, 2))).astype(np.uint16)
     hu = volume.astype(np.int32) + INTERCEPT
     print(f"  scan   {volume.shape}  HU {hu.min()} to {hu.max()}")
     print(f"  voxel  {args.pixel_spacing} x {args.pixel_spacing} x {args.slice_thickness} mm")
 
     case_dir = args.out / args.case_id
     sops = write_series(
-        volume, args.case_id, args.pixel_spacing, args.slice_thickness, case_dir / "dicom"
+        volume,
+        args.case_id,
+        args.pixel_spacing,
+        args.slice_thickness,
+        case_dir / "dicom",
+        not args.no_compress,
     )
-    print(f"  wrote  {len(sops)} slices into {case_dir / 'dicom'}")
+    on_disk = sum(f.stat().st_size for f in (case_dir / "dicom").glob("*.dcm"))
+    how = "stored" if args.no_compress else "JPEG-LS lossless"
+    print(f"  wrote  {len(sops)} slices into {case_dir / 'dicom'}, {how}, {on_disk / 1e6:.0f} MB")
 
     if not args.label:
         return 0
@@ -202,7 +229,13 @@ def main() -> int:
             "patientId": args.case_id,
             "rows": int(volume.shape[0]),
             "cols": int(volume.shape[1]),
+            "pixelSpacing": args.pixel_spacing,
+            "sliceThickness": args.slice_thickness,
         },
+        # The masks are keyed by SOP Instance UID, and only the slices that carry one appear
+        # there, so the order cannot be recovered from them. The page needs to go from the
+        # slice it is showing to the right mask, so the full series order is written out.
+        "sops": sops,
         # Every structure here is normal anatomy. What makes the case a tetralogy is the
         # arrangement between them, not any one of them being a lesion, so none is marked as
         # one: saying otherwise would be a claim about the pixels that nobody made.
