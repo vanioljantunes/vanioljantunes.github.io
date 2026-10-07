@@ -6,7 +6,9 @@
   "scripts": {
     "build:viewer": "node scripts/build-viewer.mjs",
     "watch:viewer": "node scripts/build-viewer.mjs --watch",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "build:heart": "node scripts/build-heart.mjs",
+    "watch:heart": "node scripts/build-heart.mjs --watch"
   },
   "devDependencies": {
     "esbuild": "^0.25.0",
@@ -16,6 +18,7 @@
     "@cornerstonejs/core": "^3.0.0",
     "@cornerstonejs/dicom-image-loader": "^3.0.0",
     "@cornerstonejs/tools": "^3.0.0",
-    "dicom-parser": "^1.8.21"
+    "dicom-parser": "^1.8.21",
+    "three": "^0.180.0"
   }
 }

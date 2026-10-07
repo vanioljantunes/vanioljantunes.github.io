@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Beating heart from a cardiac CT | Vanio Antunes</title>
+  <meta name="description" content="A heart reconstructed from a gated cardiac CT and animated in the browser: deep-learning segmentation, diffeomorphic registration of 21 cardiac phases, and the measured motion played as glTF morph targets.">
+  <link rel="icon" href="/favicon.ico?v=2" sizes="48x48">
+  <link rel="icon" href="/favicon-32.png?v=2" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
+  <link rel="stylesheet" href="/site-bar.css">
+  <link rel="stylesheet" href="/site.css">
+  <link rel="stylesheet" href="./heart.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-bar">
+    <div class="site-bar__inner">
+      <div class="site-bar__id">
+        <a class="site-bar__brand" href="/"><img src="/img/vanio-antunes.jpg" width="32" height="32" alt=""><span class="site-bar__name">Vanio Antunes</span></a>
+        <ul class="site-bar__social" aria-label="Profiles">
+          <li>
+          <a href="https://scholar.google.com/citations?user=JOZkTg0AAAAJ&amp;hl=en" target="_blank" rel="noopener noreferrer" aria-label="Google Scholar (opens in a new tab)">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269zM12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></svg>
+          </a>
+          </li>
+          <li>
+          <a href="https://www.linkedin.com/in/vanio-antunes/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn (opens in a new tab)">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.370 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </a>
+          </li>
+          <li>
+          <a href="https://x.com/VanioAntunes" target="_blank" rel="noopener noreferrer" aria-label="X (opens in a new tab)">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          </li>
+        </ul>
+      </div>
+      <nav aria-label="Main">
+        <ul class="site-bar__links">
+          <li><a href="/about/">Who am I</a></li>
+          <li><a href="/tools/">Tools</a></li>
+          <li><a href="/packages/">R packages</a></li>
+          <li><a href="/imaging/" aria-current="true">Imaging<span class="site-bar__long">&nbsp;projects</span></a></li>
+        </ul>
+      </nav>
+    </div>
+    <nav class="site-subnav" aria-label="Imaging projects">
+      <ul class="site-subnav__links">
+          <li><a href="/imaging/">All projects</a></li>
+          <li><a href="/imaging/viewers/">Imaging viewers</a></li>
+          <li><a href="/imaging/heart/" aria-current="page">Beating heart</a></li>
+          <li><a href="/imaging/study-track/">Study track</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main" class="page-main wrap heart-page">
+    <div class="page-head">
+      <h1>A heart beating, measured from one CT study</h1>
+      <p>A gated cardiac CT records the same heart at 21 moments of a single heartbeat. A network
+      finds the heart in one of those moments, registration carries that outline to the other 20,
+      and what you see below moves the way this patient's heart moved. Nothing here is keyframed
+      by hand.</p>
+    </div>
+
+    <figure class="heart-viewer">
+      <div class="heart-stage">
+        <canvas id="stage" width="960" height="620" aria-label="Three-dimensional heart model, rotatable"></canvas>
+      </div>
+      <div class="heart-controls">
+        <button type="button" id="play" class="heart-btn" aria-pressed="true">Pause</button>
+        <label class="heart-phase">
+          <span class="heart-phase__label">Phase <span id="phase-label">1 of 21</span></span>
+          <input type="range" id="phase" min="0" max="20" step="1" value="0">
+        </label>
+      </div>
+      <p class="heart-status" id="status" hidden></p>
+      <div class="heart-toggles" id="toggles" role="group" aria-label="Structures"></div>
+      <figcaption>Drag to rotate, scroll to zoom. The ragged edges at the top are where the
+      scan stops and the great vessels are cut off, not an artefact of the model. 58,594
+      triangles per phase, 21 phases, 8.2 MB.</figcaption>
+    </figure>
+
+    <section class="heart-measure" aria-labelledby="measure-title">
+      <h2 id="measure-title">What this does not claim</h2>
+      <p>No volumes, and no ejection fraction. Both were tempting and both would have been
+      wrong. The scan's field of view cuts the great vessels mid-course, so the heart surface
+      it produces has 1,770 open boundary edges: it is not a closed surface, and the volume
+      inside an open surface is undefined. The first attempt at measuring it returned numbers
+      that moved by tens of per cent between two segmentations of the same heart, which is the
+      signature of a leaking mesh rather than of a beating heart.</p>
+      <p>Separating left from right, and ventricle from atrium, needs TotalSegmentator's
+      <code>heartchambers_highres</code> model, which is licensed separately and free for
+      academic use on request. With those labels the chambers can be closed and measured
+      properly. Until then this page shows motion, which it measured, and stays quiet about
+      volume, which it did not.</p>
+    </section>
+
+    <section class="heart-method" aria-labelledby="method-title">
+      <h2 id="method-title">How it was built</h2>
+
+      <ol class="heart-steps">
+        <li>
+          <h3>The study</h3>
+          <p>A gated 4D cardiac CT of a truncal valve case, released by the Jolley Lab at
+          Children's Hospital of Philadelphia through SlicerHeart and distributed with MONAI
+          Physio. 21 phases, 512 by 391 by 218 voxels at 0.6 by 0.6 by 0.7 mm, 2.5 GB.</p>
+        </li>
+        <li>
+          <h3>Finding the heart</h3>
+          <p>TotalSegmentator v2 through MONAI Physio's
+          <code>SegmentChestTotalSegmentatorWithContrast</code>, which detects contrast
+          enhancement and adjusts its thresholds for it. 58 structures in 400 seconds on an
+          RTX 4050. The fast 3 mm model does the same job in 42 seconds, but its wall was coarse
+          enough to be worth the extra six minutes, and only the reference phase is segmented so
+          the cost is paid once. The heart came back as one structure, because the six-way
+          chamber split is a separately licensed model.</p>
+        </li>
+        <li>
+          <h3>Measuring the motion</h3>
+          <p>Greedy diffeomorphic registration with normalised cross correlation, four
+          resolution levels at 30, 15, 7 and 3 iterations, warping each of the other 20 phases
+          onto phase 15. The deformation fields are the measured displacement of tissue, and
+          they are what makes this a reconstruction rather than an animation. 19.8 minutes for
+          the full series.</p>
+        </li>
+        <li>
+          <h3>Fitting a browser</h3>
+          <p>The result is a 236 MB animated USD built for Omniverse. Getting it into a web page
+          meant decimating the heart surface by 79% and the aorta by 27% while keeping
+          vertex correspondence across phases, which <code>vtkDecimatePro</code> allows because
+          it deletes vertices rather than relocating them. The surviving indices are taken from
+          every phase and written as glTF morph targets, so the browser interpolates between
+          phases instead of stepping through them. 8.2 MB.</p>
+        </li>
+      </ol>
+
+      <h3 class="heart-honest">What ran out of memory first</h3>
+      <p>The first attempt held all 21 phases at native resolution and the Linux out-of-memory
+      killer took the process at phase 6, at 23.9 GB resident. The fix cost no accuracy: the
+      segmenter resamples its input to 1 mm isotropic before inference anyway, so the finer
+      sampling was being discarded. Resampling the series first cut the voxel count to a quarter,
+      and the run finished in 18 minutes rather than the projected 70.</p>
+    </section>
+
+    <section class="ground" aria-labelledby="credits-title">
+      <p class="eyebrow" id="credits-title">Sources</p>
+      <p class="ground__line">Toolkit:
+      <a href="https://github.com/Project-MONAI/monai-physio" target="_blank" rel="noopener noreferrer">MONAI Physio<span class="visually-hidden"> (opens in a new tab)</span></a>
+      2026.9.1, Apache 2.0, NVIDIA and Project MONAI. Segmentation:
+      <a href="https://pubs.rsna.org/doi/10.1148/ryai.230024" target="_blank" rel="noopener noreferrer">TotalSegmentator<span class="visually-hidden"> (opens in a new tab)</span></a>,
+      Wasserthal and colleagues, Radiology: Artificial Intelligence, 2023. Study: Slicer-Heart-CT,
+      Jolley Lab, Children's Hospital of Philadelphia, through
+      <a href="https://github.com/SlicerHeart/SlicerHeart" target="_blank" rel="noopener noreferrer">SlicerHeart<span class="visually-hidden"> (opens in a new tab)</span></a>.</p>
+    </section>
+  </main>
+  <script type="module" src="/js/subnav.js"></script>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

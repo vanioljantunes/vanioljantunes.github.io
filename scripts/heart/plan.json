@@ -1,0 +1,149 @@
+{
+  "title": "From a cardiac CT scan to a beating heart on the website",
+  "summary": "A CT scanner recorded one patient's heart 21 times across a single heartbeat. Below is every command that runs, what it reads, what it writes, and the settings it uses. Nothing here is a metaphor: each block is the literal action taken on this machine.",
+  "stages": [
+    {
+      "id": "env",
+      "title": "Check the machine",
+      "what": "Confirm the GPU is reachable from inside WSL, because every later stage picks cuda:0 or silently falls back to CPU.",
+      "runs": [
+        "wsl.exe -d Ubuntu -- nvidia-smi --query-gpu=name,memory.total --format=csv,noheader",
+        "~/heart/.venv/bin/python -c \"import torch; print(torch.cuda.is_available(), torch.cuda.get_device_name(0))\""
+      ],
+      "reads": [],
+      "writes": [],
+      "settings": [],
+      "result": "NVIDIA GeForce RTX 4050 Laptop GPU, 6141 MiB. torch 2.14.1+cu126, cuda.is_available() True."
+    },
+    {
+      "id": "install",
+      "title": "Install the toolkit",
+      "what": "Create an isolated Python 3.12 environment and install MONAI Physio. torch goes in first on its own: torch-scatter compiles against the torch headers at build time and fails if torch is absent, which is exactly how the first attempt died.",
+      "runs": [
+        "uv venv --python 3.12                       # ~/heart/.venv",
+        "uv pip install torch torchvision torchaudio --torch-backend=cu126",
+        "uv pip install --no-build-isolation torch-scatter",
+        "uv pip install monai-physio",
+        "uv pip install cupy-cuda12x nbconvert matplotlib",
+        "python -m ipykernel install --user --name heart"
+      ],
+      "reads": [],
+      "writes": ["~/heart/.venv/  (about 9 GB)"],
+      "settings": [
+        "CUDA wheel index: cu126, matched to the 596.36 Windows driver",
+        "CuPy present, so mesh operations run on the GPU instead of NumPy"
+      ],
+      "result": "monai-physio 2026.9.1, MONAI 1.6.1, TotalSegmentator 2.18.0, ITK 5.4.7, VTK 9.7.1, ANTsPy 0.6.1."
+    },
+    {
+      "id": "nb",
+      "title": "Fetch the scan",
+      "what": "Download the 4D sequence and split it into one 3D volume per cardiac phase. The split is what makes the frames addressable: every later stage iterates over slice_000.mha to slice_020.mha.",
+      "runs": [
+        "DownloadData.DownloadSlicerHeartCTData('~/heart/data/Slicer-Heart-CT')",
+        "  -> urllib fetch TruncalValve_4DCT.seq.nrrd (1209 MB)",
+        "  -> ConvertImage4DTo3D splits it into slice_000.mha ... slice_020.mha"
+      ],
+      "reads": ["github.com/Project-MONAI/monai-physio/releases/download/2026.07.1/TruncalValve_4DCT.seq.nrrd"],
+      "writes": [
+        "~/heart/data/Slicer-Heart-CT/TruncalValve_4DCT.seq.nrrd   1209 MB",
+        "~/heart/data/Slicer-Heart-CT/slice_000.mha ... slice_020.mha   59.9 MB each"
+      ],
+      "settings": [
+        "Source: Jolley Lab, Children's Hospital of Philadelphia, via SlicerHeart",
+        "Reference phase for everything downstream: index 14, which is int(0.7 * 21)"
+      ],
+      "result": "21 phases, 512 by 391 by 218 voxels at 0.6 by 0.6 by 0.7 mm, -1024 to 3071 HU, 2.5 GB on disk."
+    },
+    {
+      "id": "seg",
+      "title": "Find the heart",
+      "what": "Run TotalSegmentator's nnU-Net over the reference phase only. It returns a labelmap the same size as the CT, where each voxel holds a structure number. The chamber labels 141 to 144 are the ones the beating model is built from; the myocardium wraps them.",
+      "runs": [
+        "segmenter = SegmentChestTotalSegmentatorWithContrast(log_level=logging.INFO)",
+        "segmenter.set_fast_mode(True)",
+        "segmenter.process(reference_image)   # downloads nnU-Net weights on first call",
+        "  -> sliding-window inference on cuda:0, 3 mm fast model"
+      ],
+      "reads": ["~/heart/data/Slicer-Heart-CT/slice_014.mha"],
+      "writes": [
+        "~/.totalsegmentator/nnunet/  (model weights, about 2 GB on first run)",
+        "~/heart/out/tutorial_01_heart/slice_014_labelmap.mha"
+      ],
+      "settings": [
+        "Network: TotalSegmentator v2, 117 structures, fast mode at 3 mm",
+        "WithContrast variant: adjusts thresholds when the scan is contrast enhanced, which this one is",
+        "Chamber label ids: 141 left atrium, 142 left ventricle, 143 right atrium, 144 right ventricle"
+      ],
+      "result": null
+    },
+    {
+      "id": "reg",
+      "title": "Measure the motion",
+      "what": "For each of the other 20 phases, compute a deformation field that warps it onto the reference phase. That field is the measured displacement of the tissue, which is what turns one static segmentation into a model that moves.",
+      "runs": [
+        "registrar = RegisterImagesGreedy(log_level=logging.INFO)",
+        "registrar.set_number_of_iterations([30, 15, 7, 3])",
+        "registrar.set_metric('CC')",
+        "workflow = WorkflowConvertImageToUSD(time_series_images=..., reference_image=...,",
+        "    registration_method=registrar, segmentation_method=segmenter,",
+        "    surface_reduction_rate=0.5, save_assets=True)",
+        "workflow.process()"
+      ],
+      "reads": ["slice_000.mha ... slice_020.mha", "slice_014_labelmap.mha"],
+      "writes": [
+        "~/heart/out/tutorial_01_heart/slice_###_registered.mha   (one per phase)",
+        "~/heart/out/tutorial_01_heart/slice_###_labelmap.mha     (reference labels carried to each phase)"
+      ],
+      "settings": [
+        "Greedy diffeomorphic registration on the CPU, 4 resolution levels, 30/15/7/3 iterations",
+        "Metric: normalised cross correlation, the usual choice for same-modality CT",
+        "Registration mask dilated 10 mm around the heart, so the ribs and lungs do not drag the fit"
+      ],
+      "result": null
+    },
+    {
+      "id": "mesh",
+      "title": "Build the surfaces",
+      "what": "Convert each phase's labelmap into triangle surfaces, one mesh per anatomical structure, then halve the triangle count. A browser draws triangles; it cannot draw a voxel grid.",
+      "runs": [
+        "ProcessContours   # invoked inside WorkflowConvertImageToUSD",
+        "  -> marching cubes per label id",
+        "  -> pyacvd remesh, surface_reduction_rate = 0.5",
+        "ProcessUSDAnatomy  # assigns clinical colours per structure"
+      ],
+      "reads": ["slice_###_labelmap.mha"],
+      "writes": [
+        "~/heart/out/tutorial_01_heart/*.vtp   (surfaces, per structure per phase)",
+        "~/heart/out/tutorial_01_heart/cardiac_model.usd"
+      ],
+      "settings": [
+        "surface_reduction_rate 0.5, half the triangles removed",
+        "One mesh per structure so chambers can be toggled independently on the page"
+      ],
+      "result": null
+    },
+    {
+      "id": "web",
+      "title": "Shrink it for the web",
+      "what": "Decimate further, pack all phases into one binary glTF as morph targets, and build the viewer page. The USD file is for Omniverse; a browser needs glTF.",
+      "runs": [
+        "trimesh.load('*.vtp') -> decimate to a per-structure triangle budget",
+        "pack phases as morph targets -> imaging/heart/heart.glb",
+        "npm run build:viewer   # esbuild bundles the three.js viewer",
+        "write imaging/heart/index.html"
+      ],
+      "reads": ["~/heart/out/tutorial_01_heart/*.vtp"],
+      "writes": [
+        "imaging/heart/heart.glb   (target: under 8 MB)",
+        "imaging/heart/index.html",
+        "imaging/heart/app.js"
+      ],
+      "settings": [
+        "Triangle budget chosen so the file stays under 8 MB on a phone connection",
+        "Phase slider, chamber toggles, play and pause, prefers-reduced-motion respected"
+      ],
+      "result": null
+    }
+  ]
+}

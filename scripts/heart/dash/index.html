@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Heart pipeline</title>
+<style>
+  :root {
+    --paper: #14110e; --card: #1b1713; --ink: #f4ede5; --muted: #a2978a; --line: #342c24;
+    --accent: #e2703a; --ok: #74c084; --bad: #e2605a; --run: #e8b14c;
+    --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.6 Georgia, serif; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 28px 24px 80px; }
+  h1 { font-size: 26px; margin: 0 0 8px; }
+  .lede { color: var(--muted); font-size: 16px; margin: 0 0 24px; max-width: 70ch; }
+
+  .meters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 26px; }
+  .meter { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; min-width: 190px; flex: 1 1 190px; }
+  .meter .k { font-family: var(--mono); font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+  .meter .v { font-size: 19px; }
+  .meter .v small { color: var(--muted); font-size: 13px; }
+  .track { height: 5px; background: #2a241e; border-radius: 3px; overflow: hidden; margin-top: 7px; }
+  .track i { display: block; height: 100%; background: var(--ok); transition: width .4s ease; }
+  .meter.warn .track i { background: var(--run); }
+  .meter.crit .track i { background: var(--bad); }
+
+  ol.stages { list-style: none; margin: 0 0 26px; padding: 0; }
+  li.stage { display: grid; grid-template-columns: 26px 1fr; gap: 14px; padding: 14px 0; border-top: 1px solid var(--line); }
+  li.stage:last-child { border-bottom: 1px solid var(--line); }
+  .mark { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--line); margin-top: 4px;
+          display: grid; place-items: center; font-size: 12px; font-family: var(--mono); color: var(--muted); }
+  .stage[data-status="running"] .mark { border-color: var(--run); color: var(--run); animation: pulse 1.1s infinite alternate; }
+  .stage[data-status="done"] .mark { border-color: var(--ok); color: var(--ok); }
+  .stage[data-status="failed"] .mark { border-color: var(--bad); color: var(--bad); }
+  @keyframes pulse { to { opacity: .35; } }
+  .stage h2 { font-size: 18px; margin: 0 0 2px; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+  .stage .tag { font-family: var(--mono); font-size: 11px; color: var(--muted); border: 1px solid var(--line);
+                border-radius: 999px; padding: 1px 8px; }
+  .stage p { margin: 2px 0; max-width: 72ch; }
+  .stage .why { color: var(--muted); font-size: 14.5px; }
+  .stage .result { font-family: var(--mono); font-size: 13px; color: var(--ok); }
+  .block { margin: 10px 0 0; }
+  .block .k { font-family: var(--mono); font-size: 10.5px; color: var(--muted);
+              text-transform: uppercase; letter-spacing: .07em; margin-bottom: 3px; }
+  .block pre { margin: 0; background: #100d0b; border: 1px solid var(--line); border-left: 2px solid var(--accent);
+               border-radius: 5px; padding: 9px 12px; font-family: var(--mono); font-size: 12.5px;
+               line-height: 1.55; color: #e8ddd0; overflow-x: auto; white-space: pre; }
+  .block ul { margin: 0; padding-left: 18px; font-family: var(--mono); font-size: 12.5px; color: #cfc3b4; }
+  .block.files pre { border-left-color: #6d8fb8; }
+  .block.settings ul { font-family: Georgia, serif; font-size: 14px; color: var(--muted); }
+  .stage .live { font-family: var(--mono); font-size: 12.5px; color: var(--run); white-space: pre-wrap;
+                 word-break: break-word; margin-top: 6px; }
+
+  .ask { background: var(--card); border: 1px solid var(--accent); border-radius: 10px; padding: 18px; margin: 0 0 26px; }
+  .ask h2 { margin: 0 0 6px; font-size: 19px; }
+  .ask p { margin: 0 0 14px; color: var(--muted); max-width: 72ch; }
+  .ask .opts { display: flex; gap: 10px; flex-wrap: wrap; }
+  .ask button { font: inherit; font-size: 15px; text-align: left; background: #231d18; color: var(--ink);
+                border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; cursor: pointer; max-width: 320px; }
+  .ask button:hover, .ask button:focus-visible { border-color: var(--accent); outline: none; }
+  .ask button b { display: block; }
+  .ask button span { color: var(--muted); font-size: 13.5px; }
+  .ask.answered { border-color: var(--line); }
+  .ask .chosen { color: var(--ok); font-family: var(--mono); font-size: 13px; }
+
+  #art { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 26px; }
+  #art:empty { display: none; }
+  #art figure { margin: 0; flex: 0 0 auto; }
+  #art img { height: 170px; border: 1px solid var(--line); border-radius: 6px; display: block; background: #000; }
+  #art figcaption { color: var(--muted); font-size: 11.5px; font-family: var(--mono); padding-top: 5px; }
+
+  details { border-top: 1px solid var(--line); padding-top: 14px; }
+  summary { cursor: pointer; color: var(--muted); font-size: 14px; }
+  #log { font-family: var(--mono); font-size: 12.5px; line-height: 1.45; white-space: pre-wrap;
+         word-break: break-word; max-height: 380px; overflow: auto; margin-top: 12px;
+         background: #100d0b; border: 1px solid var(--line); border-radius: 6px; padding: 12px; }
+  #log .err { color: #f0a39e; }
+  .conn { float: right; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="conn" id="conn">connecting</span>
+  <h1 id="title">Heart pipeline</h1>
+  <p class="lede" id="summary"></p>
+
+  <div class="meters" id="meters"></div>
+  <div id="asks"></div>
+  <ol class="stages" id="stages"></ol>
+  <div id="art" aria-label="Pictures produced so far"></div>
+
+  <details>
+    <summary>Raw command output</summary>
+    <div id="log" aria-live="polite"></div>
+  </details>
+</div>
+
+<script type="module">
+  const el = (id) => document.getElementById(id);
+  const stagesEl = el('stages'), metersEl = el('meters'), artEl = el('art');
+  const logEl = el('log'), asksEl = el('asks'), connEl = el('conn');
+
+  const nodes = new Map();   // stage id from plan.json -> rendered row
+  const asked = new Map();
+
+  const fmt = (ms) => ms >= 60000 ? `${Math.floor(ms / 60000)}m ${Math.round((ms % 60000) / 1000)}s` : `${(ms / 1000).toFixed(0)}s`;
+  const base = (id) => id.replace(/-[a-z0-9]+$/, '');
+
+  const plan = await (await fetch('/state')).json();
+  el('title').textContent = plan.title || 'Heart pipeline';
+  el('summary').textContent = plan.summary || '';
+
+  function block(label, lines, className) {
+    if (!lines || !lines.length) return null;
+    const wrap = document.createElement('div');
+    wrap.className = `block ${className || ''}`;
+    const key = document.createElement('div');
+    key.className = 'k';
+    key.textContent = label;
+    wrap.append(key);
+    if (className === 'settings') {
+      const ul = document.createElement('ul');
+      for (const line of lines) {
+        const item = document.createElement('li');
+        item.textContent = line;
+        ul.append(item);
+      }
+      wrap.append(ul);
+    } else {
+      const pre = document.createElement('pre');
+      pre.textContent = lines.join('\n');
+      wrap.append(pre);
+    }
+    return wrap;
+  }
+
+  for (const [index, stage] of (plan.stages || []).entries()) {
+    const li = document.createElement('li');
+    li.className = 'stage';
+    li.dataset.status = stage.result ? 'done' : 'pending';
+    li.innerHTML = `
+      <div class="mark">${stage.result ? '✓' : index + 1}</div>
+      <div data-role="body">
+        <h2>${stage.title}<span class="tag" data-role="tag">${stage.result ? 'done' : 'waiting'}</span></h2>
+        <p data-role="what"></p>
+        <p class="result" data-role="result"${stage.result ? '' : ' hidden'}></p>
+        <div class="live" data-role="live"></div>
+      </div>`;
+    li.querySelector('[data-role="what"]').textContent = stage.what;
+    li.querySelector('[data-role="result"]').textContent = stage.result || '';
+    const body = li.querySelector('[data-role="body"]');
+    const live = li.querySelector('[data-role="live"]');
+    for (const part of [
+      block('commands run', stage.runs),
+      block('reads', stage.reads, 'files'),
+      block('writes', stage.writes, 'files'),
+      block('settings that matter', stage.settings, 'settings'),
+    ]) if (part) body.insertBefore(part, live);
+    stagesEl.append(li);
+    nodes.set(stage.id, {
+      li,
+      tag: li.querySelector('[data-role="tag"]'),
+      live: li.querySelector('[data-role="live"]'),
+      result: li.querySelector('[data-role="result"]'),
+      mark: li.querySelector('.mark'),
+    });
+  }
+
+  function meter(key, label, value, pct, level) {
+    let box = el(`m-${key}`);
+    if (!box) {
+      box = document.createElement('div');
+      box.id = `m-${key}`;
+      box.className = 'meter';
+      box.innerHTML = `<div class="k">${label}</div><div class="v" data-role="v"></div><div class="track"><i></i></div>`;
+      metersEl.append(box);
+    }
+    box.querySelector('[data-role="v"]').innerHTML = value;
+    box.querySelector('.track i').style.width = `${Math.max(0, Math.min(100, pct))}%`;
+    box.className = `meter ${level || ''}`;
+  }
+
+  function showAsk(ev) {
+    if (asked.has(ev.ask)) return;
+    const card = document.createElement('div');
+    card.className = 'ask';
+    card.innerHTML = `<h2></h2><p></p><div class="opts"></div>`;
+    card.querySelector('h2').textContent = ev.question;
+    card.querySelector('p').textContent = ev.detail || '';
+    const opts = card.querySelector('.opts');
+    for (const option of ev.options || []) {
+      const button = document.createElement('button');
+      const name = document.createElement('b');
+      name.textContent = option.label;
+      const note = document.createElement('span');
+      note.textContent = option.description || '';
+      button.append(name, note);
+      button.addEventListener('click', () => {
+        fetch('/answer', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ ask: ev.ask, choice: option.id, label: option.label }),
+        });
+      });
+      opts.append(button);
+    }
+    asksEl.append(card);
+    asked.set(ev.ask, card);
+  }
+
+  const es = new EventSource('/events');
+  es.onopen = () => { connEl.textContent = 'live'; connEl.style.color = 'var(--ok)'; };
+  es.onerror = () => { connEl.textContent = 'reconnecting'; connEl.style.color = 'var(--bad)'; };
+  es.onmessage = (e) => {
+    const ev = JSON.parse(e.data);
+    const node = ev.stage ? nodes.get(base(ev.stage)) : null;
+
+    if (ev.type === 'stage' && node) {
+      node.li.dataset.status = ev.status;
+      node.tag.textContent = ev.status === 'running' ? 'running'
+        : ev.status === 'done' ? `done in ${fmt(ev.ms || 0)}`
+        : `failed, exit ${ev.code}`;
+      if (ev.status === 'done') node.mark.textContent = '✓';
+      if (ev.status === 'failed') node.mark.textContent = '!';
+    } else if (ev.type === 'beat' && node) {
+      if (node.li.dataset.status === 'running') node.tag.textContent = `running ${fmt(ev.ms)}`;
+    } else if ((ev.type === 'log' || ev.type === 'progress') && node) {
+      node.live.textContent = ev.line;
+    } else if (ev.type === 'result' && node) {
+      node.result.textContent = ev.text;
+      node.result.hidden = false;
+    } else if (ev.type === 'metric') {
+      if (ev.diskFreeGb != null) {
+        const level = ev.diskFreeGb < 8 ? 'crit' : ev.diskFreeGb < 20 ? 'warn' : '';
+        meter('disk', 'Windows disk free', `${ev.diskFreeGb.toFixed(1)} <small>GB of 476</small>`, (ev.diskFreeGb / 476) * 100, level);
+      }
+      if (ev.mem) {
+        const used = ev.mem.totalGb - ev.mem.availableGb;
+        const pct = (used / ev.mem.totalGb) * 100;
+        meter('ram', 'Linux memory in use', `${used.toFixed(1)} <small>GB of ${ev.mem.totalGb.toFixed(0)}</small>`, pct,
+          pct > 90 ? 'crit' : pct > 75 ? 'warn' : '');
+      }
+      if (ev.gpu) {
+        const pct = (ev.gpu.usedMb / ev.gpu.totalMb) * 100;
+        meter('vram', 'Graphics memory', `${(ev.gpu.usedMb / 1024).toFixed(1)} <small>GB of ${(ev.gpu.totalMb / 1024).toFixed(0)}, ${ev.gpu.utilPct}% busy</small>`, pct,
+          pct > 92 ? 'crit' : pct > 80 ? 'warn' : '');
+      }
+    } else if (ev.type === 'ask') {
+      showAsk(ev);
+    } else if (ev.type === 'answered') {
+      const card = asked.get(ev.ask);
+      if (card) {
+        card.classList.add('answered');
+        const chosen = document.createElement('p');
+        chosen.className = 'chosen';
+        chosen.textContent = `chosen: ${ev.choice}`;
+        card.querySelector('.opts').replaceChildren(chosen);
+      }
+    } else if (ev.type === 'artifact') {
+      const fig = document.createElement('figure');
+      const img = document.createElement('img');
+      img.src = `/art/${ev.path}?v=${ev.t}`;
+      img.alt = ev.label || ev.path;
+      const cap = document.createElement('figcaption');
+      cap.textContent = ev.label || ev.path;
+      fig.append(img, cap);
+      artEl.append(fig);
+    }
+
+    if (ev.type === 'log' || ev.type === 'progress') {
+      const div = document.createElement('div');
+      if (ev.stream === 'err') div.className = 'err';
+      div.textContent = ev.line;
+      const atBottom = logEl.scrollHeight - logEl.scrollTop - logEl.clientHeight < 80;
+      logEl.append(div);
+      while (logEl.childElementCount > 3000) logEl.firstElementChild.remove();
+      if (atBottom) logEl.scrollTop = logEl.scrollHeight;
+    }
+  };
+</script>
+</body>
+</html>

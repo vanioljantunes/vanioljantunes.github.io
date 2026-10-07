@@ -1,0 +1,48 @@
+{
+  "phases": 21,
+  "fps": 14.0,
+  "structures": [
+    {
+      "name": "aorta",
+      "label": "Aorta",
+      "colour": "#c2453c",
+      "points": 7989,
+      "faces": 16052
+    },
+    {
+      "name": "inferior_vena_cava",
+      "label": "Inferior vena cava",
+      "colour": "#4f6f93",
+      "points": 3192,
+      "faces": 6211
+    },
+    {
+      "name": "pulmonary_vein",
+      "label": "Pulmonary veins",
+      "colour": "#5b7fa6",
+      "points": 3499,
+      "faces": 6811
+    },
+    {
+      "name": "superior_vena_cava",
+      "label": "Superior vena cava",
+      "colour": "#4f6f93",
+      "points": 1478,
+      "faces": 2818
+    },
+    {
+      "name": "atrial_appendage_left",
+      "label": "Left atrial appendage",
+      "colour": "#a8584c",
+      "points": 1400,
+      "faces": 2885
+    },
+    {
+      "name": "heart",
+      "label": "Heart",
+      "colour": "#b4563f",
+      "points": 12304,
+      "faces": 23817
+    }
+  ]
+}
