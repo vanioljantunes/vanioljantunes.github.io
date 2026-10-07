@@ -1,10 +1,15 @@
-// Study track: render the deep-learning-drizzle catalogue, filter it, and play a
-// course playlist inside its own card. One player exists at a time.
+// Study track: the deep-learning-drizzle catalogue, walked one level at a time.
 //
-// The player runs through the YouTube IFrame API rather than a bare iframe, because
-// the catalogue only carries a playlist id: the API is what tells us the lectures in
-// that playlist, which one is playing, and how to step between them. Nothing reaches
-// YouTube until the reader presses play.
+// The page is a screen with a catalogue under it. The screen is the only thing that plays,
+// it keeps its place while the reader navigates, and everything below it only decides what
+// it shows: topics open into their courses, a course loads its playlist, a lecture swaps the
+// video. The player is mounted once in the screen rather than inside whichever card was
+// clicked, so choosing the next thing never moves the thing being watched.
+//
+// The player runs through the YouTube IFrame API rather than a bare iframe, because the
+// catalogue only carries a playlist id: the API is what tells us the lectures in that
+// playlist, which one is playing, and how to step between them. Nothing reaches YouTube
+// until the reader presses play.
 
 const DATA_URL = '/imaging/study-track/courses.json';
 const YT_API = 'https://www.youtube.com/iframe_api';
@@ -12,7 +17,7 @@ const THUMB = (id) => `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
 
 const railList = document.getElementById('st-rail-list');
 const railTotal = document.getElementById('st-rail-total');
-const sectionsEl = document.getElementById('st-sections');
+const navEl = document.getElementById('st-sections');
 const countEl = document.getElementById('st-count');
 const emptyEl = document.getElementById('st-empty');
 const emptyClear = document.getElementById('st-empty-clear');
@@ -22,10 +27,15 @@ const yearsEl = document.getElementById('st-years');
 const sortEl = document.getElementById('st-sort');
 const playableEl = document.getElementById('st-playable');
 
+const screenEl = document.getElementById('st-screen');
+const screenIdle = document.getElementById('st-screen-idle');
+const screenBody = document.getElementById('st-screen-body');
+
 let sections = [];
-let openCard = null;
-let player = null; // the one live YT.Player
+let player = null; // the one live YT.Player, always mounted in the screen
+let playing = null; // the course it is playing
 let hasBakedTitles = false;
+let openSlug = null; // the topic whose courses are listed, or null for the topic cards
 
 // Titles we have learned, by video id. The IFrame API only names the video that is
 // playing, so the strip fills in as lectures are visited unless titles were baked in.
@@ -57,14 +67,12 @@ async function load() {
   }));
 
   buildRail();
-  buildSections();
   railTotal.textContent = `${plural(data.counts.courses, 'course', 'courses')} in ${plural(
     data.counts.sections,
     'topic',
     'topics',
   )}. ${data.counts.withEmbed} play in the page.`;
   apply();
-  watchSections();
   followUrl();
 }
 
@@ -84,53 +92,28 @@ function followUrl() {
         const embed = course.embeds.find((e) => e.id === list);
         if (!embed) continue;
         const at = Number.parseInt(params.get('i') ?? '', 10);
-        openCited(course, embed, Number.isInteger(at) && at > 0 ? at : 0);
+        showTopic(s.slug);
+        playCourse(course, embed, Number.isInteger(at) && at > 0 ? at : 0);
         return;
       }
     }
   }
 
-  // Also covers a bare #topic: the catalogue is built after load, so the browser resolved
-  // the hash against an empty page and scrolled nowhere.
-  if (topic) {
-    const sec = sectionsEl.querySelector(`.st-section[data-slug="${CSS.escape(topic)}"]`);
-    if (sec) sec.scrollIntoView({ block: 'start' });
-  }
+  if (topic && sections.some((s) => s.slug === topic)) showTopic(topic);
 }
 
-function openCited(course, embed, startAt) {
-  // Narrow to the course by name, which also shows its sibling years, then open the exact card.
-  qEl.value = course.name;
-  apply();
-
-  const card = sectionsEl.querySelector(`#${course.id}`);
-  if (!card) return;
-  const btn = card.querySelector('.st-play');
-  if (!btn) {
-    card.scrollIntoView({ block: 'center' });
-    return;
-  }
-  openPlayer(card, course, btn, card.querySelector('.st-player'), embed, startAt);
-  card.scrollIntoView({ block: 'start' });
+// Keep the address bar in step with the level being read, so a topic can be bookmarked.
+function rememberPlace() {
+  const params = new URLSearchParams(location.search);
+  params.delete('list');
+  params.delete('i');
+  if (openSlug) params.set('topic', openSlug);
+  else params.delete('topic');
+  const query = params.toString();
+  window.history.replaceState(null, '', query ? `${location.pathname}?${query}` : location.pathname);
 }
 
-function buildRail() {
-  railList.replaceChildren();
-  for (const s of sections) {
-    const li = document.createElement('li');
-    const a = document.createElement('a');
-    a.href = `#${s.slug}`;
-    a.dataset.slug = s.slug;
-    const name = document.createElement('span');
-    name.className = 'st-rail__name';
-    name.textContent = s.title;
-    const count = document.createElement('span');
-    count.className = 'st-rail__count';
-    a.append(name, count);
-    li.append(a);
-    railList.append(li);
-  }
-}
+/* ---------- Small builders ---------- */
 
 function linkOut(label, url, cls) {
   const a = document.createElement('a');
@@ -164,10 +147,58 @@ function icon(d) {
   return svg;
 }
 
+function buildRail() {
+  railList.replaceChildren();
+  for (const s of sections) {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = `?topic=${encodeURIComponent(s.slug)}`;
+    a.dataset.slug = s.slug;
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      showTopic(s.slug);
+    });
+    const name = document.createElement('span');
+    name.className = 'st-rail__name';
+    name.textContent = s.title;
+    const count = document.createElement('span');
+    count.className = 'st-rail__count';
+    a.append(name, count);
+    li.append(a);
+    railList.append(li);
+  }
+}
+
+/* ---------- Level one: the topics ---------- */
+
+function topicCard(section, visible) {
+  const li = document.createElement('li');
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'st-topic';
+  b.dataset.slug = section.slug;
+
+  const name = document.createElement('span');
+  name.className = 'st-topic__name';
+  name.textContent = section.title;
+
+  const count = document.createElement('span');
+  count.className = 'st-topic__count';
+  count.textContent = plural(visible, 'course', 'courses');
+
+  b.append(name, count);
+  b.addEventListener('click', () => showTopic(section.slug));
+  li.append(b);
+  return li;
+}
+
+/* ---------- Level two: the courses in a topic ---------- */
+
 function courseCard(course) {
   const li = document.createElement('li');
   li.className = 'st-card';
   li.id = course.id;
+  if (playing && playing.id === course.id) li.classList.add('st-card--playing');
 
   const h3 = document.createElement('h3');
   h3.className = 'st-card__name';
@@ -193,13 +224,11 @@ function courseCard(course) {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'st-play';
-    btn.setAttribute('aria-expanded', 'false');
-    btn.setAttribute('aria-controls', `${course.id}-player`);
     const label = document.createElement('span');
     label.className = 'st-play__label';
-    label.textContent = 'Play lectures';
+    label.textContent = playing && playing.id === course.id ? 'Playing above' : 'Play lectures';
     btn.append(icon('M8 5.5v13l11-6.5z'), label);
-    btn.addEventListener('click', () => togglePlayer(li, course, btn));
+    btn.addEventListener('click', () => playCourse(course, course.embeds[0], 0));
     actions.append(btn);
   }
 
@@ -207,13 +236,23 @@ function courseCard(course) {
   for (const p of course.pages) actions.append(linkOut(p.label, p.url, 'st-link st-link--quiet'));
   li.append(actions);
 
-  const panel = document.createElement('div');
-  panel.className = 'st-player';
-  panel.id = `${course.id}-player`;
-  panel.hidden = true;
-  li.append(panel);
-
   return li;
+}
+
+function showTopic(slug) {
+  openSlug = slug;
+  // A topic is a place of its own, so a search from the previous level must not narrow it.
+  if (qEl.value.trim()) qEl.value = '';
+  apply();
+  rememberPlace();
+  const head = navEl.querySelector('.st-level__title');
+  if (head) head.focus();
+}
+
+function showTopics() {
+  openSlug = null;
+  apply();
+  rememberPlace();
 }
 
 /* ---------- The YouTube IFrame API ---------- */
@@ -333,25 +372,68 @@ function syncStrip(strip, ids, current) {
   }
 }
 
-/* ---------- Open and close ---------- */
+/* ---------- The screen ---------- */
 
-function togglePlayer(card, course, btn) {
-  const panel = card.querySelector('.st-player');
-  const isOpen = btn.getAttribute('aria-expanded') === 'true';
-
-  if (openCard && openCard !== card) closePlayer(openCard);
-  if (isOpen) {
-    closePlayer(card);
-    return;
+function destroyPlayer() {
+  if (player && typeof player.destroy === 'function') {
+    try {
+      player.destroy();
+    } catch {
+      // The player may already be gone with its host; nothing to clean up then.
+    }
   }
-
-  openPlayer(card, course, btn, panel, course.embeds[0], 0);
+  player = null;
 }
 
-function openPlayer(card, course, btn, panel, embed, startAt = 0) {
-  panel.replaceChildren();
+function closeScreen() {
+  destroyPlayer();
+  playing = null;
+  screenBody.replaceChildren();
+  screenBody.hidden = true;
+  screenIdle.hidden = false;
+  screenEl.classList.remove('st-screen--on');
+  markPlayingCard();
+}
 
-  // Several playlists on one course: a chip per playlist, as before.
+// The course list stays on screen while something plays, so the card that is playing says so.
+function markPlayingCard() {
+  for (const card of navEl.querySelectorAll('.st-card')) {
+    const isPlaying = Boolean(playing) && card.id === playing.id;
+    card.classList.toggle('st-card--playing', isPlaying);
+    const label = card.querySelector('.st-play__label');
+    if (label) label.textContent = isPlaying ? 'Playing above' : 'Play lectures';
+  }
+}
+
+function playCourse(course, embed = course.embeds[0], startAt = 0) {
+  if (!embed) return;
+  destroyPlayer();
+  playing = course;
+  screenIdle.hidden = true;
+  screenBody.hidden = false;
+  screenEl.classList.add('st-screen--on');
+  screenBody.replaceChildren();
+  markPlayingCard();
+
+  const head = document.createElement('div');
+  head.className = 'st-screen__head';
+  const name = document.createElement('h2');
+  name.className = 'st-screen__name';
+  name.textContent = course.name;
+  const who = document.createElement('p');
+  who.className = 'st-screen__meta';
+  who.textContent = [course.instructor, course.year].filter(Boolean).join(' · ');
+  head.append(name, who);
+
+  const close = document.createElement('button');
+  close.type = 'button';
+  close.className = 'st-linkbtn st-screen__close';
+  close.textContent = 'Close';
+  close.addEventListener('click', closeScreen);
+  head.append(close);
+  screenBody.append(head);
+
+  // Several playlists on one course: a chip per playlist.
   if (course.embeds.length > 1) {
     const switcher = document.createElement('p');
     switcher.className = 'st-player__switch';
@@ -363,25 +445,12 @@ function openPlayer(card, course, btn, panel, embed, startAt = 0) {
       b.setAttribute('aria-pressed', String(e === embed));
       b.addEventListener('click', () => {
         if (e === embed) return;
-        destroyPlayer();
-        openPlayer(card, course, btn, panel, e);
+        playCourse(course, e, 0);
       });
       switcher.append(b);
     }
-    panel.append(switcher);
+    screenBody.append(switcher);
   }
-
-  const strip = document.createElement('div');
-  strip.className = 'st-strip';
-  strip.hidden = true;
-  strip.setAttribute('role', 'group');
-  strip.setAttribute('aria-label', `Lectures in ${course.name}`);
-  panel.append(strip);
-
-  const now = document.createElement('p');
-  now.className = 'st-now';
-  now.textContent = 'Loading the player…';
-  panel.append(now);
 
   const stage = document.createElement('div');
   stage.className = 'st-stage';
@@ -406,23 +475,19 @@ function openPlayer(card, course, btn, panel, embed, startAt = 0) {
   frame.append(host);
 
   stage.append(prev, frame, next);
-  panel.append(stage);
+  screenBody.append(stage);
 
-  const close = document.createElement('button');
-  close.type = 'button';
-  close.className = 'st-linkbtn st-player__close';
-  close.textContent = 'Close the player';
-  close.addEventListener('click', () => {
-    closePlayer(card);
-    btn.focus();
-  });
-  panel.append(close);
+  const now = document.createElement('p');
+  now.className = 'st-now';
+  now.textContent = 'Loading the player…';
+  screenBody.append(now);
 
-  panel.hidden = false;
-  btn.setAttribute('aria-expanded', 'true');
-  btn.querySelector('.st-play__label').textContent = 'Stop lectures';
-  card.classList.add('st-card--playing');
-  openCard = card;
+  const strip = document.createElement('div');
+  strip.className = 'st-strip';
+  strip.hidden = true;
+  strip.setAttribute('role', 'group');
+  strip.setAttribute('aria-label', `Lectures in ${course.name}`);
+  screenBody.append(strip);
 
   let ids = [];
   let jumpTo = startAt;
@@ -484,59 +549,7 @@ function openPlayer(card, course, btn, panel, embed, startAt = 0) {
     });
 }
 
-function destroyPlayer() {
-  if (player && typeof player.destroy === 'function') {
-    try {
-      player.destroy();
-    } catch {
-      // The player may already be gone with its card; nothing to clean up then.
-    }
-  }
-  player = null;
-}
-
-function closePlayer(card) {
-  destroyPlayer();
-  const panel = card.querySelector('.st-player');
-  const btn = card.querySelector('.st-play');
-  panel.replaceChildren();
-  panel.hidden = true;
-  if (btn) {
-    btn.setAttribute('aria-expanded', 'false');
-    btn.querySelector('.st-play__label').textContent = 'Play lectures';
-  }
-  card.classList.remove('st-card--playing');
-  if (openCard === card) openCard = null;
-}
-
-/* ---------- Sections and filtering ---------- */
-
-function buildSections() {
-  sectionsEl.replaceChildren();
-  for (const s of sections) {
-    const sec = document.createElement('section');
-    sec.className = 'st-section';
-    sec.id = s.slug;
-    sec.dataset.slug = s.slug;
-
-    const h2 = document.createElement('h2');
-    h2.className = 'st-section__head';
-    const title = document.createElement('span');
-    title.className = 'st-section__title';
-    title.textContent = s.title;
-    const count = document.createElement('span');
-    count.className = 'st-section__count';
-    count.dataset.sectionCount = s.slug;
-    h2.append(title, document.createTextNode(' '), count);
-    sec.append(h2);
-
-    const ul = document.createElement('ul');
-    ul.className = 'st-grid';
-    for (const c of s.courses) ul.append(courseCard(c));
-    sec.append(ul);
-    sectionsEl.append(sec);
-  }
-}
+/* ---------- Filtering, and what the catalogue shows ---------- */
 
 function yearRange() {
   const v = yearsEl.value;
@@ -561,61 +574,101 @@ const comparators = {
   name: (a, b) => a.name.localeCompare(b.name),
 };
 
+function courseList(courses, cmp) {
+  const ul = document.createElement('ul');
+  ul.className = 'st-grid';
+  const order = cmp ? [...courses].sort(cmp) : courses;
+  for (const c of order) ul.append(courseCard(c));
+  return ul;
+}
+
+function levelHead(title, note, onBack) {
+  const head = document.createElement('div');
+  head.className = 'st-level';
+
+  if (onBack) {
+    const back = document.createElement('button');
+    back.type = 'button';
+    back.className = 'st-back';
+    back.append(icon('m15 5-7 7 7 7'));
+    back.append(document.createTextNode('All topics'));
+    back.addEventListener('click', onBack);
+    head.append(back);
+  }
+
+  const h2 = document.createElement('h2');
+  h2.className = 'st-level__title';
+  h2.tabIndex = -1;
+  h2.textContent = title;
+  head.append(h2);
+
+  if (note) {
+    const p = document.createElement('p');
+    p.className = 'st-level__note';
+    p.textContent = note;
+    head.append(p);
+  }
+  return head;
+}
+
 function apply() {
   const q = qEl.value.trim().toLowerCase();
   const range = yearRange();
   const cmp = comparators[sortEl.value];
+  const filtered = Boolean(q) || Boolean(range) || playableEl.checked;
+
+  // Per-topic counts drive both the rail and the topic cards.
+  const visibleBySlug = new Map();
   let total = 0;
-
   for (const s of sections) {
-    const sec = sectionsEl.querySelector(`.st-section[data-slug="${s.slug}"]`);
-    const ul = sec.querySelector('.st-grid');
-    const visible = [];
-
-    for (const c of s.courses) {
-      const card = ul.querySelector(`#${c.id}`);
-      const ok = matches(c, q, range);
-      card.hidden = !ok;
-      if (!ok && card === openCard) closePlayer(card);
-      if (ok) visible.push(c);
-    }
-
-    const order = cmp ? [...visible].sort(cmp) : s.courses;
-    for (const c of order) ul.append(ul.querySelector(`#${c.id}`));
-
-    sec.hidden = visible.length === 0;
-    sec.querySelector(`[data-section-count="${s.slug}"]`).textContent = plural(visible.length, 'course', 'courses');
+    const visible = s.courses.filter((c) => matches(c, q, range));
+    visibleBySlug.set(s.slug, visible);
+    total += visible.length;
 
     const railItem = railList.querySelector(`a[data-slug="${s.slug}"]`);
     railItem.querySelector('.st-rail__count').textContent = String(visible.length);
     railItem.parentElement.hidden = visible.length === 0;
-
-    total += visible.length;
+    if (s.slug === openSlug) railItem.setAttribute('aria-current', 'true');
+    else railItem.removeAttribute('aria-current');
   }
 
-  const filtered = Boolean(q) || Boolean(range) || playableEl.checked;
-  countEl.textContent = filtered
-    ? `${plural(total, 'course', 'courses')} match`
-    : `${plural(total, 'course', 'courses')} across ${plural(sections.length, 'topic', 'topics')}`;
-  emptyEl.hidden = total > 0;
-}
+  navEl.replaceChildren();
 
-// Highlight the topic in the rail that the reader is looking at.
-function watchSections() {
-  const obs = new IntersectionObserver(
-    (entries) => {
-      const seen = entries
-        .filter((e) => e.isIntersecting)
-        .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
-      if (!seen) return;
-      for (const a of railList.querySelectorAll('a')) {
-        if (a.dataset.slug === seen.target.dataset.slug) a.setAttribute('aria-current', 'true');
-        else a.removeAttribute('aria-current');
-      }
-    },
-    { rootMargin: '-96px 0px -60% 0px', threshold: 0 },
-  );
-  for (const sec of sectionsEl.querySelectorAll('.st-section')) obs.observe(sec);
+  if (filtered) {
+    // A search is a question about the whole catalogue, so it answers across every topic
+    // rather than inside whichever one happens to be open.
+    const hits = [];
+    for (const s of sections) for (const c of visibleBySlug.get(s.slug)) hits.push(c);
+    if (hits.length) {
+      navEl.append(levelHead('Matching courses', null, openSlug ? showTopics : null));
+      navEl.append(courseList(hits, cmp));
+    }
+    countEl.textContent = `${plural(total, 'course', 'courses')} match`;
+  } else if (openSlug) {
+    const section = sections.find((s) => s.slug === openSlug);
+    const courses = visibleBySlug.get(openSlug) ?? [];
+    navEl.append(
+      levelHead(section.title, `${plural(courses.length, 'course', 'courses')} in this topic.`, showTopics),
+    );
+    navEl.append(courseList(courses, cmp));
+    countEl.textContent = `${plural(courses.length, 'course', 'courses')} in ${section.title}`;
+  } else {
+    const ul = document.createElement('ul');
+    ul.className = 'st-topics';
+    for (const s of sections) {
+      const visible = visibleBySlug.get(s.slug);
+      if (visible.length) ul.append(topicCard(s, visible.length));
+    }
+    navEl.append(ul);
+    countEl.textContent = `${plural(total, 'course', 'courses')} across ${plural(
+      sections.length,
+      'topic',
+      'topics',
+    )}. Pick a topic.`;
+  }
+
+  emptyEl.hidden = total > 0;
+  markPlayingCard();
 }
 
 let timer;
