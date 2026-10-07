@@ -87,9 +87,6 @@ export interface Choice {
   value: string;
   label: string;
   count: number;
-  /* True when at least one series behind this choice carries published outlines, so the
-     picker can say where the structures are instead of leaving the reader to hunt. */
-  outlined?: boolean;
 }
 
 export interface Selection {
@@ -133,14 +130,12 @@ export function assignIds(entries: CatalogEntry[]): Map<string, CatalogEntry> {
    can never land on a combination with no series behind it. */
 function tally(entries: CatalogEntry[], key: (e: CatalogEntry) => string): Choice[] {
   const counts = new Map<string, number>();
-  const outlined = new Set<string>();
   for (const e of entries) {
     const k = key(e);
     counts.set(k, (counts.get(k) ?? 0) + 1);
-    if (e.hasSegmentation) outlined.add(k);
   }
   return [...counts.entries()]
-    .map(([value, count]) => ({ value, label: value, count, outlined: outlined.has(value) }))
+    .map(([value, count]) => ({ value, label: value, count }))
     .sort((a, b) => a.label.localeCompare(b.label));
 }
 
@@ -193,7 +188,6 @@ export function caseChoices(entries: CatalogEntry[], sel: Selection): Choice[] {
       value: e.id ?? e.seriesUID,
       label: `${e.patientId}${repeat} - ${images} images`,
       count: 1,
-      outlined: e.hasSegmentation === true,
     };
   });
 }
