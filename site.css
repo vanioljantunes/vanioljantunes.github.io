@@ -87,6 +87,13 @@ a:focus-visible {
   padding-inline: 1.25rem;
 }
 
+/* The viewer pages carry an image and a rail of instructions beside it. Inside the 1080px
+   measure the image would lose a third of its width to the rail, so these pages run wider
+   and every edge on them, heading, pickers and image, still lines up. */
+.wrap--wide {
+  max-width: 1340px;
+}
+
 /* ---------- Page headings ---------- */
 
 .page-head {
@@ -3107,6 +3114,47 @@ a.tool:focus-visible {
   display: none;
 }
 
+
+/* ----- Viewer and its instructions, side by side -----
+   The how-to sits beside the image rather than under it, so it is readable while the
+   image is in use rather than after a scroll. Making room for a rail inside the 1080px
+   measure would cost the image a third of its width, so the block breaks out of the
+   column and runs as wide as the window allows. */
+.dv-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 18rem;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.dv-side__title {
+  margin-top: 0;
+}
+
+.dv-page > p {
+  max-width: 70ch;
+}
+
+/* One per row in the rail, and no trailing margin: the rail ends where the image does. */
+.dv-side .dv-cards {
+  grid-template-columns: minmax(0, 1fr);
+  margin-bottom: 0;
+}
+
+/* Below this the rail would squeeze both itself and the image, so it goes back under. */
+@media (max-width: 900px) {
+  .dv-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dv-side__title {
+    margin-top: 2rem;
+  }
+
+  .dv-side .dv-cards {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
+}
 
 /* How-to cards under the viewer. Contents are rebuilt per modality, so the grid has to
    cope with four to six items without leaving a ragged last row. */

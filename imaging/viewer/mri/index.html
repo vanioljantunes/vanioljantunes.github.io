@@ -58,99 +58,106 @@
     </nav>
   </header>
 
-  <main id="main" class="page-main wrap">
+  <main id="main" class="page-main wrap wrap--wide dv-page">
     <div class="page-head">
       <h1>MRI viewer</h1>
       <p>Magnetic resonance read in the browser: pick the weighting and watch the same anatomy change between T1, T2 and diffusion.</p>
     </div>
 
 
-    <div class="dv-pickers">
-      <div class="dv-pick">
-        <label for="dv-pick-modality">Imaging</label>
-        <select id="dv-pick-modality"></select>
-      </div>
-      <div class="dv-pick">
-        <label for="dv-pick-region">Region</label>
-        <select id="dv-pick-region"></select>
-      </div>
-      <div class="dv-pick">
-        <label for="dv-pick-lesion">Finding</label>
-        <select id="dv-pick-lesion"></select>
-      </div>
-      <div class="dv-pick">
-        <label for="dv-pick-sequence">Sequence</label>
-        <select id="dv-pick-sequence"></select>
-      </div>
-      <div class="dv-pick">
-        <label for="dv-pick-case">Case</label>
-        <select id="dv-pick-case"></select>
-      </div>
-    </div>
 
 
-    <p class="dv-status" id="dv-status" role="status" aria-live="polite">Starting</p>
-
-
-    <div class="dv-progress" id="dv-progress" hidden
-         role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
-         aria-label="Loading slices">
-      <span class="dv-progress__track"><span class="dv-progress__fill" id="dv-progress-fill"></span></span>
-      <span class="dv-progress__text" id="dv-progress-text"></span>
-    </div>
-
-    <div class="dv-viewer">
-      <div class="dv-frame">
-        <!-- Cornerstone renders its canvas into this element. tabindex makes the stack
-             keyboard-scrollable; the overlay sits above it and ignores pointer events. -->
-        <div class="dv-stage" id="dv-stage" tabindex="0" role="img"
-             aria-label="CT series. Use the arrow keys to move through slices."></div>
-
-        <div class="dv-overlay" aria-hidden="true">
-          <div class="dv-overlay__tl">
-            <span id="dv-patient">-</span>
-            <span id="dv-study">-</span>
-            <span id="dv-series">-</span>
+    <div class="dv-layout">
+      <div class="dv-main">
+        <div class="dv-pickers">
+          <div class="dv-pick">
+            <label for="dv-pick-modality">Imaging</label>
+            <select id="dv-pick-modality"></select>
           </div>
-          <div class="dv-overlay__tr">
-            <span id="dv-modality">-</span>
-            <span id="dv-date">-</span>
-            <span class="dv-overlay__extra" id="dv-extra"></span>
+          <div class="dv-pick">
+            <label for="dv-pick-region">Region</label>
+            <select id="dv-pick-region"></select>
           </div>
-          <div class="dv-overlay__bl">
-            <span>Slice <b id="dv-slice">-</b></span>
-            <span>Thickness <b id="dv-thickness">-</b></span>
+          <div class="dv-pick">
+            <label for="dv-pick-lesion">Finding</label>
+            <select id="dv-pick-lesion"></select>
           </div>
-          <div class="dv-overlay__br">
-            <span id="dv-window">-</span>
-            <span>Zoom <b id="dv-zoom">-</b></span>
+          <div class="dv-pick">
+            <label for="dv-pick-sequence">Sequence</label>
+            <select id="dv-pick-sequence"></select>
+          </div>
+          <div class="dv-pick">
+            <label for="dv-pick-case">Case</label>
+            <select id="dv-pick-case"></select>
           </div>
         </div>
-      </div>
+        <p class="dv-status" id="dv-status" role="status" aria-live="polite">Starting</p>
 
-      <div class="dv-controls" role="toolbar" aria-label="Viewer controls">
-        <div class="dv-group" role="group" aria-label="Window presets">
-          <span class="dv-group__label" id="dv-presets-label">Window</span>
-          <div class="dv-chips" id="dv-presets" aria-labelledby="dv-presets-label"></div>
+
+        <div class="dv-progress" id="dv-progress" hidden
+             role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+             aria-label="Loading slices">
+          <span class="dv-progress__track"><span class="dv-progress__fill" id="dv-progress-fill"></span></span>
+          <span class="dv-progress__text" id="dv-progress-text"></span>
         </div>
-        <div class="dv-group" role="group" aria-label="View">
-          <span class="dv-group__label">View</span>
-          <div class="dv-chips">
-            <button type="button" class="dv-chip" id="dv-invert">Invert</button>
-            <button type="button" class="dv-chip" id="dv-reset">Reset</button>
+
+        <div class="dv-viewer">
+          <div class="dv-frame">
+            <!-- Cornerstone renders its canvas into this element. tabindex makes the stack
+                 keyboard-scrollable; the overlay sits above it and ignores pointer events. -->
+            <div class="dv-stage" id="dv-stage" tabindex="0" role="img"
+                 aria-label="CT series. Use the arrow keys to move through slices."></div>
+
+            <div class="dv-overlay" aria-hidden="true">
+              <div class="dv-overlay__tl">
+                <span id="dv-patient">-</span>
+                <span id="dv-study">-</span>
+                <span id="dv-series">-</span>
+              </div>
+              <div class="dv-overlay__tr">
+                <span id="dv-modality">-</span>
+                <span id="dv-date">-</span>
+                <span class="dv-overlay__extra" id="dv-extra"></span>
+              </div>
+              <div class="dv-overlay__bl">
+                <span>Slice <b id="dv-slice">-</b></span>
+                <span>Thickness <b id="dv-thickness">-</b></span>
+              </div>
+              <div class="dv-overlay__br">
+                <span id="dv-window">-</span>
+                <span>Zoom <b id="dv-zoom">-</b></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="dv-controls" role="toolbar" aria-label="Viewer controls">
+            <div class="dv-group" role="group" aria-label="Window presets">
+              <span class="dv-group__label" id="dv-presets-label">Window</span>
+              <div class="dv-chips" id="dv-presets" aria-labelledby="dv-presets-label"></div>
+            </div>
+            <div class="dv-group" role="group" aria-label="View">
+              <span class="dv-group__label">View</span>
+              <div class="dv-chips">
+                <button type="button" class="dv-chip" id="dv-invert">Invert</button>
+                <button type="button" class="dv-chip" id="dv-reset">Reset</button>
+              </div>
+            </div>
           </div>
         </div>
+
+        <p class="dv-provenance" id="dv-provenance"></p>
+        <p class="dv-modality-note" id="dv-modality-note"></p>
+
+
+        <p class="dv-credit" id="dv-attribution"></p>
+
       </div>
+
+      <aside class="dv-side" aria-labelledby="dv-guide-title">
+        <h2 class="dv-h2 dv-side__title" id="dv-guide-title">Using the viewer</h2>
+        <ul class="dv-cards" id="dv-guide"></ul>
+      </aside>
     </div>
-
-    <p class="dv-provenance" id="dv-provenance"></p>
-    <p class="dv-modality-note" id="dv-modality-note"></p>
-
-
-    <p class="dv-credit" id="dv-attribution"></p>
-
-    <h2 class="dv-h2">Using the viewer</h2>
-    <ul class="dv-cards" id="dv-guide"></ul>
 
     <h2 class="dv-h2">What this is</h2>
     <p>
