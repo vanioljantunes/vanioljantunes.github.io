@@ -58,75 +58,131 @@
   <main id="main" class="page-main wrap imaging-page">
     <div class="page-head">
       <h1>Tetralogy of Fallot on CT</h1>
-      <p>A cardiac CT angiogram of a child with a tetralogy of Fallot, read in the browser. The four chambers, the myocardium, the aorta and the pulmonary artery were outlined by the radiologists who published the dataset. Draw a box round any of them and the viewer names it.</p>
+      <p>A cardiac CT angiogram of a child with a tetralogy of Fallot, beside one the dataset records no congenital defect for. Scrolling either moves the other to the same level, so the two can be read against each other. On both, the four chambers, the myocardium, the aorta and the pulmonary artery were outlined by the radiologists who published the dataset: draw a box round any of them and that side names it.</p>
     </div>
 
     <p class="dv-status" id="dv-status" data-kind="loading" role="status" aria-live="polite">Reading the study&hellip;</p>
     <div class="dv-progress" id="dv-progress" hidden><span class="dv-progress__bar" id="dv-progress-bar"></span></div>
 
-    <div class="dv-workspace">
-    <div class="dv-viewer">
-      <div class="dv-frame">
-        <div class="dv-stage" id="dv-stage" tabindex="0" role="img"
-             aria-label="Cardiac CT. Use the arrow keys to move through slices."></div>
+    <div class="chd-pair">
+      <section class="chd-side" aria-labelledby="tof-title">
+        <h2 class="chd-side__title" id="tof-title">Tetralogy of Fallot</h2>
+        <p class="chd-side__note">ImageCHD case 1046</p>
 
-        <div class="dv-overlay" aria-hidden="true">
-          <div class="dv-overlay__tl">
-            <span class="dv-overlay__strong">Tetralogy of Fallot</span>
-            <span>Cardiac CT angiography</span>
-            <span>ImageCHD case 1046</span>
+        <div class="dv-frame">
+          <div class="dv-stage" id="tof-stage" tabindex="0" role="img"
+               aria-label="Cardiac CT with a tetralogy of Fallot. Use the arrow keys to move through slices."></div>
+
+          <div class="dv-overlay" aria-hidden="true">
+            <div class="dv-overlay__tl">
+              <span class="dv-overlay__strong">Tetralogy of Fallot</span>
+              <span>0.24 mm in plane</span>
+            </div>
+            <div class="dv-overlay__bl">
+              <span>Slice <span id="tof-slice">-</span></span>
+            </div>
+            <div class="dv-overlay__br">
+              <span id="tof-window">-</span>
+              <span>Zoom <span id="tof-zoom">-</span></span>
+            </div>
           </div>
-          <div class="dv-overlay__tr">
-            <span>CT</span>
-            <span>0.24 mm in plane</span>
-          </div>
-          <div class="dv-overlay__bl">
-            <span>Slice <span id="dv-slice">-</span></span>
-            <span>Thickness 0.75 mm</span>
-          </div>
-          <div class="dv-overlay__br">
-            <span id="dv-window">-</span>
-            <span>Zoom <span id="dv-zoom">-</span></span>
+
+          <canvas class="dv-seg-canvas" id="tof-seg-canvas" aria-hidden="true"></canvas>
+
+          <!-- Only present while the identify tool is on. It sits above the image so a drag
+               draws a box instead of reaching Cornerstone underneath and windowing. -->
+          <div class="dv-seg-layer" id="tof-seg-layer" hidden>
+            <div class="dv-seg-box" id="tof-seg-box" hidden></div>
           </div>
         </div>
 
-        <canvas class="dv-seg-canvas" id="dv-seg-canvas" aria-hidden="true"></canvas>
-
-        <!-- Only present while the identify tool is on. It sits above the image so a drag
-             draws a box instead of reaching Cornerstone underneath and windowing. -->
-        <div class="dv-seg-layer" id="dv-seg-layer" hidden>
-          <div class="dv-seg-box" id="dv-seg-box" hidden></div>
-        </div>
-      </div>
-
-      <div class="dv-controls" role="toolbar" aria-label="Viewer controls">
-        <div class="dv-group" role="group" aria-label="Window presets">
-          <span class="dv-group__label" id="dv-presets-label">Window</span>
-          <div class="dv-chips" id="dv-presets" aria-labelledby="dv-presets-label"></div>
-        </div>
-        <div class="dv-group" role="group" aria-label="View">
-          <span class="dv-group__label">View</span>
-          <div class="dv-chips">
-            <button type="button" class="dv-chip" id="dv-invert">Invert</button>
-            <button type="button" class="dv-chip" id="dv-reset">Reset</button>
+        <div class="dv-controls dv-controls--static" role="toolbar" aria-label="Tetralogy viewer controls">
+          <div class="dv-group" role="group" aria-label="Window presets">
+            <span class="dv-group__label" id="tof-presets-label">Window</span>
+            <div class="dv-chips" id="tof-presets" aria-labelledby="tof-presets-label"></div>
+          </div>
+          <div class="dv-group" role="group" aria-label="View">
+            <span class="dv-group__label">View</span>
+            <div class="dv-chips">
+              <button type="button" class="dv-chip" id="tof-invert">Invert</button>
+              <button type="button" class="dv-chip" id="tof-reset">Reset</button>
+            </div>
+          </div>
+          <div class="dv-group" role="group" aria-label="Structures">
+            <span class="dv-group__label">Structures</span>
+            <div class="dv-chips">
+              <button type="button" class="dv-chip" id="tof-identify" aria-pressed="false">Identify</button>
+            </div>
           </div>
         </div>
-        <div class="dv-group" role="group" aria-label="Structures">
-          <span class="dv-group__label">Structures</span>
-          <div class="dv-chips">
-            <button type="button" class="dv-chip" id="dv-identify" aria-pressed="false">Identify</button>
+
+        <p class="dv-seg-hint" id="tof-hint"></p>
+
+        <aside class="dv-seg-panel" id="tof-panel" aria-live="polite" hidden>
+          <h3 class="dv-seg-panel__title">Structure</h3>
+          <div id="tof-body"></div>
+        </aside>
+      </section>
+
+      <section class="chd-side" aria-labelledby="ctl-title">
+        <h2 class="chd-side__title" id="ctl-title">Healthy control</h2>
+        <p class="chd-side__note">ImageCHD case 1080, which the dataset records no congenital defect for</p>
+
+        <div class="dv-frame">
+          <div class="dv-stage" id="ctl-stage" tabindex="0" role="img"
+               aria-label="Cardiac CT of the control. Use the arrow keys to move through slices."></div>
+
+          <div class="dv-overlay" aria-hidden="true">
+            <div class="dv-overlay__tl">
+              <span class="dv-overlay__strong">Healthy control</span>
+              <span>0.24 mm in plane</span>
+            </div>
+            <div class="dv-overlay__bl">
+              <span>Slice <span id="ctl-slice">-</span></span>
+            </div>
+            <div class="dv-overlay__br">
+              <span id="ctl-window">-</span>
+              <span>Zoom <span id="ctl-zoom">-</span></span>
+            </div>
+          </div>
+
+          <canvas class="dv-seg-canvas" id="ctl-seg-canvas" aria-hidden="true"></canvas>
+
+          <div class="dv-seg-layer" id="ctl-seg-layer" hidden>
+            <div class="dv-seg-box" id="ctl-seg-box" hidden></div>
           </div>
         </div>
-      </div>
+
+        <div class="dv-controls dv-controls--static" role="toolbar" aria-label="Control viewer controls">
+          <div class="dv-group" role="group" aria-label="Window presets">
+            <span class="dv-group__label" id="ctl-presets-label">Window</span>
+            <div class="dv-chips" id="ctl-presets" aria-labelledby="ctl-presets-label"></div>
+          </div>
+          <div class="dv-group" role="group" aria-label="View">
+            <span class="dv-group__label">View</span>
+            <div class="dv-chips">
+              <button type="button" class="dv-chip" id="ctl-invert">Invert</button>
+              <button type="button" class="dv-chip" id="ctl-reset">Reset</button>
+            </div>
+          </div>
+          <div class="dv-group" role="group" aria-label="Structures">
+            <span class="dv-group__label">Structures</span>
+            <div class="dv-chips">
+              <button type="button" class="dv-chip" id="ctl-identify" aria-pressed="false">Identify</button>
+            </div>
+          </div>
+        </div>
+
+        <p class="dv-seg-hint" id="ctl-hint"></p>
+
+        <aside class="dv-seg-panel" id="ctl-panel" aria-live="polite" hidden>
+          <h3 class="dv-seg-panel__title">Structure</h3>
+          <div id="ctl-body"></div>
+        </aside>
+      </section>
     </div>
 
-      <aside class="dv-seg-panel" id="dv-seg-panel" aria-live="polite" hidden>
-        <h2 class="dv-seg-panel__title">Structure</h2>
-        <div id="dv-seg-body"></div>
-      </aside>
-    </div>
-
-    <p class="dv-seg-hint" id="dv-seg-hint"></p>
+    <p class="chd-link-note">Scrolling either study moves the other. The two children are different sizes and their scans start and stop at different levels, so the link maps between the outlined hearts rather than between slice numbers: it holds the level through the heart and drifts outside it. Window, zoom and pan stay separate.</p>
 
     <h2 class="dv-h2">What a tetralogy is</h2>
     <p class="dv-prose">Four things are found together, and they follow from one another rather than arriving separately. The wall between the ventricles is incomplete, so the two sides of the heart are not kept apart. The aorta sits over that gap instead of over the left ventricle alone, so it receives blood from both. The way out of the right ventricle towards the lungs is narrowed. And the right ventricle, pushing against that narrowing, thickens.</p>
@@ -142,6 +198,7 @@
 
     <h2 class="dv-h2">Where this comes from</h2>
     <p class="dv-credit">Images and outlines from <a href="https://www.kaggle.com/datasets/xiaoweixumedicalai/imagechd" target="_blank" rel="noopener noreferrer">ImageCHD<span class="visually-hidden"> (opens in a new tab)</span></a>, a dataset of 110 congenital heart CT studies published by Xiaowei Xu and colleagues and described in <a href="https://arxiv.org/abs/2101.10799" target="_blank" rel="noopener noreferrer">their MICCAI 2020 paper<span class="visually-hidden"> (opens in a new tab)</span></a>. Released under Attribution-NonCommercial 4.0 International (CC BY-NC 4.0); this page is non-commercial and carries the attribution the licence asks for.</p>
+    <p class="dv-credit">The two studies were chosen to match: the same scanner, the same 0.24 mm voxels and the same 0.75 mm slices, so a difference between them is a difference in the hearts rather than in how they were scanned. The control is one of the twenty cases the dataset lists no congenital defect against. That is what the table records, not a reading of the images, and the child was still scanned for some clinical reason, so it is a comparison rather than a certificate of a normal heart.</p>
     <p class="dv-credit">The dataset ships NIfTI volumes. They were converted to DICOM for this page by <code>scripts/nifti-to-dicom.py</code>, which restores the voxel spacing from the dataset's own spreadsheet, settles the orientation from the anatomy, and shifts the stored values into Hounsfield units. The seven outlines are the published ones, re-encoded rather than redrawn. No patient dates are carried over.</p>
 
     <script type="module" src="/imaging/chd/app.js"></script>

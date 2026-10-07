@@ -3981,3 +3981,81 @@ a.tool:focus-visible {
     transform: none;
   }
 }
+
+/* ---------- Congenital heart: two studies read against each other ---------- */
+
+.chd-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.chd-side__title {
+  margin: 0 0 0.15rem;
+  font-size: 1.1rem;
+}
+
+.chd-side__note {
+  margin: 0 0 0.6rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+/* Side by side each frame has half the width, so the tall single-viewer height would leave
+   the image floating in black. */
+.chd-side .dv-frame {
+  height: min(52vh, 460px);
+}
+
+/* The structure panel sits under its own image rather than beside it: with two viewers there
+   is no width to spare for a side column. */
+.chd-side .dv-seg-panel {
+  margin-top: 0.6rem;
+}
+
+/* The single-viewer page floats its controls over the image. Here they sit under it, so that
+   the half width left to each study goes on anatomy rather than on chips. */
+.dv-controls--static {
+  position: static;
+  transform: none;
+  width: auto;
+  max-width: none;
+  margin-top: 0.5rem;
+  border-color: var(--border);
+  background: var(--surface);
+  backdrop-filter: none;
+}
+
+.dv-controls--static .dv-group__label,
+.dv-controls--static .dv-chip {
+  color: inherit;
+}
+
+.dv-controls--static .dv-chip {
+  border-color: var(--border);
+  background: transparent;
+}
+
+.dv-controls--static .dv-chip:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.chd-link-note {
+  margin: 1rem 0 0;
+  max-width: 62ch;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 1000px) {
+  /* Two half-width viewers are unreadable on a phone, so they stack and each takes the full
+     width instead. */
+  .chd-pair {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .chd-side .dv-frame {
+    height: min(58vh, 420px);
+  }
+}

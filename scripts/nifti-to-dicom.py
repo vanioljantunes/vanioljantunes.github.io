@@ -154,7 +154,11 @@ def write_series(
 
         ds.PixelData = np.ascontiguousarray(volume[:, :, n], dtype=np.uint16).tobytes()
         if compress:
+            # Re-encoding the pixels makes a new SOP Instance, and pydicom issues a fresh UID
+            # for it. The masks are keyed by these UIDs, so the one recorded has to be the one
+            # the file ends up carrying rather than the one it held a moment earlier.
             ds.compress(JPEGLSLossless)
+            sops[-1] = ds.SOPInstanceUID
         ds.save_as(out_dir / f"{n + 1:04d}.dcm", enforce_file_format=True)
 
     return sops
