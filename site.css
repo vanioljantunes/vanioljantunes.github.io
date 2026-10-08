@@ -3156,6 +3156,86 @@ a.tool:focus-visible {
   }
 }
 
+/* ----- Questions under the viewer -----
+   The explainer used to be four paragraphs capped at 70ch, so most of it was scroll and
+   the licence question was buried in the middle. Each question is now a disclosed row
+   that runs the full width of the page; the answer text keeps its own measure inside. */
+
+.dv-faq {
+  margin: 2rem 0 0;
+  border-top: 1px solid var(--border);
+}
+
+.dv-faq .dv-h2 {
+  margin-top: 1.5rem;
+}
+
+.dv-faq__lead {
+  margin: 0 0 1rem;
+  max-width: 70ch;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.dv-faq__item {
+  border-bottom: 1px solid var(--border);
+}
+
+.dv-faq__item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 44px;
+  padding: 0.7rem 0.2rem;
+  color: var(--text);
+  font-weight: 600;
+  list-style: none;
+  cursor: pointer;
+}
+
+.dv-faq__item summary::-webkit-details-marker {
+  display: none;
+}
+
+/* A plus that becomes a minus, so the state is readable without relying on the arrow
+   the browser would otherwise draw at a different place on every platform. */
+.dv-faq__item summary::after {
+  content: "+";
+  flex: none;
+  color: var(--accent);
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.dv-faq__item[open] summary::after {
+  content: "−";
+}
+
+.dv-faq__item summary:hover {
+  color: var(--accent-dark);
+}
+
+.dv-faq__item summary:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.dv-faq__body {
+  padding: 0 0.2rem 1rem;
+}
+
+.dv-faq__body p {
+  margin: 0 0 0.75rem;
+  max-width: 78ch;
+}
+
+.dv-faq__body p:last-child {
+  margin-bottom: 0;
+}
+
 /* How-to cards under the viewer. Contents are rebuilt per modality, so the grid has to
    cope with four to six items without leaving a ragged last row. */
 

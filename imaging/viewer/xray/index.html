@@ -159,31 +159,117 @@
       </aside>
     </div>
 
-    <h2 class="dv-h2">What this is</h2>
-    <p>
-      Every image above is real patient data, pulled slice by slice from a public research
-      archive over DICOMweb and decoded in a web worker on your own machine. On CT the pixel
-      values are true Hounsfield units, so the window presets mean what they mean on a
-      workstation.
-    </p>
-    <p>
-      It is built on <a href="https://github.com/cornerstonejs/cornerstone3D">Cornerstone3D</a>,
-      the MIT-licensed rendering engine that also sits underneath the
-      <a href="https://github.com/OHIF/Viewers">OHIF Viewer</a>. OHIF itself is AGPL-3.0,
-      so none of its code is used here.
-    </p>
-    <p>
-      The finding you pick names the entry criterion of the research collection a case came
-      from. Every patient in a glioblastoma collection has glioblastoma, so the label is true
-      of the case, but it is not a report written from the pixels on screen, and nothing here
-      is for diagnostic use. <span id="dv-catalog-summary"></span>
-    </p>
-    <p>
-      Measurements, multiplanar reconstruction, a study browser and local file reading are
-      the next pieces. Segmentation editing, structured reports and hanging protocols are
-      out of scope: this is a demonstration, not a reporting workstation, and nothing here
-      is for diagnostic use.
-    </p>
+    <section class="dv-faq" aria-labelledby="dv-faq-title">
+      <h2 class="dv-h2" id="dv-faq-title">Questions</h2>
+      <p class="dv-faq__lead">
+        A demonstration of browser rendering, not a reporting workstation. Nothing here is
+        for diagnostic use.
+      </p>
+
+      <details class="dv-faq__item">
+        <summary>What is this built from?</summary>
+        <div class="dv-faq__body">
+          <p>
+            It is built on <a href="https://github.com/cornerstonejs/cornerstone3D">Cornerstone3D</a>,
+            the MIT-licensed rendering engine that also sits underneath the
+            <a href="https://github.com/OHIF/Viewers">OHIF Viewer</a>. OHIF itself is AGPL-3.0,
+            so none of its code is used here.
+          </p>
+          <p>
+            Every image above is real patient data, pulled slice by slice from a public research
+            archive over DICOMweb and decoded in a web worker on your own machine. On CT the pixel
+            values are true Hounsfield units, so the window presets mean what they mean on a
+            workstation.
+          </p>
+        </div>
+      </details>
+
+      <details class="dv-faq__item">
+        <summary>What is Cornerstone3D?</summary>
+        <div class="dv-faq__body">
+          <p>
+            An open-source JavaScript library for displaying medical images in a browser. It
+            decodes DICOM pixel data, applies the rescale slope and intercept so CT values come
+            out in Hounsfield units, draws through WebGL, and keeps the geometry of a series so
+            windowing, zoom, stack scrolling and volume reconstruction behave the way they do on
+            a workstation. It also carries the tool layer that measurement, annotation and
+            segmentation display are built on.
+          </p>
+          <p>
+            It is the third generation of the Cornerstone project, licensed MIT, and developed in
+            the open by contributors who also work on OHIF. The permissive licence is the reason
+            it can be used on a personal site like this one.
+          </p>
+        </div>
+      </details>
+
+      <details class="dv-faq__item">
+        <summary>What is the OHIF Viewer?</summary>
+        <div class="dv-faq__body">
+          <p>
+            A complete web DICOM viewer from the Open Health Imaging Foundation: study list,
+            hanging protocols, measurement panels, segmentation display, extensions. Research
+            platforms deploy it as the front end for their archives, including the NCI Imaging
+            Data Commons, whose public viewer is OHIF.
+          </p>
+          <p>
+            OHIF is licensed AGPL-3.0, which requires anyone who deploys a derivative over a
+            network to publish the source of that derivative. This page avoids the question by
+            using only Cornerstone3D, the MIT-licensed engine below OHIF, and writing its own
+            interface on top.
+          </p>
+        </div>
+      </details>
+
+      <details class="dv-faq__item">
+        <summary>What is DICOMweb?</summary>
+        <div class="dv-faq__body">
+          <p>
+            The HTTP side of the DICOM standard. Classic DICOM moves images over DIMSE, a TCP
+            protocol a browser cannot speak. DICOMweb exposes the same archive over ordinary web
+            requests: QIDO-RS to search studies, series and instances, WADO-RS to retrieve
+            metadata and pixel frames, STOW-RS to store new objects.
+          </p>
+          <p>
+            This viewer uses QIDO-RS to find a series and WADO-RS to pull its frames, one request
+            per frame, straight from the archive to your browser. It never calls STOW-RS, so
+            nothing is written back, and no server of mine sits in the middle.
+          </p>
+        </div>
+      </details>
+
+      <details class="dv-faq__item">
+        <summary>What dataset is being used?</summary>
+        <div class="dv-faq__body">
+          <p>
+            The <a href="https://imaging.datacommons.cancer.gov/">NCI Imaging Data Commons</a>,
+            which hosts collections from The Cancer Imaging Archive. The images are de-identified
+            and public, and the endpoint is a viewing-only proxy, so the page renders pixels and
+            never offers a download. Collections in the index include NLST lung screening,
+            LIDC-IDRI, several TCGA cohorts, UPENN-GBM, Duke breast MRI, ISPY, ProstateX, MIDRC
+            and CBIS-DDSM. The page opens on a lung screening chest CT of 277 slices.
+          </p>
+          <p>
+            The finding you pick names the entry criterion of the research collection a case came
+            from. Every patient in a glioblastoma collection has glioblastoma, so the label is true
+            of the case, but it is not a report written from the pixels on screen.
+            <span id="dv-catalog-summary"></span>
+          </p>
+        </div>
+      </details>
+
+      <details class="dv-faq__item">
+        <summary>What is not here yet?</summary>
+        <div class="dv-faq__body">
+          <p>
+            Measurements, multiplanar reconstruction, a study browser and local file reading are
+            the next pieces. Segmentation editing, structured reports and hanging protocols are
+            out of scope: this is a demonstration, not a reporting workstation, and nothing here
+            is for diagnostic use.
+          </p>
+        </div>
+      </details>
+    </section>
   </main>
 
   <script type="module" src="/imaging/viewer/app.js"></script>
