@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Beating heart from a cardiac CT | Vanio Antunes</title>
+  <title>Heart clone using MONAI | Vanio Antunes</title>
   <meta name="description" content="A heart reconstructed from a gated cardiac CT and animated in the browser: deep-learning segmentation, diffeomorphic registration of 21 cardiac phases, and the measured motion played as glTF morph targets.">
   <link rel="icon" href="/favicon.ico?v=2" sizes="48x48">
   <link rel="icon" href="/favicon-32.png?v=2" type="image/png" sizes="32x32">
@@ -50,7 +50,7 @@
       <ul class="site-subnav__links">
           <li><a href="/imaging/">All projects</a></li>
           <li><a href="/imaging/viewers/">Imaging viewers</a></li>
-          <li><a href="/imaging/heart/" aria-current="page">Beating heart</a></li>
+          <li><a href="/imaging/heart/" aria-current="page">Heart clone</a></li>
           <li><a href="/imaging/study-track/">Study track</a></li>
       </ul>
     </nav>
@@ -58,11 +58,7 @@
 
   <main id="main" class="page-main wrap heart-page">
     <div class="page-head">
-      <h1>A heart beating, measured from one CT study</h1>
-      <p>A gated cardiac CT records the same heart at 21 moments of a single heartbeat. A network
-      finds the heart in one of those moments, registration carries that outline to the other 20,
-      and what you see below moves the way this patient's heart moved. Nothing here is keyframed
-      by hand.</p>
+      <h1>Heart clone using MONAI</h1>
     </div>
 
     <figure class="heart-viewer">
@@ -75,74 +71,42 @@
           <span class="heart-phase__label">Phase <span id="phase-label">1 of 21</span></span>
           <input type="range" id="phase" min="0" max="20" step="1" value="0">
         </label>
+        <output class="heart-volume" id="volume-now" aria-live="off">-</output>
       </div>
       <p class="heart-status" id="status" hidden></p>
       <div class="heart-toggles" id="toggles" role="group" aria-label="Structures"></div>
-      <figcaption>Drag to rotate, scroll to zoom. The ragged edges at the top are where the
-      scan stops and the great vessels are cut off, not an artefact of the model. 58,594
-      triangles per phase, 21 phases, 8.2 MB.</figcaption>
+      <div class="heart-toggles heart-toggles--slices" id="plane-toggles" role="group" aria-label="CT slices"></div>
+      <figcaption>Drag to rotate, scroll to zoom. The three CT slices are the scan this was
+      built from, placed at their own coordinates; the number beside the slider is the volume
+      enclosed by the heart surface at that phase. 50,100 triangles per phase, 21 phases,
+      7.0 MB.</figcaption>
     </figure>
-
-    <section class="heart-measure" aria-labelledby="measure-title">
-      <h2 id="measure-title">What this does not claim</h2>
-      <p>No volumes, and no ejection fraction. Both were tempting and both would have been
-      wrong. The scan's field of view cuts the great vessels mid-course, so the heart surface
-      it produces has 1,770 open boundary edges: it is not a closed surface, and the volume
-      inside an open surface is undefined. The first attempt at measuring it returned numbers
-      that moved by tens of per cent between two segmentations of the same heart, which is the
-      signature of a leaking mesh rather than of a beating heart.</p>
-      <p>Separating left from right, and ventricle from atrium, needs TotalSegmentator's
-      <code>heartchambers_highres</code> model, which is licensed separately and free for
-      academic use on request. With those labels the chambers can be closed and measured
-      properly. Until then this page shows motion, which it measured, and stays quiet about
-      volume, which it did not.</p>
-    </section>
 
     <section class="heart-method" aria-labelledby="method-title">
       <h2 id="method-title">How it was built</h2>
 
-      <ol class="heart-steps">
+      <ol class="heart-steps heart-steps--cards">
         <li>
           <h3>The study</h3>
-          <p>A gated 4D cardiac CT of a truncal valve case, released by the Jolley Lab at
-          Children's Hospital of Philadelphia through SlicerHeart and distributed with MONAI
-          Physio. 21 phases, 512 by 391 by 218 voxels at 0.6 by 0.6 by 0.7 mm, 2.5 GB.</p>
+          <p>A gated 4D cardiac CT of a truncal valve case, from the Jolley Lab at CHOP.
+          21 phases, 0.6 mm voxels, 2.5 GB.</p>
         </li>
         <li>
           <h3>Finding the heart</h3>
-          <p>TotalSegmentator v2 through MONAI Physio's
-          <code>SegmentChestTotalSegmentatorWithContrast</code>, which detects contrast
-          enhancement and adjusts its thresholds for it. 58 structures in 400 seconds on an
-          RTX 4050. The fast 3 mm model does the same job in 42 seconds, but its wall was coarse
-          enough to be worth the extra six minutes, and only the reference phase is segmented so
-          the cost is paid once. The heart came back as one structure, because the six-way
-          chamber split is a separately licensed model.</p>
+          <p>TotalSegmentator v2 through MONAI Physio, contrast aware. 58 structures in
+          400 s on an RTX 4050, on the reference phase only.</p>
         </li>
         <li>
           <h3>Measuring the motion</h3>
-          <p>Greedy diffeomorphic registration with normalised cross correlation, four
-          resolution levels at 30, 15, 7 and 3 iterations, warping each of the other 20 phases
-          onto phase 15. The deformation fields are the measured displacement of tissue, and
-          they are what makes this a reconstruction rather than an animation. 19.8 minutes for
-          the full series.</p>
+          <p>Greedy diffeomorphic registration warps the other 20 phases onto phase 15.
+          The deformation fields are measured tissue displacement. 19.8 min.</p>
         </li>
         <li>
           <h3>Fitting a browser</h3>
-          <p>The result is a 236 MB animated USD built for Omniverse. Getting it into a web page
-          meant decimating the heart surface by 79% and the aorta by 27% while keeping
-          vertex correspondence across phases, which <code>vtkDecimatePro</code> allows because
-          it deletes vertices rather than relocating them. The surviving indices are taken from
-          every phase and written as glTF morph targets, so the browser interpolates between
-          phases instead of stepping through them. 8.2 MB.</p>
+          <p>One surface decimated with <code>vtkDecimatePro</code>, so every phase keeps the
+          same vertices. Shipped as glTF morph targets. 7.0 MB.</p>
         </li>
       </ol>
-
-      <h3 class="heart-honest">What ran out of memory first</h3>
-      <p>The first attempt held all 21 phases at native resolution and the Linux out-of-memory
-      killer took the process at phase 6, at 23.9 GB resident. The fix cost no accuracy: the
-      segmenter resamples its input to 1 mm isotropic before inference anyway, so the finer
-      sampling was being discarded. Resampling the series first cut the voxel count to a quarter,
-      and the run finished in 18 minutes rather than the projected 70.</p>
     </section>
 
     <section class="ground" aria-labelledby="credits-title">

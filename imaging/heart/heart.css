@@ -142,18 +142,11 @@
   color: var(--faint);
 }
 
-.heart-measure,
 .heart-method {
   margin: 0 0 2.5rem;
 }
 
-.heart-measure p {
-  margin: 0 0 0.9rem;
-  color: var(--muted);
-  max-width: 68ch;
-}
 
-.heart-measure h2,
 .heart-method h2 {
   font-size: 1.25rem;
   margin: 0 0 1rem;
@@ -233,4 +226,61 @@
     aspect-ratio: 4 / 5;
   }
 
+}
+
+.heart-volume {
+  font-variant-numeric: tabular-nums;
+  font-size: 1rem;
+  color: var(--text);
+  min-width: 5rem;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.heart-toggles--slices {
+  margin-top: 0.25rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--rule);
+}
+
+.toggle .swatch--slice {
+  background: linear-gradient(135deg, #2c3340 0%, #9aa5b4 50%, #f2f4f7 100%);
+}
+
+/* Steps sit side by side as cards. The list stays an <ol> because the order is the pipeline. */
+.heart-steps--cards {
+  grid-template-columns: repeat(auto-fit, minmax(13.5rem, 1fr));
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.heart-steps--cards li {
+  margin: 0;
+  max-width: none;
+  display: flex;
+  flex-direction: column;
+  padding: 1.1rem 1.1rem 1.2rem;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.heart-steps--cards li::before {
+  position: static;
+  margin-bottom: 0.6rem;
+}
+
+.heart-steps--cards h3 {
+  margin-bottom: 0.4rem;
+}
+
+.heart-steps--cards p {
+  font-size: 0.9375rem;
+}
+
+/* Class names are longer than a card column, so they wrap instead of spilling out of it. */
+.heart-steps--cards code {
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }

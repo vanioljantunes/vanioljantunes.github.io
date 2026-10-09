@@ -3,17 +3,27 @@
  * The GLB carries one mesh per structure, each with 20 morph targets holding the vertex
  * offsets of phases 1 to 20 relative to phase 0, and one animation that drives the morph
  * weights. Playing that clip is the whole animation; the slider seeks it.
+ *
+ * Everything is in CT physical millimetres, including the three CT slice planes, so the model
+ * sits inside its own scan rather than floating in the void.
  */
 import {
   AmbientLight,
   AnimationMixer,
   Box3,
+  BufferAttribute,
+  BufferGeometry,
   Clock,
   DirectionalLight,
+  DoubleSide,
+  Group,
   Mesh,
+  MeshBasicMaterial,
   MeshStandardMaterial,
   PerspectiveCamera,
   Scene,
+  SRGBColorSpace,
+  TextureLoader,
   Vector3,
   WebGLRenderer,
   type AnimationAction,
@@ -21,18 +31,41 @@ import {
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
+type Plane = {
+  name: string;
+  axis: number;
+  index: number;
+  file: string;
+  corners: [number, number, number][];
+};
+
+type Structure = {
+  name: string;
+  colour: string;
+  points: number;
+  faces: number;
+  volumePerPhase: number[];
+  measuredWatertight: boolean;
+};
+
 type Manifest = {
   phases: number;
   fps: number;
-  structures: { name: string; label: string; colour: string; points: number; faces: number }[];
+  referencePhase: number;
+  units: string;
+  ct: { planes: Plane[]; window: { level: number; width: number } };
+  structures: Structure[];
 };
 
-const canvas = document.getElementById('stage') as HTMLCanvasElement;
-const status = document.getElementById('status') as HTMLParagraphElement;
-const toggles = document.getElementById('toggles') as HTMLDivElement;
-const phaseInput = document.getElementById('phase') as HTMLInputElement;
-const phaseLabel = document.getElementById('phase-label') as HTMLSpanElement;
-const playButton = document.getElementById('play') as HTMLButtonElement;
+const el = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+const canvas = el<HTMLCanvasElement>('stage');
+const status = el<HTMLParagraphElement>('status');
+const toggles = el<HTMLDivElement>('toggles');
+const planeToggles = el<HTMLDivElement>('plane-toggles');
+const phaseInput = el<HTMLInputElement>('phase');
+const phaseLabel = el<HTMLSpanElement>('phase-label');
+const playButton = el<HTMLButtonElement>('play');
+const volumeOut = document.getElementById('volume-now');
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -40,13 +73,13 @@ const renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 const scene = new Scene();
-const camera = new PerspectiveCamera(42, 1, 0.01, 100);
+const camera = new PerspectiveCamera(42, 1, 1, 5000);
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 controls.enablePan = false;
 
-scene.add(new AmbientLight(0xffffff, 1.5));
-const key = new DirectionalLight(0xffffff, 2.2);
+scene.add(new AmbientLight(0xffffff, 1.4));
+const key = new DirectionalLight(0xffffff, 2.1);
 key.position.set(1, 1.4, 1.2);
 scene.add(key);
 const fill = new DirectionalLight(0xffd9c0, 0.8);
@@ -59,6 +92,7 @@ let action: AnimationAction | null = null;
 let playing = !reducedMotion;
 let phaseCount = 21;
 let fps = 14;
+let heartVolumes: number[] = [];
 
 function resize(): void {
   const { clientWidth, clientHeight } = canvas;
@@ -68,15 +102,14 @@ function resize(): void {
   camera.updateProjectionMatrix();
 }
 
-function frameScene(): void {
-  const box = new Box3().setFromObject(scene);
-  const size = box.getSize(new Vector3());
-  const centre = box.getCenter(new Vector3());
+function frameOn(target: Box3): void {
+  const size = target.getSize(new Vector3());
+  const centre = target.getCenter(new Vector3());
   const radius = Math.max(size.x, size.y, size.z);
   controls.target.copy(centre);
-  camera.position.copy(centre).add(new Vector3(radius * 0.95, radius * 0.35, radius * 1.05));
+  camera.position.copy(centre).add(new Vector3(radius * 1.9, radius * 0.75, radius * 2.1));
   camera.near = radius / 100;
-  camera.far = radius * 20;
+  camera.far = radius * 40;
   camera.updateProjectionMatrix();
   controls.update();
 }
@@ -91,12 +124,78 @@ function setPlaying(next: boolean): void {
 function showPhase(phase: number): void {
   phaseInput.value = String(phase);
   phaseLabel.textContent = `${phase + 1} of ${phaseCount}`;
+  if (volumeOut && heartVolumes[phase] !== undefined) {
+    volumeOut.textContent = `${heartVolumes[phase].toFixed(0)} mL`;
+  }
+}
+
+function toggleRow(
+  label: string,
+  colour: string | null,
+  note: string,
+  onChange: (on: boolean) => void,
+): HTMLLabelElement {
+  const row = document.createElement('label');
+  row.className = 'toggle';
+  const input = document.createElement('input');
+  input.type = 'checkbox';
+  input.checked = true;
+  input.addEventListener('change', () => onChange(input.checked));
+  const swatch = document.createElement('span');
+  swatch.className = colour ? 'swatch' : 'swatch swatch--slice';
+  if (colour) swatch.style.background = colour;
+  const name = document.createElement('span');
+  name.className = 'name';
+  name.textContent = label;
+  const count = document.createElement('span');
+  count.className = 'count';
+  count.textContent = note;
+  row.append(input, swatch, name, count);
+  return row;
+}
+
+/* The CT planes are two triangles each, placed on the corners the exporter measured through
+   ITK's index-to-physical transform. Corner order is (0,0), (max,0), (max,max), (0,max) in
+   index space; three.js flips textures vertically, hence the v coordinates below. */
+function addPlanes(planes: Plane[]): void {
+  const group = new Group();
+  const loader = new TextureLoader();
+
+  for (const plane of planes) {
+    const positions = new Float32Array(plane.corners.flat());
+    const uv = new Float32Array([0, 1, 1, 1, 1, 0, 0, 0]);
+    const geometry = new BufferGeometry();
+    geometry.setAttribute('position', new BufferAttribute(positions, 3));
+    geometry.setAttribute('uv', new BufferAttribute(uv, 2));
+    geometry.setIndex([0, 1, 2, 0, 2, 3]);
+    geometry.computeVertexNormals();
+
+    const texture = loader.load(plane.file);
+    texture.colorSpace = SRGBColorSpace;
+    const mesh = new Mesh(geometry, new MeshBasicMaterial({
+      map: texture,
+      side: DoubleSide,
+      transparent: true,
+      opacity: 0.92,
+    }));
+    mesh.name = plane.name;
+    group.add(mesh);
+
+    planeToggles.append(toggleRow(
+      `${plane.name[0].toUpperCase()}${plane.name.slice(1)} slice`,
+      null,
+      `index ${plane.index}`,
+      (on) => { mesh.visible = on; },
+    ));
+  }
+  scene.add(group);
 }
 
 async function main(): Promise<void> {
   const manifest: Manifest = await (await fetch('heart.json')).json();
   phaseCount = manifest.phases;
   fps = manifest.fps;
+  heartVolumes = manifest.structures.find((s) => s.name === 'Heart')?.volumePerPhase ?? [];
 
   const gltf = await new GLTFLoader().loadAsync('heart.glb');
   scene.add(gltf.scene);
@@ -109,37 +208,31 @@ async function main(): Promise<void> {
     const mesh = object as Mesh;
     if (!mesh.isMesh) return;
     const key = (mesh.userData?.structure as string | undefined) ?? mesh.name;
-    const isWall = key === 'heart';
+    const isWall = key === 'Heart';
     const material = mesh.material as MeshStandardMaterial;
-    // The wall encloses the vessels, so it is shown as a shell you can see into, solid
-    // enough to read as muscle.
+    // The wall encloses the vessels, so it is a shell you can see into, solid enough to read
+    // as muscle.
     material.transparent = isWall;
-    material.opacity = isWall ? 0.55 : 1;
+    material.opacity = isWall ? 0.62 : 1;
     material.depthWrite = !isWall;
     meshes.set(key, mesh);
   });
 
+  // Frame on the anatomy, not on the planes, which span the whole chest.
+  const anatomy = new Box3().setFromObject(gltf.scene);
+
   for (const structure of manifest.structures) {
     const mesh = meshes.get(structure.name);
     if (!mesh) continue;
-    const row = document.createElement('label');
-    row.className = 'toggle';
-    const input = document.createElement('input');
-    input.type = 'checkbox';
-    input.checked = true;
-    input.addEventListener('change', () => { mesh.visible = input.checked; });
-    const swatch = document.createElement('span');
-    swatch.className = 'swatch';
-    swatch.style.background = structure.colour;
-    const name = document.createElement('span');
-    name.className = 'name';
-    name.textContent = structure.label;
-    const count = document.createElement('span');
-    count.className = 'count';
-    count.textContent = `${structure.faces.toLocaleString('en')} faces`;
-    row.append(input, swatch, name, count);
-    toggles.append(row);
+    toggles.append(toggleRow(
+      structure.name,
+      structure.colour,
+      `${structure.faces.toLocaleString('en')} faces`,
+      (on) => { mesh.visible = on; },
+    ));
   }
+
+  addPlanes(manifest.ct.planes);
 
   mixer = new AnimationMixer(gltf.scene);
   action = mixer.clipAction(gltf.animations[0]);
@@ -157,7 +250,7 @@ async function main(): Promise<void> {
   setPlaying(playing);
   showPhase(0);
 
-  frameScene();
+  frameOn(anatomy);
   resize();
   if (reducedMotion) {
     status.hidden = false;

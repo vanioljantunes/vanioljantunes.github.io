@@ -1,16 +1,12 @@
-"""Turn the animated USD into one GLB a browser can play.
+"""Pack the cardiac surfaces and their motion into one GLB for the web.
 
-The USD holds 55 structures, each with 21 time samples of per-vertex positions. Three things
-have to happen before a browser can show that:
+Input is `phases.npz` from build_meshes.py: one topology per structure, 21 sets of positions,
+in CT physical millimetres. Output is a GLB whose meshes carry glTF morph targets, so the
+browser interpolates between phases rather than stepping through them, plus a manifest the
+page reads for labels, colours, measured volumes and the CT plane geometry.
 
-1. Keep only the cardiac structures. Ribs and vertebrae are context the viewer does not need.
-2. Decimate. 54k vertices per phase is far too much to ship, let alone 21 of them.
-   Decimation has to preserve vertex correspondence across phases, otherwise the morph
-   targets are meaningless. vtkDecimatePro only ever deletes vertices, never moves them, so
-   the surviving points are a subset of the originals: carry an index array through the
-   decimation and the same subset can be taken from every phase.
-3. Write glTF morph targets, so the browser interpolates between phases instead of stepping
-   through them, and one animation that cycles the weights.
+Positions stay in millimetres. The CT planes are placed from the same coordinates, so the
+model sits inside its own scan.
 """
 from __future__ import annotations
 
@@ -19,83 +15,12 @@ import struct
 from pathlib import Path
 
 import numpy as np
-import pyvista as pv
-from pxr import Usd, UsdGeom
 
-USD_FILE = Path("/root/heart/out/tutorial_01_heart/cardiac_model.all_painted.usd")
-OUT_FILE = Path("/mnt/c/Users/vanio/claudeOS/projects/vanioAntunes/imaging/heart/heart.glb")
+MESHES = Path.home() / "heart" / "out" / "web-meshes"
+WEB = Path("/mnt/c/Users/vanio/claudeOS/projects/vanioAntunes/imaging/heart")
+OUT_FILE = WEB / "heart.glb"
 
-# Structure: (vertex budget, colour, human label). Colours follow the clinical convention of
-# red for systemic arterial, blue for systemic venous, and a muted muscle tone for the wall.
-WANTED: dict[str, tuple[int, str, str]] = {
-    "heart": (12000, "#b4563f", "Heart"),
-    # The vessels are thin-walled and already small; decimating them hard perforates them,
-    # so they keep most of their triangles and the budget is spent on the wall instead.
-    "aorta": (8000, "#c2453c", "Aorta"),
-    "pulmonary_vein": (3500, "#5b7fa6", "Pulmonary veins"),
-    "superior_vena_cava": (1500, "#4f6f93", "Superior vena cava"),
-    "inferior_vena_cava": (3200, "#4f6f93", "Inferior vena cava"),
-    "atrial_appendage_left": (1400, "#a8584c", "Left atrial appendage"),
-}
-
-FPS = 14.0  # 21 phases played back in 1.5 s, a plausible resting heart rate
-
-
-def read_usd() -> dict[str, dict]:
-    """Read every wanted structure: triangles once, positions per phase."""
-    stage = Usd.Stage.Open(str(USD_FILE))
-    start, end = int(stage.GetStartTimeCode()), int(stage.GetEndTimeCode())
-    found: dict[str, dict] = {}
-
-    for prim in stage.Traverse():
-        if not prim.IsA(UsdGeom.Mesh) or prim.GetName() not in WANTED:
-            continue
-        mesh = UsdGeom.Mesh(prim)
-        counts = np.asarray(mesh.GetFaceVertexCountsAttr().Get(start))
-        indices = np.asarray(mesh.GetFaceVertexIndicesAttr().Get(start))
-        if counts.size == 0 or not np.all(counts == 3):
-            raise ValueError(f"{prim.GetName()} is not triangulated")
-        phases = [np.asarray(mesh.GetPointsAttr().Get(t), dtype=np.float32)
-                  for t in range(start, end + 1)]
-        found[prim.GetName()] = {"faces": indices.reshape(-1, 3), "phases": phases}
-        print(f"  read {prim.GetName():<24} {len(phases)} phases, {len(phases[0])} points")
-    return found
-
-
-def decimate(faces: np.ndarray, phases: list[np.ndarray], budget: int):
-    """Reduce vertex count while keeping the same vertex in every phase."""
-    original = len(phases[0])
-    if original <= budget:
-        return faces, phases, 0.0
-
-    padded = np.hstack([np.full((len(faces), 1), 3), faces]).ravel()
-    surface = pv.PolyData(phases[0], padded)
-    surface.point_data["orig"] = np.arange(original, dtype=np.float64)
-
-    reduction = 1.0 - budget / original
-    # decimate_pro deletes vertices rather than relocating them, so "orig" survives intact.
-    reduced = surface.decimate_pro(reduction, preserve_topology=True)
-
-    kept = np.rint(reduced.point_data["orig"]).astype(np.int64)
-    new_faces = reduced.faces.reshape(-1, 4)[:, 1:]
-    return new_faces, [phase[kept] for phase in phases], reduction
-
-
-def smooth(faces: np.ndarray, phases: list[np.ndarray]) -> list[np.ndarray]:
-    """Taubin-smooth every phase with identical settings.
-
-    Decimating a marching-cubes surface by 80 or 90 per cent leaves spikes where vessels were
-    cut off. Taubin smoothing removes them without the shrinkage plain Laplacian causes. It is
-    a function of connectivity and positions only, and the connectivity is shared, so applying
-    it phase by phase keeps vertices corresponding.
-    """
-    padded = np.hstack([np.full((len(faces), 1), 3), faces]).ravel()
-    out = []
-    for phase in phases:
-        surface = pv.PolyData(phase, padded)
-        smoothed = surface.smooth_taubin(n_iter=24, pass_band=0.08, normalize_coordinates=True)
-        out.append(np.asarray(smoothed.points, dtype=np.float32))
-    return out
+FPS = 14.0  # 21 phases in 1.5 s, a plausible resting rate
 
 
 def vertex_normals(points: np.ndarray, faces: np.ndarray) -> np.ndarray:
@@ -148,7 +73,7 @@ def build_glb(structures: dict[str, dict]) -> bytes:
     channels, samplers = [], []
 
     for name, data in structures.items():
-        budget, colour, label = WANTED[name]
+        colour, label = data["colour"], data["label"]
         faces = data["faces"].astype(np.uint32)
         phases = data["phases"]
         base = phases[0]
@@ -210,42 +135,51 @@ def build_glb(structures: dict[str, dict]) -> bytes:
             + struct.pack("<II", len(blob), 0x004E4942) + bytes(blob))
 
 
+
 def main() -> None:
-    print("reading", USD_FILE.name)
-    structures = read_usd()
-    missing = set(WANTED) - set(structures)
-    if missing:
-        print("not in this segmentation:", sorted(missing))
+    summary = json.loads((MESHES / "summary.json").read_text())
+    data = np.load(MESHES / "phases.npz")
 
-    print()
-    reduced = {}
-    for name, data in structures.items():
-        budget = WANTED[name][0]
-        faces, phases, reduction = decimate(data["faces"], data["phases"], budget)
-        phases = smooth(faces, phases)
-        reduced[name] = {"faces": faces, "phases": phases}
-        print(f"  {name:<24} {len(data['phases'][0]):>6} -> {len(phases[0]):>6} points "
-              f"({reduction * 100:.0f}% removed), {len(faces)} faces, smoothed")
+    structures = {}
+    for entry in summary["structures"]:
+        label_id = entry["labelId"]
+        faces = data[f"faces_{label_id}"].astype(np.int64)
+        points = data[f"points_{label_id}"].astype(np.float32)
+        structures[entry["name"]] = {
+            "faces": faces,
+            "phases": [points[i] for i in range(points.shape[0])],
+            "colour": entry["colour"],
+            "label": entry["name"],
+        }
+        print(f"  {entry['name']:<24} {points.shape[1]:>6} points {len(faces):>6} faces "
+              f"{points.shape[0]} phases")
 
-    print()
-    glb = build_glb(reduced)
-    OUT_FILE.parent.mkdir(parents=True, exist_ok=True)
+    glb = build_glb(structures)
     OUT_FILE.write_bytes(glb)
+    print()
     print("written", OUT_FILE, f"{len(glb) / 1024**2:.2f} MB")
 
-    # No volume is published. The heart surface has 1770 open boundary edges where the field
-    # of view truncates it, so the volume it encloses is undefined; measure_volumes.py runs
-    # that check and refuses to write numbers when it fails.
     manifest = {
-        "phases": len(next(iter(reduced.values()))["phases"]),
+        "phases": summary["phases"],
         "fps": FPS,
-        "structures": [{"name": name, "label": WANTED[name][2], "colour": WANTED[name][1],
-                        "points": int(len(data["phases"][0])), "faces": int(len(data["faces"]))}
-                       for name, data in reduced.items()],
+        "referencePhase": summary["referencePhase"],
+        "units": "mm",
+        "ct": summary["ct"],
+        "heartCentreMm": summary["heartCentreMm"],
+        "structures": [
+            {
+                "name": entry["name"],
+                "colour": entry["colour"],
+                "points": entry["points"],
+                "faces": entry["faces"],
+                "volumePerPhase": entry["volumePerPhase"],
+                "measuredWatertight": entry["measuredWatertight"],
+            }
+            for entry in summary["structures"]
+        ],
     }
-    manifest_file = OUT_FILE.with_name("heart.json")
-    manifest_file.write_text(json.dumps(manifest, indent=2))
-    print("written", manifest_file)
+    (WEB / "heart.json").write_text(json.dumps(manifest, indent=2))
+    print("written", WEB / "heart.json")
 
 
 if __name__ == "__main__":
