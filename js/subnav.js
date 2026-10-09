@@ -1,3 +1,7 @@
+// Page chrome (bar scroll state, strip overflow) is wanted on every page that has
+// the bar, and this module is on every one of them, so it is pulled in from here.
+import './chrome.js';
+
 // Tools, Who am I and R packages sub-navigation.
 // 1. Keeps the current item visible when the list scrolls sideways (phones).
 // 2. With data-spy, for in-page links (#section), marks the section in view with aria-current="location".
@@ -45,6 +49,8 @@ const menus = [...document.querySelectorAll('.subnav-menu')].map((root) => ({
 if (menus.length) {
   let open = null;
 
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   const place = (menu) => {
     const r = menu.button.getBoundingClientRect();
     const { panel } = menu;
@@ -52,14 +58,37 @@ if (menus.length) {
     panel.style.top = `${r.bottom + 4}px`;
     const width = panel.offsetWidth;
     const max = document.documentElement.clientWidth - width - 12;
-    panel.style.left = `${Math.max(12, Math.min(r.left, max))}px`;
+    const left = Math.max(12, Math.min(r.left, max));
+    panel.style.left = `${left}px`;
+    // The panel grows out of the button that opened it, not out of its own centre,
+    // so the relationship between the two stays obvious. The origin is where the
+    // button sits inside the panel, clamped to the panel if it was pushed sideways
+    // to stay on screen.
+    const originX = Math.max(8, Math.min(r.left + r.width / 2 - left, width - 8));
+    panel.style.setProperty('--origin-x', `${Math.round(originX)}px`);
   };
 
   const close = () => {
     if (!open) return;
-    open.panel.hidden = true;
-    open.button.setAttribute('aria-expanded', 'false');
+    const { panel, button } = open;
     open = null;
+    button.setAttribute('aria-expanded', 'false');
+    panel.removeAttribute('data-open');
+    if (reduced) {
+      panel.hidden = true;
+      return;
+    }
+    // It leaves along the path it arrived by; it is only taken out of the layout once
+    // it has finished leaving, and a timer covers the case where no transition ran.
+    let done = false;
+    const finish = () => {
+      if (done || panel.hasAttribute('data-open')) return;
+      done = true;
+      panel.hidden = true;
+      panel.removeEventListener('transitionend', finish);
+    };
+    panel.addEventListener('transitionend', finish);
+    setTimeout(finish, 360);
   };
 
   const show = (menu) => {
@@ -68,6 +97,10 @@ if (menus.length) {
     menu.button.setAttribute('aria-expanded', 'true');
     open = menu;
     place(menu);
+    // Place it first, then let it arrive: without the forced read the panel would be
+    // painted already open and there would be nothing to animate.
+    void menu.panel.offsetWidth;
+    menu.panel.setAttribute('data-open', '');
   };
 
   menus.forEach((menu) => {

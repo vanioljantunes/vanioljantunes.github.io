@@ -18,6 +18,27 @@
   --shadow-hover: 0 4px 14px rgba(28, 36, 48, 0.06);
   --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Motion. A spring has no duration: response is how fast it reaches the target, and
+     the easings below are sampled springs, so CSS motion settles the way the JS springs
+     in /js/motion.js do. --ease-spring is critically damped (no overshoot) and is the
+     default for anything the pointer did not throw; --ease-spring-bounce overshoots a
+     little and is reserved for motion that follows a flick or a drag release. */
+  --resp-press: 100ms;
+  --resp-fast: 180ms;
+  --resp: 300ms;
+  --resp-slow: 400ms;
+  --ease-spring: linear(0, 0.0902, 0.2642, 0.4422, 0.594, 0.7127, 0.8009, 0.8641, 0.9084, 0.9389, 0.9596, 0.9734, 0.9826, 0.9887, 0.9927, 0.9953, 1);
+  --ease-spring-bounce: linear(0, 0.1182, 0.3674, 0.6317, 0.8475, 0.9921, 1.0689, 1.0942, 1.0873, 1.0651, 1.0397, 1.018, 1.0029, 0.9945, 0.9912, 0.9914, 0.9934, 0.9958, 0.9979, 0.9995, 1.0004, 1.0008, 1);
+  --press-scale: 0.975;
+  --press-scale-sm: 0.94;
+
+  /* Materials. Translucent chrome floats over the content instead of taking a strip of
+     it; the frosted fallback keeps the same geometry when transparency is turned down. */
+  --chrome: rgba(255, 255, 255, 0.72);
+  --chrome-strong: rgba(255, 255, 255, 0.82);
+  --chrome-blur: blur(20px) saturate(180%);
+  --chrome-edge: rgba(255, 255, 255, 0.6);
 }
 
 *,
@@ -4059,5 +4080,296 @@ a.tool:focus-visible {
 
   .vw-card a:hover {
     transform: none;
+  }
+}
+
+/* ===========================================================================
+   Apple-design pass
+   Response, materials, type metrics and the three preference signals. The rules
+   live at the end of the file so they settle the question wherever an older rule
+   said something softer. Ordered the way the skill is: response first, then
+   materials, then type, then preferences.
+   =========================================================================== */
+
+/* ----- 1. Response: feedback belongs on the press, not the release -----
+   Every surface that can be pressed answers on pointer-down, in 100ms, with a
+   transform only, so the compositor carries it. */
+
+.tile,
+.card,
+a.tool,
+.tile-badge,
+.card-cta,
+.social a,
+.pkg-cta,
+.btn,
+button,
+summary {
+  touch-action: manipulation;
+}
+
+.tile:active,
+.card:active,
+a.tool:active {
+  transform: scale(var(--press-scale));
+  transition: transform var(--resp-press) var(--ease-spring);
+}
+
+.tile-badge:active,
+.card-cta:active,
+.social a:active,
+.site-bar__social a:active,
+.site-bar__links a:active {
+  transform: scale(var(--press-scale-sm));
+  transition: transform var(--resp-press) var(--ease-spring);
+}
+
+/* The press has to beat the hover growth the tile is already running, so the
+   hover scale from /js/home.js is overridden by a transform of equal weight. */
+.tile[data-tile]:active {
+  transform: scale(0.99);
+}
+
+/* Hovers and state changes settle on a spring rather than a flat curve. */
+.tile,
+.card,
+.social a,
+.card-cta,
+.tile-badge,
+.tool-box {
+  transition-timing-function: var(--ease-spring);
+  transition-duration: var(--resp-fast);
+}
+
+/* The screenshot zoom is a slow reveal, not a response: it keeps its own pace. */
+.card-shot img {
+  transition: transform var(--resp-slow) var(--ease-spring);
+}
+
+/* ----- 9. Boundaries rubber-band instead of stopping hard -----
+   The horizontal strips (bar links, sub-bar, topic rails) are native scrollers,
+   so the browser's own overscroll is the rubber band; it is kept inside the
+   strip rather than handed to the page. */
+
+.site-bar__links,
+.site-subnav__links,
+.scroll-strip {
+  overscroll-behavior-inline: contain;
+}
+
+/* ----- 12. Scroll edge effect, not a hard divider -----
+   Where a strip scrolls out of view the content fades instead of being cut by an
+   edge, and the fade only exists on the side that still has content. */
+
+.site-bar__links[data-overflow],
+.site-subnav__links[data-overflow],
+.st-rail__list[data-overflow],
+.st-strip[data-overflow] {
+  /* The fade exists per side, and only on a side that is still hiding something:
+     at the left end of a strip there is nothing to the left to suggest. */
+  --edge-start: 0px;
+  --edge-end: 0px;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 var(--edge-start),
+    #000 calc(100% - var(--edge-end)), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 var(--edge-start),
+    #000 calc(100% - var(--edge-end)), transparent 100%);
+}
+
+[data-overflow][data-fade-start] {
+  --edge-start: 1.25rem;
+}
+
+[data-overflow][data-fade-end] {
+  --edge-end: 1.25rem;
+}
+
+/* ----- 15. Typography: tracking and leading are size-specific -----
+   Large text reads too loose as it grows, so it is tightened; small text needs a
+   little more room. Nothing here is one value for all sizes. */
+
+html {
+  font-optical-sizing: auto;
+}
+
+body {
+  letter-spacing: 0;
+}
+
+h1 {
+  letter-spacing: -0.025em;
+}
+
+h2 {
+  letter-spacing: -0.015em;
+}
+
+h3 {
+  letter-spacing: -0.01em;
+}
+
+.tool-desc,
+.tile p,
+.pkg-note,
+.card-kicker {
+  letter-spacing: 0.005em;
+}
+
+/* Spacing in em so a larger text setting moves the layout with the text. */
+.tile h2 {
+  line-height: 1.18;
+}
+
+.page-head h1 {
+  line-height: 1.1;
+}
+
+/* ----- 14. Reduced motion: a gentler equivalent, not silence -----
+   Transforms and overshoot go; the colour and border feedback stays, so a press
+   still answers. */
+
+@media (prefers-reduced-motion: reduce) {
+  .tile:active,
+  .card:active,
+  a.tool:active,
+  .tile[data-tile]:active,
+  .tile-badge:active,
+  .card-cta:active,
+  .social a:active,
+  .site-bar__social a:active,
+  .site-bar__links a:active {
+    transform: none;
+  }
+
+  .tile:active,
+  .card:active,
+  a.tool:active {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+}
+
+/* ----- Reduced transparency: frostier, not blurrier ----- */
+
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --chrome: var(--surface);
+    --chrome-strong: var(--surface);
+    --chrome-blur: none;
+    --chrome-edge: var(--border);
+  }
+}
+
+/* ----- More contrast: near-solid surfaces with a defined border ----- */
+
+@media (prefers-contrast: more) {
+  :root {
+    --chrome: var(--surface);
+    --chrome-strong: var(--surface);
+    --chrome-blur: none;
+    --border: #5c6675;
+    --muted: #333c4a;
+    --faint: #3c4452;
+  }
+
+  .tile,
+  .card,
+  .tool-soon-tag {
+    border-width: 2px;
+  }
+}
+
+/* ===========================================================================
+   Apple-design pass, page level
+   The surfaces that are not shared: the viewer's controls, the two FAQ
+   disclosures, the study-track rails and the calculator buttons.
+   =========================================================================== */
+
+/* ----- Response on every page's own controls ----- */
+
+.dv-chip,
+.dv-pick select,
+.st-linkbtn,
+.st-reset,
+.calc-button,
+.xvr-faq__item summary,
+.dv-faq__item summary {
+  touch-action: manipulation;
+}
+
+.dv-chip:active,
+.st-linkbtn:active,
+.st-reset:active,
+.calc-button:active {
+  transform: scale(0.96);
+  transition: transform var(--resp-press) var(--ease-spring);
+}
+
+/* A disclosure row is wide, so it answers with the row's own tint rather than a
+   scale that would read as the whole page moving. */
+.dv-faq__item summary:active,
+.xvr-faq__item summary:active {
+  background: var(--accent-soft);
+}
+
+/* ----- The disclosures open as a height, not as a jump -----
+   Only where the browser can interpolate to a keyword height; elsewhere the
+   native open/close stands, which is the correct degradation for a detail that
+   is pure craft. */
+
+@supports (interpolate-size: allow-keywords) and selector(::details-content) {
+  .dv-faq__item,
+  .xvr-faq__item {
+    interpolate-size: allow-keywords;
+  }
+
+  .dv-faq__item::details-content,
+  .xvr-faq__item::details-content {
+    overflow: clip;
+    block-size: 0;
+    opacity: 0;
+    transition: block-size 260ms var(--ease-spring), opacity 160ms var(--ease-spring),
+      content-visibility 260ms allow-discrete;
+  }
+
+  .dv-faq__item[open]::details-content,
+  .xvr-faq__item[open]::details-content {
+    block-size: auto;
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dv-faq__item::details-content,
+    .xvr-faq__item::details-content {
+      transition: opacity 140ms linear;
+      block-size: auto;
+    }
+  }
+}
+
+/* ----- Rails: the overscroll stays in the rail, and the ends fade where there
+   is more to reach. /js/chrome.js stamps data-overflow only when a strip really
+   overflows, so a short rail has no fade to explain. ----- */
+
+.st-rail__list,
+.st-strip {
+  overscroll-behavior-inline: contain;
+}
+
+/* The rails use the same per-side fade as the bars; see the shared rule above. */
+
+/* ----- The viewer's control bar is chrome over an image, so it is a material
+   too: it floats on the image instead of taking a strip of it. ----- */
+
+.dv-overlay__tl,
+.dv-overlay__tr,
+.dv-overlay__bl,
+.dv-overlay__br {
+  letter-spacing: 0.01em;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .dv-controls {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }

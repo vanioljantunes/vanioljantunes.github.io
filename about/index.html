@@ -2994,6 +2994,120 @@
     .sect {
       scroll-margin-top: 110px !important;
     }
+
+    /* ===================================================================
+       Apple-design pass. Same palette, same layout: this adds the response
+       on the press, the spring timing, the size-specific type metrics and
+       the two preference signals the page did not answer yet. Appended last
+       so it settles anything above that said something softer.
+       =================================================================== */
+
+    :root {
+      --ease-spring: linear(0, 0.0902, 0.2642, 0.4422, 0.594, 0.7127, 0.8009, 0.8641,
+        0.9084, 0.9389, 0.9596, 0.9734, 0.9826, 0.9887, 0.9927, 0.9953, 1);
+      --resp-press: 100ms;
+      --resp-fast: 180ms;
+    }
+
+    html {
+      font-optical-sizing: auto;
+    }
+
+    /* Tracking is size-specific: the display name tightens as it grows, the small
+       uppercase labels keep the extra room they need, body copy sits at zero. */
+    .hero-name {
+      letter-spacing: -0.025em;
+    }
+
+    .sect-h {
+      letter-spacing: -0.018em;
+    }
+
+    .hero-bio,
+    .about-text,
+    .pub-title {
+      letter-spacing: 0;
+    }
+
+    /* Feedback on pointer-down, not on release. Transform only, 100ms, so the
+       compositor carries it and nothing waits for a click to answer. */
+    .cta-primary,
+    .scholar-cta,
+    .hero-chip,
+    .social-link,
+    .filter-btn,
+    .pub-nav-btn,
+    .pub-card,
+    .contact-card,
+    .hero-social-strip a {
+      touch-action: manipulation;
+      transition-timing-function: var(--ease-spring);
+      transition-duration: var(--resp-fast);
+    }
+
+    .cta-primary:active,
+    .scholar-cta:active,
+    .hero-chip:active,
+    .social-link:active,
+    .filter-btn:active,
+    .pub-nav-btn:active,
+    .contact-card:active,
+    .hero-social-strip a:active {
+      transform: scale(0.96);
+      transition: transform var(--resp-press) var(--ease-spring);
+    }
+
+    .pub-card:active {
+      transform: scale(0.985);
+      transition: transform var(--resp-press) var(--ease-spring);
+    }
+
+    /* Reduced motion keeps the feedback and drops the travel. */
+    @media (prefers-reduced-motion: reduce) {
+      .cta-primary:active,
+      .scholar-cta:active,
+      .hero-chip:active,
+      .social-link:active,
+      .filter-btn:active,
+      .pub-nav-btn:active,
+      .pub-card:active,
+      .contact-card:active,
+      .hero-social-strip a:active {
+        transform: none;
+        border-color: var(--accent);
+        background: var(--accent-dim);
+      }
+    }
+
+    /* Transparency turned down: the frosted nav becomes solid, same geometry. */
+    @media (prefers-reduced-transparency: reduce) {
+      .nav {
+        background: var(--surface);
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+      }
+    }
+
+    /* More contrast: near-solid surfaces with a defined border. */
+    @media (prefers-contrast: more) {
+      :root {
+        --border: #64748B;
+        --muted: #334155;
+      }
+
+      .nav {
+        background: var(--surface);
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+      }
+
+      .pub-card,
+      .contact-card,
+      .hero-bio-card {
+        border-width: 2px;
+      }
+    }
+
   </style>
 </head>
 

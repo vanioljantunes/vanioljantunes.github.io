@@ -6,10 +6,38 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  border-bottom: 1px solid #c9d0d9;
-  background: #ffffff;
+  /* A floating translucent layer, not an opaque strip: the page scrolls under it.
+     The hairline and the shadow only appear once there is content behind the bar,
+     so an unscrolled page has no divider to explain. */
+  border-bottom: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 0 0 0 0 rgba(28, 36, 48, 0);
+  transition: border-color 200ms var(--ease-spring, ease-out),
+    box-shadow 200ms var(--ease-spring, ease-out),
+    background-color 200ms var(--ease-spring, ease-out);
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   line-height: 1.55;
+}
+
+.site-bar[data-scrolled] {
+  border-bottom-color: rgba(201, 208, 217, 0.9);
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 1px 12px rgba(28, 36, 48, 0.06);
+}
+
+/* Legibility over a changing backdrop: slightly heavier, slightly looser, and the
+   colour stays on the solid text itself rather than on the translucent surface. */
+.site-bar__links a,
+.site-bar__brand {
+  letter-spacing: 0.004em;
+}
+
+/* No JavaScript, no scroll state: /js/chrome.js stamps data-chrome on the bar, and
+   without it the bar keeps a permanent hairline rather than floating over nothing. */
+.site-bar:not([data-chrome]) {
+  border-bottom-color: #c9d0d9;
 }
 
 .site-bar *,
@@ -378,4 +406,117 @@
 
 .site-subnav__links .subnav-menu__list a:hover {
   background: #e8f0fb;
+}
+
+
+/* ----- Press feedback: on pointer-down, 100ms, transform only ----- */
+.site-bar__links a,
+.site-bar__social a,
+.subnav-menu__button,
+.site-subnav__links a {
+  touch-action: manipulation;
+  transition: transform 100ms var(--ease-spring, ease-out),
+    background-color 140ms var(--ease-spring, ease-out),
+    color 140ms var(--ease-spring, ease-out);
+}
+
+.site-bar__links a:active,
+.site-bar__social a:active,
+.subnav-menu__button:active,
+.site-subnav__links a:active {
+  transform: scale(0.94);
+}
+
+/* ----- The sub-bar is the lighter material of the two, and it floats too ----- */
+.site-subnav {
+  border-top: 1px solid rgba(227, 231, 236, 0.9);
+  background: rgba(247, 248, 250, 0.72);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  backdrop-filter: blur(20px) saturate(160%);
+}
+
+/* ----- The dropdown is a material arriving, anchored to the button that opened it.
+   subnav.js sets --origin-x so the panel scales out of its trigger rather than its own
+   centre, and the exit runs the same path backwards. Blur and scale move together, so
+   the glass reads as a surface arriving rather than an opacity fade. The timing lives in
+   CSS, not in a spring library, because the sub-bar must behave before any CDN answers.
+   ----- */
+.subnav-menu__list {
+  transform-origin: var(--origin-x, 1rem) top;
+  background: rgba(255, 255, 255, 0.86);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  box-shadow: 0 10px 30px rgba(28, 36, 48, 0.14), 0 1px 0 rgba(255, 255, 255, 0.6) inset;
+  opacity: 0;
+  transform: scale(0.94);
+  filter: blur(6px);
+  transition: opacity 160ms var(--ease-spring, ease-out),
+    transform 300ms var(--ease-spring, ease-out),
+    filter 160ms var(--ease-spring, ease-out);
+}
+
+.subnav-menu__list[data-open] {
+  opacity: 1;
+  transform: scale(1);
+  filter: blur(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .subnav-menu__list {
+    transform: none;
+    filter: none;
+    transition: opacity 120ms linear;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-bar__links a:active,
+  .site-bar__social a:active,
+  .subnav-menu__button:active,
+  .site-subnav__links a:active {
+    transform: none;
+    background: #e8f0fb;
+  }
+}
+
+/* Transparency turned down: the same geometry, frostier and solid. */
+@media (prefers-reduced-transparency: reduce) {
+  .site-bar,
+  .site-bar[data-scrolled] {
+    background: #ffffff;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .site-subnav {
+    background: #f7f8fa;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .subnav-menu__list {
+    background: #ffffff;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .site-bar {
+    background: #ffffff;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border-bottom-color: #5c6675;
+  }
+
+  .site-subnav,
+  .subnav-menu__list {
+    background: #ffffff;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .site-bar__links a[aria-current="page"] {
+    outline: 2px solid #164a90;
+  }
 }

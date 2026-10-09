@@ -1,16 +1,16 @@
-// Home page motion. Motion drives the entrance and tile hover/press;
-// anime.js draws the line under the name and nudges the tile arrows.
-// Loaded as a module: if either CDN import fails, nothing here runs and the
-// head script's timeout reveals the content.
-import * as Motion from 'https://cdn.jsdelivr.net/npm/motion@13.4.0/+esm';
+// Home page motion. Springs, not durations: the tiles can be grabbed, hovered and
+// pressed at any point in their entrance and the motion continues from where they
+// actually are rather than jumping to where the script thought they were.
+// anime.js draws the line under the name.
+// Loaded as a module: if either CDN import fails, nothing here runs and the head
+// script's timeout reveals the content.
+import { Motion, SPRING, reduced } from './motion.js';
 import * as anime from 'https://cdn.jsdelivr.net/npm/animejs@4.5.0/+esm';
 
 const root = document.documentElement;
-const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 // The fallback timer already revealed everything: do not hide it again.
 const tooLate = !root.classList.contains('anim-pending');
 
-const EXPO_OUT = [0.16, 1, 0.3, 1];
 const { animate, stagger } = Motion;
 
 if (reduced) {
@@ -30,15 +30,17 @@ if (reduced) {
     if (drawable) anime.utils.set(drawable, { draw: '0 0' });
     root.classList.remove('anim-pending');
 
+    // Nothing was thrown here, so nothing overshoots: a critically damped spring
+    // arrives and settles.
     animate(intro, { opacity: [0, 1], y: [14, 0] }, {
-      duration: 0.7,
-      ease: EXPO_OUT,
-      delay: stagger(0.07),
+      ...SPRING.move,
+      duration: 0.55,
+      delay: stagger(0.06),
     });
     animate(tiles, { opacity: [0, 1], y: [22, 0] }, {
-      duration: 0.8,
-      ease: EXPO_OUT,
-      delay: stagger(0.09, { startDelay: 0.3 }),
+      ...SPRING.move,
+      duration: 0.6,
+      delay: stagger(0.08, { startDelay: 0.25 }),
     });
     if (drawable) {
       anime.animate(drawable, {
@@ -50,10 +52,19 @@ if (reduced) {
     }
   }
 
-  // Hover grows the card, press settles it (transform only).
+  // Hover grows the card, the press answers on pointer-down and returns to whichever
+  // state the pointer is still in. Every one of these re-targets the same spring, so
+  // a press during the entrance, or a pointer leaving mid-press, continues from the
+  // scale on screen instead of snapping.
+  const HOVER = 1.035;
+  const PRESS = 0.995;
+
   document.querySelectorAll('[data-tile]').forEach((tile) => {
-    const lift = () => animate(tile, { scale: 1.035 }, { duration: 0.35, ease: EXPO_OUT });
-    const drop = () => animate(tile, { scale: 1 }, { duration: 0.35, ease: EXPO_OUT });
+    let hovered = false;
+    const to = (scale, spring) => animate(tile, { scale }, spring);
+    const lift = () => { hovered = true; to(HOVER, SPRING.move); };
+    const drop = () => { hovered = false; to(1, SPRING.move); };
+
     if (typeof Motion.hover === 'function') {
       Motion.hover(tile, () => {
         lift();
@@ -65,11 +76,18 @@ if (reduced) {
     }
     tile.addEventListener('focusin', lift);
     tile.addEventListener('focusout', drop);
+
     if (typeof Motion.press === 'function') {
+      // Motion's press fires on pointer-down, which is the only moment feedback is
+      // worth anything.
       Motion.press(tile, () => {
-        animate(tile, { scale: 1.01 }, { duration: 0.15, ease: EXPO_OUT });
-        return () => animate(tile, { scale: 1.035 }, { duration: 0.3, ease: EXPO_OUT });
+        to(PRESS, SPRING.press);
+        return () => to(hovered ? HOVER : 1, SPRING.move);
       });
+    } else {
+      tile.addEventListener('pointerdown', () => to(PRESS, SPRING.press), { passive: true });
+      tile.addEventListener('pointerup', () => to(hovered ? HOVER : 1, SPRING.move), { passive: true });
+      tile.addEventListener('pointercancel', () => to(hovered ? HOVER : 1, SPRING.move), { passive: true });
     }
   });
 }
