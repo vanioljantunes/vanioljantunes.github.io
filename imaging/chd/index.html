@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Tetralogy of Fallot on CT | Vanio Antunes</title>
-  <meta name="description" content="A paediatric cardiac CT of a tetralogy of Fallot, read in the browser, with the seven cardiac structures outlined by the radiologists who published the dataset.">
+  <title>CHD segmentation | Vanio Antunes</title>
+  <meta name="description" content="A paediatric cardiac CT of a tetralogy of Fallot read against a control, with the seven cardiac structures outlined by the radiologists who published the dataset and named inside the image.">
   <link rel="icon" href="/favicon.ico?v=2" sizes="48x48">
   <link rel="icon" href="/favicon-32.png?v=2" type="image/png" sizes="32x32">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
@@ -49,7 +49,7 @@
       <ul class="site-subnav__links">
           <li><a href="/imaging/">All projects</a></li>
           <li><a href="/imaging/viewers/">Imaging viewers</a></li>
-          <li><a href="/imaging/chd/" aria-current="page">Congenital heart</a></li>
+          <li><a href="/imaging/chd/" aria-current="page">CHD segmentation</a></li>
           <li><a href="/imaging/heart/">Heart clone</a></li>
           <li><a href="/imaging/#alearrhythmia">aleArrhythmia</a></li>
           <li><a href="/imaging/study-track/">Study track</a></li>
@@ -59,19 +59,42 @@
 
   <main id="main" class="page-main wrap imaging-page">
     <div class="page-head">
-      <h1>Tetralogy of Fallot on CT</h1>
-      <p>A cardiac CT angiogram of a child with a tetralogy of Fallot, beside one the dataset records no congenital defect for. Scrolling either moves the other to the same level, so the two can be read against each other. On both, the four chambers, the myocardium, the aorta and the pulmonary artery were outlined by the radiologists who published the dataset: draw a box round any of them and that side names it.</p>
+      <h1>CHD segmentation</h1>
+      <p>A cardiac CT angiogram of a child with a tetralogy of Fallot, beside one the dataset records no congenital defect for. Scrolling either moves the other to the same level, so the two can be read against each other. On both, the four chambers, the myocardium, the aorta and the pulmonary artery were outlined by the radiologists who published the dataset: draw a box round any of them on either study and both name it.</p>
     </div>
 
     <p class="dv-status" id="dv-status" data-kind="loading" role="status" aria-live="polite">Reading the study&hellip;</p>
     <div class="dv-progress" id="dv-progress" hidden><span class="dv-progress__bar" id="dv-progress-bar"></span></div>
 
+    <!-- One toolbar for the pair. Two sets of chips invited the two studies to drift apart,
+         which is the one thing a comparison cannot afford. -->
+    <div class="dv-controls dv-controls--static dv-controls--shared" role="toolbar" aria-label="Viewer controls">
+      <div class="dv-group" role="group" aria-label="Window presets">
+        <span class="dv-group__label" id="shared-presets-label">Window</span>
+        <div class="dv-chips" id="shared-presets" aria-labelledby="shared-presets-label"></div>
+      </div>
+      <div class="dv-group" role="group" aria-label="View">
+        <span class="dv-group__label">View</span>
+        <div class="dv-chips">
+          <button type="button" class="dv-chip" id="shared-invert">Invert</button>
+          <button type="button" class="dv-chip" id="shared-reset">Reset</button>
+        </div>
+      </div>
+      <div class="dv-group" role="group" aria-label="Structures">
+        <span class="dv-group__label">Structures</span>
+        <div class="dv-chips">
+          <button type="button" class="dv-chip" id="shared-identify" aria-pressed="false">Identify</button>
+        </div>
+      </div>
+    </div>
+
+    <p class="chd-hint" id="chd-hint">Press Identify, then drag a box round a structure on either study. The other names the same structure on its own slice.</p>
+
     <div class="chd-pair">
       <section class="chd-side" aria-labelledby="tof-title">
-        <h2 class="chd-side__title" id="tof-title">Tetralogy of Fallot</h2>
-        <p class="chd-side__note">ImageCHD case 1046</p>
+        <h2 class="chd-side__title" id="tof-title">Tetralogy of Fallot <span class="chd-side__id">(ImageCHD case 1046)</span></h2>
 
-        <div class="dv-frame">
+        <div class="dv-frame" id="tof-frame">
           <div class="dv-stage" id="tof-stage" tabindex="0" role="img"
                aria-label="Cardiac CT with a tetralogy of Fallot. Use the arrow keys to move through slices."></div>
 
@@ -96,41 +119,17 @@
           <div class="dv-seg-layer" id="tof-seg-layer" hidden>
             <div class="dv-seg-box" id="tof-seg-box" hidden></div>
           </div>
+
+          <!-- The named structure sits over the top of its own image. Empty until something
+               is identified, so an unused viewer carries no text at all. -->
+          <div class="chd-readout" id="tof-readout" aria-live="polite" hidden></div>
         </div>
-
-        <div class="dv-controls dv-controls--static" role="toolbar" aria-label="Tetralogy viewer controls">
-          <div class="dv-group" role="group" aria-label="Window presets">
-            <span class="dv-group__label" id="tof-presets-label">Window</span>
-            <div class="dv-chips" id="tof-presets" aria-labelledby="tof-presets-label"></div>
-          </div>
-          <div class="dv-group" role="group" aria-label="View">
-            <span class="dv-group__label">View</span>
-            <div class="dv-chips">
-              <button type="button" class="dv-chip" id="tof-invert">Invert</button>
-              <button type="button" class="dv-chip" id="tof-reset">Reset</button>
-            </div>
-          </div>
-          <div class="dv-group" role="group" aria-label="Structures">
-            <span class="dv-group__label">Structures</span>
-            <div class="dv-chips">
-              <button type="button" class="dv-chip" id="tof-identify" aria-pressed="false">Identify</button>
-            </div>
-          </div>
-        </div>
-
-        <p class="dv-seg-hint" id="tof-hint"></p>
-
-        <aside class="dv-seg-panel" id="tof-panel" aria-live="polite" hidden>
-          <h3 class="dv-seg-panel__title">Structure</h3>
-          <div id="tof-body"></div>
-        </aside>
       </section>
 
       <section class="chd-side" aria-labelledby="ctl-title">
-        <h2 class="chd-side__title" id="ctl-title">Healthy control</h2>
-        <p class="chd-side__note">ImageCHD case 1080, which the dataset records no congenital defect for</p>
+        <h2 class="chd-side__title" id="ctl-title">Healthy control <span class="chd-side__id">(ImageCHD case 1080)</span></h2>
 
-        <div class="dv-frame">
+        <div class="dv-frame" id="ctl-frame">
           <div class="dv-stage" id="ctl-stage" tabindex="0" role="img"
                aria-label="Cardiac CT of the control. Use the arrow keys to move through slices."></div>
 
@@ -150,37 +149,16 @@
 
           <canvas class="dv-seg-canvas" id="ctl-seg-canvas" aria-hidden="true"></canvas>
 
+          <!-- Only present while the identify tool is on. It sits above the image so a drag
+               draws a box instead of reaching Cornerstone underneath and windowing. -->
           <div class="dv-seg-layer" id="ctl-seg-layer" hidden>
             <div class="dv-seg-box" id="ctl-seg-box" hidden></div>
           </div>
+
+          <!-- The named structure sits over the top of its own image. Empty until something
+               is identified, so an unused viewer carries no text at all. -->
+          <div class="chd-readout" id="ctl-readout" aria-live="polite" hidden></div>
         </div>
-
-        <div class="dv-controls dv-controls--static" role="toolbar" aria-label="Control viewer controls">
-          <div class="dv-group" role="group" aria-label="Window presets">
-            <span class="dv-group__label" id="ctl-presets-label">Window</span>
-            <div class="dv-chips" id="ctl-presets" aria-labelledby="ctl-presets-label"></div>
-          </div>
-          <div class="dv-group" role="group" aria-label="View">
-            <span class="dv-group__label">View</span>
-            <div class="dv-chips">
-              <button type="button" class="dv-chip" id="ctl-invert">Invert</button>
-              <button type="button" class="dv-chip" id="ctl-reset">Reset</button>
-            </div>
-          </div>
-          <div class="dv-group" role="group" aria-label="Structures">
-            <span class="dv-group__label">Structures</span>
-            <div class="dv-chips">
-              <button type="button" class="dv-chip" id="ctl-identify" aria-pressed="false">Identify</button>
-            </div>
-          </div>
-        </div>
-
-        <p class="dv-seg-hint" id="ctl-hint"></p>
-
-        <aside class="dv-seg-panel" id="ctl-panel" aria-live="polite" hidden>
-          <h3 class="dv-seg-panel__title">Structure</h3>
-          <div id="ctl-body"></div>
-        </aside>
       </section>
     </div>
 

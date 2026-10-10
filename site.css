@@ -3993,14 +3993,19 @@ h3 {
 }
 
 .chd-side__title {
-  margin: 0 0 0.15rem;
   font-size: 1.1rem;
 }
 
-.chd-side__note {
+.chd-side__title {
   margin: 0 0 0.6rem;
+}
+
+/* The case number is part of the title rather than a line under it: it identifies the study,
+   it is not a second thought about it. */
+.chd-side__id {
   color: var(--muted);
-  font-size: 0.85rem;
+  font-size: 0.9rem;
+  font-weight: 400;
 }
 
 /* Side by side each frame has half the width, so the tall single-viewer height would leave
@@ -4009,10 +4014,49 @@ h3 {
   height: min(52vh, 460px);
 }
 
-/* The structure panel sits under its own image rather than beside it: with two viewers there
-   is no width to spare for a side column. */
-.chd-side .dv-seg-panel {
-  margin-top: 0.6rem;
+/* ----- The named structure, over the top of its own image ----- */
+
+.chd-readout {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 3;
+  padding: 0.7rem 0.9rem 1.4rem;
+  background: linear-gradient(
+    to bottom,
+    rgb(0 0 0 / 0.88) 0%,
+    rgb(0 0 0 / 0.72) 55%,
+    rgb(0 0 0 / 0) 100%
+  );
+  color: #fff;
+  /* The identify layer underneath has to keep receiving drags. */
+  pointer-events: none;
+}
+
+.chd-readout__name {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.chd-readout__what {
+  margin: 0;
+  max-width: 52ch;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: rgb(255 255 255 / 0.88);
+}
+
+.chd-readout__note {
+  margin: 0.35rem 0 0;
+  font-size: 0.75rem;
+  color: rgb(255 255 255 / 0.7);
+}
+
+/* The corner caption and the readout occupy the same corner, so the caption steps aside
+   while something is named. */
+.chd-frame--named .dv-overlay__tl {
+  opacity: 0;
 }
 
 /* The single-viewer page floats its controls over the image. Here they sit under it, so that
@@ -4041,6 +4085,29 @@ h3 {
 .dv-controls--static .dv-chip:hover {
   background: rgba(0, 0, 0, 0.05);
 }
+
+/* ----- One toolbar above the pair ----- */
+
+/* The toolbar above the pair is a bar, not a floating pill: it runs the full measure, its
+   groups read from the left, and the 999px radius that suits a one-line pill is dropped so
+   that a wrapped bar does not bulge into an oval. */
+.dv-controls--shared {
+  width: 100%;
+  max-width: none;
+  margin: 0 0 0.75rem;
+  justify-content: flex-start;
+  gap: 0.5rem 1.6rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 14px;
+}
+
+.chd-hint {
+  margin: 0 0 1.25rem;
+  max-width: 72ch;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
 
 .chd-link-note {
   margin: 1rem 0 0;
