@@ -36,6 +36,7 @@ type Plane = {
   axis: number;
   index: number;
   file: string;
+  default?: boolean;
   corners: [number, number, number][];
 };
 
@@ -73,6 +74,14 @@ const renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 const scene = new Scene();
+
+/* The CT is in LPS: +x to the patient's left, +y posterior, +z towards the head. three.js
+   wants +y up, so everything hangs off a group rotated a quarter turn about x. That maps
+   head-to-foot onto up-down and puts posterior away from the camera, which is the orientation
+   a reader expects from an anterior view: patient's left on the viewer's right. */
+const patient = new Group();
+patient.rotation.x = -Math.PI / 2;
+scene.add(patient);
 const camera = new PerspectiveCamera(42, 1, 1, 5000);
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
@@ -107,7 +116,7 @@ function frameOn(target: Box3): void {
   const centre = target.getCenter(new Vector3());
   const radius = Math.max(size.x, size.y, size.z);
   controls.target.copy(centre);
-  camera.position.copy(centre).add(new Vector3(radius * 1.9, radius * 0.75, radius * 2.1));
+  camera.position.copy(centre).add(new Vector3(radius * 0.9, radius * 0.5, radius * 2.4));
   camera.near = radius / 100;
   camera.far = radius * 40;
   camera.updateProjectionMatrix();
@@ -134,12 +143,13 @@ function toggleRow(
   colour: string | null,
   note: string,
   onChange: (on: boolean) => void,
+  on = true,
 ): HTMLLabelElement {
   const row = document.createElement('label');
   row.className = 'toggle';
   const input = document.createElement('input');
   input.type = 'checkbox';
-  input.checked = true;
+  input.checked = on;
   input.addEventListener('change', () => onChange(input.checked));
   const swatch = document.createElement('span');
   swatch.className = colour ? 'swatch' : 'swatch swatch--slice';
@@ -172,13 +182,19 @@ function addPlanes(planes: Plane[]): void {
 
     const texture = loader.load(plane.file);
     texture.colorSpace = SRGBColorSpace;
+    /* Cutout rather than blended. A transparent material renders in three.js's transparent
+       pass, which runs after the opaque meshes, so the slice painted straight over the heart.
+       alphaTest drops the air instead, and the plane then behaves like ordinary geometry:
+       correctly behind the heart when it is behind it. */
     const mesh = new Mesh(geometry, new MeshBasicMaterial({
       map: texture,
       side: DoubleSide,
-      transparent: true,
-      opacity: 0.92,
+      transparent: false,
+      alphaTest: 0.35,
     }));
     mesh.name = plane.name;
+    // Three planes at once is clutter; one backdrop behind the heart is context.
+    mesh.visible = plane.default === true;
     group.add(mesh);
 
     planeToggles.append(toggleRow(
@@ -186,9 +202,10 @@ function addPlanes(planes: Plane[]): void {
       null,
       `index ${plane.index}`,
       (on) => { mesh.visible = on; },
+      mesh.visible,
     ));
   }
-  scene.add(group);
+  patient.add(group);
 }
 
 async function main(): Promise<void> {
@@ -198,7 +215,7 @@ async function main(): Promise<void> {
   heartVolumes = manifest.structures.find((s) => s.name === 'Heart')?.volumePerPhase ?? [];
 
   const gltf = await new GLTFLoader().loadAsync('heart.glb');
-  scene.add(gltf.scene);
+  patient.add(gltf.scene);
 
   /* Keyed on the structure name carried in glTF extras, not on the node name: three.js
      sanitises node names for its animation bindings, so "Inferior vena cava" arrives as
@@ -208,13 +225,14 @@ async function main(): Promise<void> {
     const mesh = object as Mesh;
     if (!mesh.isMesh) return;
     const key = (mesh.userData?.structure as string | undefined) ?? mesh.name;
-    const isWall = key === 'Heart';
     const material = mesh.material as MeshStandardMaterial;
-    // The wall encloses the vessels, so it is a shell you can see into, solid enough to read
-    // as muscle.
-    material.transparent = isWall;
-    material.opacity = isWall ? 0.62 : 1;
-    material.depthWrite = !isWall;
+    // Opaque. A translucent wall with depth writing off sorts badly against the CT planes and
+    // reads as a broken shell rather than an organ.
+    material.transparent = false;
+    material.opacity = 1;
+    material.depthWrite = true;
+    material.roughness = 0.55;
+    material.metalness = 0;
     meshes.set(key, mesh);
   });
 

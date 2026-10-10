@@ -35,13 +35,12 @@ MESHES.mkdir(parents=True, exist_ok=True)
 REFERENCE_PHASE = 14
 
 # label id -> (vertex budget, colour, label)
+#
+# The heart alone. The great vessels are cut mid-course by the field of view and their walls
+# are roughly one voxel thick, so they mesh into fragments rather than tubes: the aorta
+# encloses 1.0 mL against 7.1 mL of labelled voxels. Shipping them would mean shipping debris.
 WANTED: dict[int, tuple[int, str, str]] = {
-    51: (14000, "#b4563f", "Heart"),
-    52: (6000, "#c2453c", "Aorta"),
-    53: (3000, "#7f6bb0", "Pulmonary artery"),
-    54: (2500, "#4f6f93", "Superior vena cava"),
-    59: (2500, "#4f6f93", "Inferior vena cava"),
-    61: (1500, "#a8584c", "Left atrial appendage"),
+    51: (16000, "#b4563f", "Heart"),
 }
 
 contours = ProcessContours(log_level=logging.WARNING)
@@ -55,31 +54,42 @@ def mask_image(labels: np.ndarray, label_id: int, reference: itk.Image):
     mask = ndimage.binary_fill_holes(mask)
     components, count = ndimage.label(mask)
     if count > 1:
+        # Keep every substantial piece, not just the biggest one. A vessel cut by the edge of
+        # the field of view arrives in several pieces, and keeping one of them leaves the rest
+        # as debris floating beside the heart.
         sizes = ndimage.sum(mask, components, range(1, count + 1))
-        mask = components == (int(np.argmax(sizes)) + 1)
+        keep = [i + 1 for i, size in enumerate(sizes) if size >= 0.15 * sizes.max()]
+        mask = np.isin(components, keep)
     image = itk.image_from_array(mask.astype(np.uint8))
     image.CopyInformation(reference)
     return image
 
 
 
-def export_ct_planes(ct_file: Path, centre_mm: np.ndarray) -> dict:
-    """Write three orthogonal CT slices as PNGs, with their corners in physical millimetres.
+def export_ct_planes(ct_file: Path, heart_bounds: np.ndarray) -> dict:
+    """Write three orthogonal CT slices as RGBA PNGs, with their corners in physical millimetres.
 
-    The slices pass through the centre of the heart rather than the centre of the volume, so
-    the planes cut the organ the way a reader would set them in a viewer. Each corner is
-    carried in physical coordinates, computed through ITK's own index-to-physical transform,
-    which is the only way to get the direction matrix right.
+    The planes cut through the middle of the heart, the way a reader sets them in a viewer.
+
+    Air is transparent. A CT slice rendered opaque is mostly a black rectangle that blocks
+    whatever is behind it; mapping Hounsfield units to alpha lets the lungs fade and the air
+    disappear, leaving the chest wall, mediastinum and vessels as a translucent backdrop.
     """
     image = itk.imread(str(ct_file))
     array = itk.array_from_image(image).astype(np.float32)   # (z, y, x)
     size = np.array(itk.size(image))                         # (x, y, z)
 
-    index = np.array(image.TransformPhysicalPointToIndex([float(v) for v in centre_mm]))
-    index = np.clip(index, 0, size - 1)
+    # Through the middle of the heart. Anchoring a plane outside the organ only works from
+    # one viewing direction: orbit a quarter turn and the "backdrop" is in front, hiding the
+    # anatomy. A slice through the centre cuts the heart the way a reader sets it in a viewer,
+    # and reads as intentional from every angle.
+    centre_mm = heart_bounds.mean(axis=0)
+    anchors = np.clip(
+        np.array(image.TransformPhysicalPointToIndex([float(v) for v in centre_mm])),
+        0, size - 1)
 
     def corners(axis: int, at: int) -> list[list[float]]:
-        """Physical corners of the slice plane, in the order lower-left, lower-right, upper-right, upper-left."""
+        """Physical corners of the plane: (0,0), (max,0), (max,max), (0,max) in index space."""
         spans = [i for i in range(3) if i != axis]
         out = []
         for first, second in ((0, 0), (1, 0), (1, 1), (0, 1)):
@@ -90,24 +100,33 @@ def export_ct_planes(ct_file: Path, centre_mm: np.ndarray) -> dict:
             out.append([float(v) for v in image.TransformIndexToPhysicalPoint(idx)])
         return out
 
-    # Mediastinal window, which is what a reader uses to look at the heart.
+    # Mediastinal window for the greys, and a separate ramp for alpha so air drops out.
     level, width = 40.0, 400.0
-    low, high = level - width / 2, level + width / 2
+    low_hu, high_hu = level - width / 2, level + width / 2
 
     planes = []
     for axis, name in ((2, "axial"), (1, "coronal"), (0, "sagittal")):
-        at = int(index[axis])
+        at = int(anchors[axis])
         if axis == 2:
             plane = array[at, :, :]
         elif axis == 1:
             plane = array[:, at, :]
         else:
             plane = array[:, :, at]
-        grey = np.clip((plane - low) / (high - low), 0, 1)
+
+        grey = np.clip((plane - low_hu) / (high_hu - low_hu), 0, 1)
+        alpha = np.clip((plane + 900.0) / 300.0, 0, 1)   # -1000 HU air out, soft tissue solid
+        rgba = np.dstack([
+            (grey * 255).astype(np.uint8),
+            (grey * 255).astype(np.uint8),
+            (grey * 255).astype(np.uint8),
+            (alpha * 255).astype(np.uint8),
+        ])
         png = WEB_DIR / f"ct_{name}.png"
-        Image.fromarray((grey * 255).astype(np.uint8)).save(png)
+        Image.fromarray(rgba, mode="RGBA").save(png)
         planes.append({"name": name, "axis": axis, "index": at,
                        "file": png.name, "corners": corners(axis, at),
+                       "default": name == "coronal",
                        "window": {"level": level, "width": width}})
         print(f"  {name:<9} index {at:>4}  {plane.shape[1]}x{plane.shape[0]}  -> {png.name}")
     return {"planes": planes, "window": {"level": level, "width": width}}
@@ -173,13 +192,13 @@ def main() -> None:
 
     print()
     print("CT slice planes through the centre of the heart")
-    heart_centre = np.asarray(full_surfaces[51].center)
-    ct_planes = export_ct_planes(frames[REFERENCE_PHASE], heart_centre)
+    heart_bounds = np.asarray(full_surfaces[51].bounds).reshape(3, 2).T  # [[xmin,ymin,zmin],[xmax,...]]
+    ct_planes = export_ct_planes(frames[REFERENCE_PHASE], heart_bounds)
 
     summary = {
         "phases": len(frames),
         "ct": ct_planes,
-        "heartCentreMm": [round(float(v), 1) for v in heart_centre],
+        "heartCentreMm": [round(float(v), 1) for v in np.asarray(full_surfaces[51].center)],
         "referencePhase": REFERENCE_PHASE,
         "structures": [
             {
