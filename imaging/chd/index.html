@@ -66,30 +66,6 @@
     <p class="dv-status" id="dv-status" data-kind="loading" role="status" aria-live="polite">Reading the study&hellip;</p>
     <div class="dv-progress" id="dv-progress" hidden><span class="dv-progress__bar" id="dv-progress-bar"></span></div>
 
-    <!-- One toolbar for the pair. Two sets of chips invited the two studies to drift apart,
-         which is the one thing a comparison cannot afford. -->
-    <div class="dv-controls dv-controls--static dv-controls--shared" role="toolbar" aria-label="Viewer controls">
-      <div class="dv-group" role="group" aria-label="Window presets">
-        <span class="dv-group__label" id="shared-presets-label">Window</span>
-        <div class="dv-chips" id="shared-presets" aria-labelledby="shared-presets-label"></div>
-      </div>
-      <div class="dv-group" role="group" aria-label="View">
-        <span class="dv-group__label">View</span>
-        <div class="dv-chips">
-          <button type="button" class="dv-chip" id="shared-invert">Invert</button>
-          <button type="button" class="dv-chip" id="shared-reset">Reset</button>
-        </div>
-      </div>
-      <div class="dv-group" role="group" aria-label="Structures">
-        <span class="dv-group__label">Structures</span>
-        <div class="dv-chips">
-          <button type="button" class="dv-chip" id="shared-identify" aria-pressed="false">Identify</button>
-        </div>
-      </div>
-    </div>
-
-    <p class="chd-hint" id="chd-hint">Press Identify, then drag a box round a structure on either study. The other names the same structure on its own slice.</p>
-
     <div class="chd-pair">
       <section class="chd-side" aria-labelledby="tof-title">
         <h2 class="chd-side__title" id="tof-title">Tetralogy of Fallot <span class="chd-side__id">(ImageCHD case 1046)</span></h2>
@@ -162,7 +138,37 @@
       </section>
     </div>
 
-    <p class="chd-link-note">Scrolling either study moves the other. The two children are different sizes and their scans start and stop at different levels, so the link maps between the outlined hearts rather than between slice numbers: it holds the level through the heart and drifts outside it. Window, zoom and pan stay separate.</p>
+    <!-- The controls sit under the pair, so the two images meet the heading directly and are
+         read against each other without a bar of chips in between. Identify comes first
+         because it is the one control that asks a question of the anatomy; the window chips
+         only change how it is drawn. -->
+    <div class="dv-controls dv-controls--static dv-controls--shared" role="toolbar" aria-label="Structures">
+      <div class="dv-group" role="group" aria-label="Structures">
+        <span class="dv-group__label">Structures</span>
+        <div class="dv-chips">
+          <button type="button" class="dv-chip" id="shared-identify" aria-pressed="false">Identify</button>
+        </div>
+      </div>
+    </div>
+
+    <p class="chd-hint" id="chd-hint">Press Identify, then drag a box round a structure on either study. The other names the same structure on its own slice.</p>
+
+    <!-- One toolbar for the pair. Two sets of chips invited the two studies to drift apart,
+         which is the one thing a comparison cannot afford. -->
+    <div class="dv-controls dv-controls--static dv-controls--shared" role="toolbar" aria-label="Viewer controls">
+      <div class="dv-group" role="group" aria-label="Window presets">
+        <span class="dv-group__label" id="shared-presets-label">Window</span>
+        <div class="dv-chips" id="shared-presets" aria-labelledby="shared-presets-label"></div>
+      </div>
+      <div class="dv-group" role="group" aria-label="View">
+        <span class="dv-group__label">View</span>
+        <div class="dv-chips">
+          <button type="button" class="dv-chip" id="shared-invert">Invert</button>
+          <button type="button" class="dv-chip" id="shared-reset">Reset</button>
+        </div>
+      </div>
+    </div>
+
 
     <section class="faq" data-faq aria-labelledby="faq-title">
       <h2 id="faq-title">Questions</h2>

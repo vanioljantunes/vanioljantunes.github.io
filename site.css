@@ -4020,16 +4020,24 @@ h3 {
   position: absolute;
   inset: 0 0 auto 0;
   z-index: 3;
-  padding: 0.7rem 0.9rem 1.4rem;
-  background: linear-gradient(
-    to bottom,
-    rgb(0 0 0 / 0.88) 0%,
-    rgb(0 0 0 / 0.72) 55%,
-    rgb(0 0 0 / 0) 100%
-  );
+  padding: 0.7rem 0.9rem 0.75rem;
+  /* A flat scrim behind the text rather than a gradient through it: a gradient had already
+     faded by the last line, which then sat on bright lung and could not be read. The fade
+     is moved below the block, where there is no text to lose. */
+  background: rgb(0 0 0 / 0.8);
   color: #fff;
   /* The identify layer underneath has to keep receiving drags. */
   pointer-events: none;
+}
+
+.chd-readout::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: 0;
+  height: 1.75rem;
+  background: linear-gradient(to bottom, rgb(0 0 0 / 0.8), rgb(0 0 0 / 0));
 }
 
 .chd-readout__name {
@@ -4094,7 +4102,7 @@ h3 {
 .dv-controls--shared {
   width: 100%;
   max-width: none;
-  margin: 0 0 0.75rem;
+  margin: 1rem 0 0;
   justify-content: flex-start;
   gap: 0.5rem 1.6rem;
   padding: 0.6rem 0.9rem;
@@ -4102,19 +4110,12 @@ h3 {
 }
 
 .chd-hint {
-  margin: 0 0 1.25rem;
+  margin: 0.65rem 0 0;
   max-width: 72ch;
   color: var(--muted);
   font-size: 0.85rem;
 }
 
-
-.chd-link-note {
-  margin: 1rem 0 0;
-  max-width: 62ch;
-  color: var(--muted);
-  font-size: 0.85rem;
-}
 
 @media (max-width: 1000px) {
   /* Two half-width viewers are unreadable on a phone, so they stack and each takes the full
