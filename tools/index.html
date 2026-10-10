@@ -128,7 +128,41 @@
         </div>
       </li>
     </ul>
+    <section class="faq" data-faq aria-labelledby="faq-title">
+      <h2 id="faq-title">Questions</h2>
+      <p class="faq__lead">Small, single-purpose calculators for systematic reviews. They run in your browser.</p>
+
+      <details class="faq__item">
+        <summary>Who are these for?</summary>
+        <div class="faq__body">
+          <p>People extracting and pooling data for a systematic review or a meta-analysis, at the point where a paper reports something in the wrong shape: a median instead of a mean, several arms that have to become one, a sensitivity and specificity with no 2 by 2 table.</p>
+        </div>
+      </details>
+
+      <details class="faq__item">
+        <summary>Does my data leave the browser?</summary>
+        <div class="faq__body">
+          <p>No. Every calculator on this site runs as JavaScript on the page. Nothing is posted to a server, nothing is stored between visits, and the spreadsheet export is written in the browser. Closing the tab loses the table, which is the other side of the same property.</p>
+        </div>
+      </details>
+
+      <details class="faq__item">
+        <summary>Where do the formulas come from?</summary>
+        <div class="faq__body">
+          <p>Published methods, named on each tool's page with a link to the source: Cochrane Handbook table 7.7.a for combining groups, and Luo, Wan and Shi and colleagues for the median conversions. A tool that implements someone's method says whose it is.</p>
+        </div>
+      </details>
+
+      <details class="faq__item">
+        <summary>What does the in-progress tag mean?</summary>
+        <div class="faq__body">
+          <p>That the tool is being built and has no page yet. The cards without that tag are finished and in use. ssHelper and triageHelper live in their own repositories and are served through this site rather than written into it.</p>
+        </div>
+      </details>
+
+    </section>
   </main>
+  <script type="module" src="/js/faq.js"></script>
   <script type="module" src="/js/subnav.js"></script>
 </body>
 </html>

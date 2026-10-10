@@ -107,8 +107,40 @@
       </div>
       <p class="calc-note">Non-diseased = sample size - diseased. TP = sensitivity x diseased; FN = diseased - TP. TN = specificity x non-diseased; FP = non-diseased - TN. Counts are expected values and can be fractional.</p>
     </section>
+    <section class="faq" data-faq aria-labelledby="faq-title">
+      <h2 id="faq-title">Questions</h2>
+      <details class="faq__item">
+        <summary>What does it compute?</summary>
+        <div class="faq__body">
+          <p>The 2 by 2 table implied by a test's accuracy in a given population. From the sensitivity, the specificity, the number of people with the outcome and the sample size, it fills in true positives, false negatives, true negatives and false positives, and shows how the sample splits on the way there.</p>
+        </div>
+      </details>
+
+      <details class="faq__item">
+        <summary>How are the four cells derived?</summary>
+        <div class="faq__body">
+          <p>Non-diseased is the sample size minus the diseased. True positives are sensitivity times diseased, and the rest of that arm is false negatives. True negatives are specificity times non-diseased, and the rest of that arm is false positives. Nothing else is assumed.</p>
+        </div>
+      </details>
+
+      <details class="faq__item">
+        <summary>Why are the counts fractional?</summary>
+        <div class="faq__body">
+          <p>They are expected values, not a count of people. A sensitivity of 87.5% applied to 30 patients gives 26.25 true positives, and rounding it would make the table stop adding up. Round at the end, for reporting, rather than inside the arithmetic.</p>
+        </div>
+      </details>
+
+      <details class="faq__item">
+        <summary>What is it for?</summary>
+        <div class="faq__body">
+          <p>Reconstructing the table a diagnostic accuracy review needs when a paper reports only the accuracy measures, and showing what a test does at a prevalence you choose. Raise the number with the outcome while leaving sensitivity and specificity alone and the false positives move, which is the thing most easily forgotten about a good test in a low-prevalence population.</p>
+        </div>
+      </details>
+
+    </section>
   </main>
 
+  <script type="module" src="/js/faq.js"></script>
   <script type="module" src="/js/tool-diagnostic.js"></script>
   <script type="module" src="/js/subnav.js"></script>
 </body>

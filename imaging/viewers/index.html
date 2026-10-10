@@ -64,39 +64,128 @@
       <p>Real patient studies from a public research archive, read in the browser. Pick the modality; they share one engine, so the controls behave the same way in each.</p>
     </div>
 
-    <ul class="vw-grid" aria-label="Viewers">
-      <li class="vw-card">
-        <a href="/imaging/viewer/ct/">
-          <svg class="vw-card__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="3.6"/></svg>
-          <span class="vw-card__name">CT</span>
+    <ul class="pick" aria-label="Viewers">
+      <li>
+        <a class="pick__row" href="/imaging/viewer/ct/" data-pick="CT">
+          <svg class="pick__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="3.6"/></svg>
+          <span class="pick__name">CT</span>
+          <span class="pick__what">Slices in Hounsfield units, with the windows a workstation has</span>
+          <span class="pick__facts"><b data-pick-count>76</b> series<span class="pick__sep"></span><span data-pick-regions>chest, kidney, liver, prostate</span></span>
+          <svg class="pick__go" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h13M13 6.5 18.5 12 13 17.5"/></svg>
         </a>
       </li>
-      <li class="vw-card">
-        <a href="/imaging/viewer/mri/">
-          <svg class="vw-card__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 20V9a6 6 0 0 1 12 0v11"/><path d="M6 14h4V9M18 14h-4V9"/></svg>
-          <span class="vw-card__name">MRI</span>
+      <li>
+        <a class="pick__row" href="/imaging/viewer/mri/" data-pick="MR">
+          <svg class="pick__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 20V9a6 6 0 0 1 12 0v11"/><path d="M6 14h4V9M18 14h-4V9"/></svg>
+          <span class="pick__name">MRI</span>
+          <span class="pick__what">T1, T2, FLAIR and diffusion, picked one sequence at a time</span>
+          <span class="pick__facts"><b data-pick-count>101</b> series<span class="pick__sep"></span><span data-pick-regions>brain, breast, liver, prostate</span></span>
+          <svg class="pick__go" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h13M13 6.5 18.5 12 13 17.5"/></svg>
         </a>
       </li>
-      <li class="vw-card">
-        <a href="/imaging/viewer/xray/">
-          <svg class="vw-card__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v18"/><path d="M6 7c3 1.4 9 1.4 12 0M5.4 11c3.4 1.6 9.8 1.6 13.2 0M6 15c3 1.4 9 1.4 12 0"/></svg>
-          <span class="vw-card__name">X-ray</span>
+      <li>
+        <a class="pick__row" href="/imaging/viewer/xray/" data-pick="XR">
+          <svg class="pick__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v18"/><path d="M6 7c3 1.4 9 1.4 12 0M5.4 11c3.4 1.6 9.8 1.6 13.2 0M6 15c3 1.4 9 1.4 12 0"/></svg>
+          <span class="pick__name">X-ray</span>
+          <span class="pick__what">One or two projections, so brightness and zoom do all the work</span>
+          <span class="pick__facts"><b data-pick-count>28</b> series<span class="pick__sep"></span><span data-pick-regions>chest</span></span>
+          <svg class="pick__go" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h13M13 6.5 18.5 12 13 17.5"/></svg>
         </a>
       </li>
-      <li class="vw-card">
-        <a href="/imaging/viewer/us/">
-          <svg class="vw-card__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3.5 4.5 19a16 16 0 0 0 15 0z" fill="none"/><path d="M7.2 12.5c3 1.5 6.6 1.5 9.6 0M8.6 16c2.2 1 4.6 1 6.8 0"/></svg>
-          <span class="vw-card__name">Ultrasound</span>
+      <li>
+        <a class="pick__row" href="/imaging/viewer/us/" data-pick="US">
+          <svg class="pick__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3.5 4.5 19a16 16 0 0 0 15 0z" fill="none"/><path d="M7.2 12.5c3 1.5 6.6 1.5 9.6 0M8.6 16c2.2 1 4.6 1 6.8 0"/></svg>
+          <span class="pick__name">Ultrasound</span>
+          <span class="pick__what">Sector images and cine loops, scrolled frame by frame</span>
+          <span class="pick__facts"><b data-pick-count>16</b> series<span class="pick__sep"></span><span data-pick-regions>liver</span></span>
+          <svg class="pick__go" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h13M13 6.5 18.5 12 13 17.5"/></svg>
         </a>
       </li>
-      <li class="vw-card vw-card--wide">
-        <a href="/imaging/viewer/">
-          <svg class="vw-card__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18M9 9v9M15 9v9"/></svg>
-          <span class="vw-card__name">All modalities</span>
+      <li>
+        <a class="pick__row pick__row--all" href="/imaging/viewer/">
+          <svg class="pick__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18M9 9v9M15 9v9"/></svg>
+          <span class="pick__name">All modalities</span>
+          <span class="pick__what">The whole index in one page, mammography and PET included</span>
+          <span class="pick__facts"><b data-pick-count-all>245</b> series<span class="pick__sep"></span><span data-pick-collections>20</span> collections</span>
+          <svg class="pick__go" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h13M13 6.5 18.5 12 13 17.5"/></svg>
         </a>
       </li>
     </ul>
+
+    <section class="faq" data-faq aria-labelledby="faq-title">
+      <h2 id="faq-title">Questions</h2>
+      <p class="faq__lead">
+        A demonstration of browser rendering, not a reporting workstation. Nothing here is
+        for diagnostic use.
+      </p>
+
+      <details class="faq__item">
+        <summary>Why one viewer per modality?</summary>
+        <div class="faq__body">
+          <p>
+            Because the controls do not mean the same thing in each. A CT window is a
+            statement about Hounsfield units, so Lung and Bone are real presets with fixed
+            numbers. MR pixel values have no absolute scale, so the same buttons can only
+            widen or narrow whatever the file came with. A radiograph is one image, so
+            scrolling has nothing to move through, and a cine loop scrolls through time
+            rather than through space.
+          </p>
+          <p>
+            One engine renders all of them. What changes per page is the window presets, the
+            fields in the corner readout and the wording of the instructions beside the
+            image. The combined viewer is the same thing with the modality picker left in.
+          </p>
+        </div>
+      </details>
+
+      <details class="faq__item">
+        <summary>Where do the studies come from?</summary>
+        <div class="faq__body">
+          <p>
+            The <a href="https://imaging.datacommons.cancer.gov/">NCI Imaging Data Commons</a>,
+            which hosts collections from The Cancer Imaging Archive. The images are
+            de-identified and public, and the endpoint is a viewing-only proxy, so the pages
+            render pixels and never offer a download. The index is built once by a script that
+            walks the archive, keeps the series that are worth opening and records what each
+            one is.
+          </p>
+          <p>
+            The finding in the picker names the entry criterion of the collection a case came
+            from, not a report read off these pixels. Every patient in a glioblastoma
+            collection has glioblastoma, so the label is true of the case.
+          </p>
+        </div>
+      </details>
+
+      <details class="faq__item">
+        <summary>Is anything uploaded or stored?</summary>
+        <div class="faq__body">
+          <p>
+            No. Your browser asks the archive for the frames over DICOMweb and decodes them in
+            a web worker on your own machine. No server of mine sits in the middle, nothing is
+            written back to the archive, and the local-file source reads files you drag in
+            without sending them anywhere.
+          </p>
+        </div>
+      </details>
+
+      <details class="faq__item">
+        <summary>What is it built on?</summary>
+        <div class="faq__body">
+          <p>
+            <a href="https://github.com/cornerstonejs/cornerstone3D">Cornerstone3D</a>, the
+            MIT-licensed rendering engine that also sits underneath the
+            <a href="https://github.com/OHIF/Viewers">OHIF Viewer</a>. OHIF itself is AGPL-3.0,
+            so none of its code is used here. Each viewer page carries its own questions about
+            the engine, the archive and DICOMweb.
+          </p>
+        </div>
+      </details>
+    </section>
+
   </main>
+  <script type="module" src="/js/viewers-hub.js"></script>
+  <script type="module" src="/js/faq.js"></script>
   <script type="module" src="/js/subnav.js"></script>
 </body>
 </html>

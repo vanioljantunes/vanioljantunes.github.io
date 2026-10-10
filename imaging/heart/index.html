@@ -121,7 +121,58 @@
       Jolley Lab, Children's Hospital of Philadelphia, through
       <a href="https://github.com/SlicerHeart/SlicerHeart" target="_blank" rel="noopener noreferrer">SlicerHeart<span class="visually-hidden"> (opens in a new tab)</span></a>.</p>
     </section>
+    <section class="faq" data-faq aria-labelledby="faq-title">
+      <h2 id="faq-title">Questions</h2>
+      <p class="faq__lead">One study, built end to end to see whether the pipeline holds together in a browser. Not a clinical measurement and not for diagnostic use.</p>
+
+      <details class="faq__item">
+        <summary>What am I looking at?</summary>
+        <div class="faq__body">
+          <p>A surface of one child's heart, rebuilt from a cardiac CT and moving through the beat the scan recorded. It is not an animation drawn by hand: each of the 21 shapes is measured, and the slider steps through them in the order they were acquired. The slices under and behind the heart are the CT itself, so the surface can be checked against the image it came from.</p>
+        </div>
+      </details>
+
+      <details class="faq__item">
+        <summary>What is a gated cardiac CT?</summary>
+        <div class="faq__body">
+          <p>A heart moves too fast for one exposure, so the scanner records continuously and sorts the data by where it fell in the cardiac cycle, read from the ECG. The result is not one image but a stack of them, here 21, each showing the same anatomy at a different moment of the beat.</p>
+          <p>The cost is noise. The dose that would make one clean image is split across the phases, so a single phase is grainier than a standard CT. That is why each slice drawn here averages a 2 mm slab, five measured slices, rather than showing one.</p>
+        </div>
+      </details>
+
+      <details class="faq__item">
+        <summary>What is segmentation, and what did it?</summary>
+        <div class="faq__body">
+          <p>Segmentation labels every voxel with the structure it belongs to, which turns a grey volume into named objects that can be measured or drawn. Here it was done by TotalSegmentator v2 in its contrast-aware form, run through MONAI Physio: 58 structures in about 400 seconds on an RTX 4050, on the reference phase only.</p>
+          <p>Running it once rather than 21 times is deliberate. A network run independently per phase gives 21 unrelated label maps that flicker against each other; one segmentation carried through the beat by registration stays consistent.</p>
+        </div>
+      </details>
+
+      <details class="faq__item">
+        <summary>How does the shape move if only one phase was segmented?</summary>
+        <div class="faq__body">
+          <p>By deformable registration. A greedy diffeomorphic algorithm warps each of the other 20 phases onto phase 15 and reports the deformation field: for every point in the volume, where that tissue went. That field is applied to the single segmented surface, so the mesh is pushed around by measured displacement rather than remodelled from scratch. About 20 minutes of compute.</p>
+          <p>The useful property is correspondence. Every phase has the same vertices in the same order, so a vertex that sits on the apex stays on the apex.</p>
+        </div>
+      </details>
+
+      <details class="faq__item">
+        <summary>How does a 2.5 GB study fit in a browser?</summary>
+        <div class="faq__body">
+          <p>The volume never reaches the browser. Only the surface does, decimated with <code>vtkDecimatePro</code> to 32,004 triangles and shipped as glTF morph targets: one mesh plus a set of per-vertex offsets for each phase, which the graphics card interpolates between. 21 phases, 4.4 MB. The CT slices are sent as three images, not as the volume.</p>
+        </div>
+      </details>
+
+      <details class="faq__item">
+        <summary>What is the volume number beside the slider?</summary>
+        <div class="faq__body">
+          <p>The volume enclosed by the surface at that phase, computed from the mesh. It moves the way a ventricular volume curve should, which is a useful check that the registration did something physical, but it is a property of a decimated surface rather than a clinical measurement, and the case is a truncal valve rather than a normal heart.</p>
+        </div>
+      </details>
+
+    </section>
   </main>
+  <script type="module" src="/js/faq.js"></script>
   <script type="module" src="/js/subnav.js"></script>
   <script type="module" src="./app.js"></script>
 </body>

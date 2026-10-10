@@ -91,8 +91,42 @@
       </ul>
       <p class="calc-note">Needs n and the median, plus Q1 and Q3 (scenario 2), the minimum and maximum (scenario 1), or all of them (scenario 3). Mean by Luo et al. (2018); SD by Wan et al. (2014) in scenarios 1 and 2 and Shi et al. (2020) in scenario 3; skewness by Shi et al. (2023). Hover a result to see the method used.</p>
     </section>
+    <section class="faq" data-faq aria-labelledby="faq-title">
+      <h2 id="faq-title">Questions</h2>
+      <p class="faq__lead">Conversions, not data. Your table stays in the browser.</p>
+
+      <details class="faq__item">
+        <summary>When should I use this?</summary>
+        <div class="faq__body">
+          <p>When a trial reports a median rather than a mean, and your meta-analysis needs a mean and a standard deviation. It covers the three scenarios the literature defines: median with the minimum and maximum, median with the first and third quartiles, and both together.</p>
+        </div>
+      </details>
+
+      <details class="faq__item">
+        <summary>Which methods does it use?</summary>
+        <div class="faq__body">
+          <p>The mean follows Luo and colleagues (2018). The standard deviation follows Wan and colleagues (2014) in scenarios 1 and 2 and Shi and colleagues (2020) in scenario 3. The skewness test is Shi and colleagues (2023). Hovering a result shows which method produced it, because the scenario decides that, not you.</p>
+        </div>
+      </details>
+
+      <details class="faq__item">
+        <summary>What does the skewness flag mean?</summary>
+        <div class="faq__body">
+          <p>These conversions assume the underlying data are roughly normal. The test checks whether the reported summary is compatible with that assumption; when it is not, the row is marked and the normal-based mean and SD should not be trusted. The usual answers are to leave the study out of the pooled estimate, to use a method meant for skewed data, or to report it narratively.</p>
+        </div>
+      </details>
+
+      <details class="faq__item">
+        <summary>Does anything get uploaded?</summary>
+        <div class="faq__body">
+          <p>No. The table lives in the page, the calculations run as you type, and the .xlsx file is written in the browser. Nothing is sent anywhere and nothing is kept after the tab closes.</p>
+        </div>
+      </details>
+
+    </section>
   </main>
 
+  <script type="module" src="/js/faq.js"></script>
   <script type="module" src="/js/tool-median.js"></script>
   <script type="module" src="/js/subnav.js"></script>
 </body>

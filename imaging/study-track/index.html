@@ -120,12 +120,46 @@
         </p>
       </div>
     </div>
+    <section class="faq" data-faq aria-labelledby="faq-title">
+      <h2 id="faq-title">Questions</h2>
+      <p class="faq__lead">An index, not a course. Everything plays from the original publisher.</p>
+
+      <details class="faq__item">
+        <summary>What is this?</summary>
+        <div class="faq__body">
+          <p>Every lecture course listed in deep-learning-drizzle, laid out so a topic can be picked, narrowed by year or instructor, and watched without leaving the page. The player sits at the top and stays where it is, so choosing the next lecture never moves the thing being watched.</p>
+        </div>
+      </details>
+
+      <details class="faq__item">
+        <summary>What is deep-learning-drizzle?</summary>
+        <div class="faq__body">
+          <p>A public list, kept by kmario23 on GitHub, of university lecture courses on machine learning and the mathematics under it, with links to their recordings. It is MIT-licensed. <code>scripts/parse-drizzle.mjs</code> reads it and writes <a href="/imaging/study-track/courses.json">courses.json</a>, which is what this page loads.</p>
+        </div>
+      </details>
+
+      <details class="faq__item">
+        <summary>Who owns the videos?</summary>
+        <div class="faq__body">
+          <p>The universities and instructors who recorded them. Nothing is rehosted here: the recordings play from YouTube in privacy-enhanced mode, and a course that is not embeddable opens on its own site instead. The filter for courses that play in the page exists because of that difference.</p>
+        </div>
+      </details>
+
+      <details class="faq__item">
+        <summary>Why is it on an imaging site?</summary>
+        <div class="faq__body">
+          <p>Because the imaging projects need it. The reconstruction, segmentation and registration work in this section rests on material from these courses, and keeping the track beside the projects makes it clear which parts were learned where rather than improvised.</p>
+        </div>
+      </details>
+
+    </section>
   </main>
 
   <noscript>
     <p class="wrap st-credit">This page needs JavaScript to render the catalogue. The raw data is at <a href="/imaging/study-track/courses.json">courses.json</a>, and the original list is at <a href="https://github.com/kmario23/deep-learning-drizzle">kmario23/deep-learning-drizzle</a>.</p>
   </noscript>
 
+  <script type="module" src="/js/faq.js"></script>
   <script type="module" src="/js/subnav.js"></script>
   <script type="module" src="/js/study-track.js"></script>
 </body>
