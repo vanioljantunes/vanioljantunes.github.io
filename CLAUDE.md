@@ -36,6 +36,7 @@ Small tools that live in this repo as static pages: `tools/median`, `tools/combi
 
 | Thing | Local path | Repository | Live |
 |---|---|---|---|
+| kmHelper | `claudeOS/projects/kmHelper` | vanioljantunes/kmHelper | kmhelper.vercel.app, proxied at `/tools/kmHelper/` |
 | ssHelper | `claudeOS/projects/ssHelper` | vanioljantunes/ssHelper | sshelper-five.vercel.app, proxied at `/tools/ssHelper/` |
 | triageHelper | `claudeOS/projects/triageHelper` (tracked inside claudeOS) | vanioljantunes/claudeOS | triagehelper.vercel.app, proxied at `/tools/triageHelper/` |
 | nmaplots (R) | `claudeOS/projects/nmaplots` | vanioljantunes/nmaplots | GitHub only |

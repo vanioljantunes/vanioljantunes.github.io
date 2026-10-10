@@ -57,6 +57,11 @@
       "permanent": true
     },
     {
+      "source": "/tools/kmHelper",
+      "destination": "/tools/kmHelper/",
+      "permanent": true
+    },
+    {
       "source": "/tools/ssHelper",
       "destination": "/tools/ssHelper/",
       "permanent": true
@@ -88,6 +93,14 @@
     }
   ],
   "rewrites": [
+    {
+      "source": "/tools/kmHelper/",
+      "destination": "https://kmhelper.vercel.app/tools/kmHelper"
+    },
+    {
+      "source": "/tools/kmHelper/:path*",
+      "destination": "https://kmhelper.vercel.app/tools/kmHelper/:path*"
+    },
     {
       "source": "/tools/ssHelper/",
       "destination": "https://sshelper-five.vercel.app/tools/ssHelper"
