@@ -286,9 +286,6 @@ function syncControlsTo(modalityCode: string): void {
   state.seriesProfile = profileFor(modalityCode);
   buildPresetButtons(modalityCode);
   buildGuide(modalityCode);
-
-  const note = el('dv-modality-note');
-  if (note) note.textContent = state.seriesProfile?.note ?? state.profile?.note ?? '';
 }
 
 function describeEntry(entry: CatalogEntry): string {
@@ -314,7 +311,6 @@ async function openSelected(): Promise<void> {
   state.loadToken = token;
 
   setStatus(`Loading ${entry.sequence} - ${describeEntry(entry)}`);
-  text('dv-provenance', `${entry.collection} - ${entry.patientId}`);
 
   /* Stop the previous series pulling bandwidth away from the one now being asked for. */
   state.prefetch?.cancel();
@@ -408,19 +404,19 @@ interface GuideCard {
 const CARD_ZOOM: GuideCard = {
   icon: 'right',
   title: 'Right drag',
-  body: 'Zoom in and out. The zoom percentage shows in the bottom right of the image.',
+  body: 'Zoom. The percentage shows bottom right.',
 };
 
 const CARD_PAN: GuideCard = {
   icon: 'middle',
   title: 'Middle drag',
-  body: 'Slide the image around once you are zoomed in past the edge of the frame.',
+  body: 'Pan, once zoomed past the frame.',
 };
 
 const CARD_KEYS: GuideCard = {
   icon: 'keys',
   title: 'Arrow keys',
-  body: 'Click the image first. Up and Down move one slice, Page Up and Page Down move ten.',
+  body: 'Click the image first. Up and Down one slice, Page Up and Down ten.',
 };
 
 /* What the controls mean genuinely differs by modality, so the cards do too: windowing on CT
@@ -430,23 +426,19 @@ const GUIDES: Record<string, GuideCard[]> = {
     {
       icon: 'left',
       title: 'Left drag',
-      body:
-        'Sets the window. Left and right moves the centre, up and down the width, choosing ' +
-        'which Hounsfield units are black and which are white.',
+      body: 'Window. Sideways moves the centre, up and down the width, in Hounsfield units.',
     },
     {
       icon: 'wheel',
       title: 'Scroll wheel',
-      body: 'Moves through the slices, from the top of the scan to the bottom.',
+      body: 'Through the slices, top of the scan to bottom.',
     },
     CARD_ZOOM,
     CARD_PAN,
     {
       icon: 'window',
       title: 'Window buttons',
-      body:
-        'Standard CT windows. Lung shows air and vessels, bone shows cortex and trabeculae, ' +
-        'soft tissue shows organs. The same slice looks like a different study in each.',
+      body: 'Standard CT windows. The same slice reads as a different study in each.',
     },
     CARD_KEYS,
   ],
@@ -454,23 +446,19 @@ const GUIDES: Record<string, GuideCard[]> = {
     {
       icon: 'left',
       title: 'Left drag',
-      body:
-        'Sets brightness and contrast. MR pixel values have no absolute scale, so unlike CT ' +
-        'there is no fixed window that means the same thing on every scan.',
+      body: 'Brightness and contrast. MR values have no absolute scale, so no fixed window.',
     },
     {
       icon: 'wheel',
       title: 'Scroll wheel',
-      body: 'Moves through the slices of the sequence you picked.',
+      body: 'Through the slices of the sequence you picked.',
     },
     CARD_ZOOM,
     CARD_PAN,
     {
       icon: 'window',
       title: 'Window buttons',
-      body:
-        'As acquired uses the window stored in the file. Full range maps the darkest and ' +
-        'brightest pixel to black and white. High contrast narrows it to bring out subtle detail.',
+      body: 'As acquired uses the stored window. Full range and high contrast widen or narrow it.',
     },
     CARD_KEYS,
   ],
@@ -478,24 +466,18 @@ const GUIDES: Record<string, GuideCard[]> = {
     {
       icon: 'left',
       title: 'Left drag',
-      body:
-        'Adjusts brightness and contrast, which is how calcifications are made to stand out ' +
-        'from the surrounding tissue.',
+      body: 'Brightness and contrast, which is what makes calcifications stand out.',
     },
     {
       icon: 'right',
       title: 'Right drag',
-      body:
-        'Zoom. Mammograms are very high resolution and the findings are often small, so this ' +
-        'is the control that matters most here.',
+      body: 'Zoom. High resolution, small findings: the control that matters most here.',
     },
     CARD_PAN,
     {
       icon: 'wheel',
       title: 'Scroll wheel',
-      body:
-        'A mammogram study is only a handful of images, so scrolling moves between those few ' +
-        'views rather than through a stack of slices.',
+      body: 'A handful of views, not a stack, so this moves between them.',
     },
     CARD_KEYS,
   ],
@@ -503,23 +485,19 @@ const GUIDES: Record<string, GuideCard[]> = {
     {
       icon: 'left',
       title: 'Left drag',
-      body:
-        'Sets brightness and contrast. A PET carries counts rather than calibrated numbers, ' +
-        'so there is no fixed window as there is on CT.',
+      body: 'Brightness and contrast. PET carries counts, not calibrated numbers.',
     },
     {
       icon: 'wheel',
       title: 'Scroll wheel',
-      body: 'Moves through the slices, usually head to thigh on a whole-body study.',
+      body: 'Through the slices, head to thigh on a whole-body study.',
     },
     CARD_ZOOM,
     CARD_PAN,
     {
       icon: 'window',
       title: 'Window buttons',
-      body:
-        'Full range shows the brightest uptake in the study, which is often the bladder or ' +
-        'the brain rather than the lesion. High contrast is usually the more useful of the two.',
+      body: 'Full range peaks on bladder or brain, so high contrast is usually better.',
     },
     CARD_KEYS,
   ],
@@ -527,18 +505,14 @@ const GUIDES: Record<string, GuideCard[]> = {
     {
       icon: 'left',
       title: 'Left drag',
-      body:
-        'Adjusts brightness and contrast. On a chest radiograph this is what brings out lung ' +
-        'markings or, pulled the other way, the spine behind the heart.',
+      body: 'Brightness and contrast: lung markings, or the spine behind the heart.',
     },
     CARD_ZOOM,
     CARD_PAN,
     {
       icon: 'wheel',
       title: 'Scroll wheel',
-      body:
-        'A radiograph study is one or two images, so there is usually nothing to scroll ' +
-        'through here.',
+      body: 'One or two images, so usually nothing to scroll.',
     },
   ],
 };
@@ -648,8 +622,6 @@ async function start(): Promise<void> {
   const stage = el<HTMLDivElement>('dv-stage');
   if (!stage) return;
 
-  const credit = el('dv-attribution');
-  if (credit) credit.textContent = state.source.attribution ?? '';
 
   wireControls(stage);
   wirePickers();
@@ -697,9 +669,6 @@ async function start(): Promise<void> {
 
       const label = document.querySelector('label[for="dv-pick-sequence"]');
       if (label && state.profile) label.textContent = state.profile.pickerLabel;
-
-      const note = el('dv-modality-note');
-      if (note && state.profile?.note) note.textContent = state.profile.note;
     }
 
     state.catalog = catalog;

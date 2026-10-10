@@ -130,7 +130,6 @@ a:focus-visible {
 
 .page-head p {
   margin: 0;
-  max-width: 60ch;
   color: var(--muted);
   font-size: 1.0625rem;
 }
@@ -193,7 +192,6 @@ a:focus-visible {
 
 .tagline {
   margin: 0 0 1.25rem;
-  max-width: 40ch;
   color: var(--muted);
   font-size: 1.125rem;
   text-wrap: balance;
@@ -497,7 +495,6 @@ a.tool:focus-visible {
 }
 
 .tool-desc {
-  max-width: 26ch;
   margin: 0.7rem 0 0;
   color: var(--text);
   font-size: 0.875rem;
@@ -2609,7 +2606,6 @@ a.tool:focus-visible {
   margin: 3rem 0 0;
   padding-top: 1rem;
   border-top: 1px solid var(--border);
-  max-width: 70ch;
   color: var(--muted);
   font-size: 0.8125rem;
 }
@@ -3145,20 +3141,28 @@ a.tool:focus-visible {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 18rem;
   gap: 1.25rem;
-  align-items: start;
+  align-items: stretch;
+}
+
+/* The rail is one column tall: its cards share whatever height the image column takes,
+   so the last card ends on the same line as the viewer rather than above or below it. */
+.dv-side {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .dv-side__title {
   margin-top: 0;
 }
 
-.dv-page > p {
-  max-width: 70ch;
-}
 
 /* One per row in the rail, and no trailing margin: the rail ends where the image does. */
 .dv-side .dv-cards {
+  flex: 1;
   grid-template-columns: minmax(0, 1fr);
+  grid-auto-rows: 1fr;
+  gap: 0.5rem;
   margin-bottom: 0;
 }
 
@@ -3174,6 +3178,7 @@ a.tool:focus-visible {
 
   .dv-side .dv-cards {
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-auto-rows: auto;
   }
 }
 
@@ -3193,7 +3198,6 @@ a.tool:focus-visible {
 
 .dv-faq__lead {
   margin: 0 0 1rem;
-  max-width: 70ch;
   color: var(--muted);
   font-size: 0.9rem;
 }
@@ -3250,7 +3254,6 @@ a.tool:focus-visible {
 
 .dv-faq__body p {
   margin: 0 0 0.75rem;
-  max-width: 78ch;
 }
 
 .dv-faq__body p:last-child {
@@ -3273,11 +3276,11 @@ a.tool:focus-visible {
   display: grid;
   grid-template-columns: 26px 1fr;
   grid-template-rows: auto auto;
-  gap: 0.15rem 0.6rem;
+  gap: 0.1rem 0.55rem;
   /* Cards in a row stretch to the tallest, so the rows are pinned to the top; otherwise a
      short card floats its body down the middle and the grid reads as ragged. */
   align-content: start;
-  padding: 0.75rem 0.85rem;
+  padding: 0.55rem 0.7rem;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--surface);
@@ -3294,15 +3297,15 @@ a.tool:focus-visible {
 
 .dv-card h3 {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
 }
 
 .dv-card p {
   margin: 0;
   color: var(--muted);
-  font-size: 0.85rem;
-  line-height: 1.45;
+  font-size: 0.8125rem;
+  line-height: 1.4;
 }
 
 @media (max-width: 640px) {
