@@ -11,12 +11,17 @@ import {
   AmbientLight,
   AnimationMixer,
   Box3,
+  Box3Helper,
   BufferAttribute,
   BufferGeometry,
   Clock,
   DirectionalLight,
+  Color,
   DoubleSide,
   Group,
+  LinearFilter,
+  LinearMipmapLinearFilter,
+  LineBasicMaterial,
   Mesh,
   MeshBasicMaterial,
   MeshStandardMaterial,
@@ -54,7 +59,11 @@ type Manifest = {
   fps: number;
   referencePhase: number;
   units: string;
-  ct: { planes: Plane[]; window: { level: number; width: number } };
+  ct: {
+    planes: Plane[];
+    window: { level: number; width: number };
+    bounds?: [number, number, number][];
+  };
   structures: Structure[];
 };
 
@@ -74,6 +83,7 @@ const renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 const scene = new Scene();
+scene.background = new Color(0x0b0f14);
 
 /* The CT is in LPS: +x to the patient's left, +y posterior, +z towards the head. three.js
    wants +y up, so everything hangs off a group rotated a quarter turn about x. That maps
@@ -116,7 +126,7 @@ function frameOn(target: Box3): void {
   const centre = target.getCenter(new Vector3());
   const radius = Math.max(size.x, size.y, size.z);
   controls.target.copy(centre);
-  camera.position.copy(centre).add(new Vector3(radius * 0.9, radius * 0.5, radius * 2.4));
+  camera.position.copy(centre).add(new Vector3(radius * 0.75, radius * 0.45, radius * 1.95));
   camera.near = radius / 100;
   camera.far = radius * 40;
   camera.updateProjectionMatrix();
@@ -182,6 +192,12 @@ function addPlanes(planes: Plane[]): void {
 
     const texture = loader.load(plane.file);
     texture.colorSpace = SRGBColorSpace;
+    // Without mipmaps and anisotropy an obliquely viewed slice aliases into noise, which is
+    // most of why the CT looked ugly.
+    texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    texture.generateMipmaps = true;
+    texture.minFilter = LinearMipmapLinearFilter;
+    texture.magFilter = LinearFilter;
     /* Cutout rather than blended. A transparent material renders in three.js's transparent
        pass, which runs after the opaque meshes, so the slice painted straight over the heart.
        alphaTest drops the air instead, and the plane then behaves like ordinary geometry:
@@ -251,6 +267,19 @@ async function main(): Promise<void> {
   }
 
   addPlanes(manifest.ct.planes);
+
+  // The scanned volume drawn as a thin cage, the way a 3D viewer shows its bounds.
+  if (manifest.ct.bounds) {
+    const [near, far] = manifest.ct.bounds;
+    const a = new Vector3(...near);
+    const b = new Vector3(...far);
+    const cage = new Box3Helper(new Box3(a.clone().min(b), a.clone().max(b)), new Color(0x4a5a68));
+    const line = cage.material as LineBasicMaterial;
+    line.transparent = true;
+    line.opacity = 0.5;
+    line.depthTest = false;
+    patient.add(cage);
+  }
 
   mixer = new AnimationMixer(gltf.scene);
   action = mixer.clipAction(gltf.animations[0]);

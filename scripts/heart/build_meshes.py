@@ -40,7 +40,7 @@ REFERENCE_PHASE = 14
 # are roughly one voxel thick, so they mesh into fragments rather than tubes: the aorta
 # encloses 1.0 mL against 7.1 mL of labelled voxels. Shipping them would mean shipping debris.
 WANTED: dict[int, tuple[int, str, str]] = {
-    51: (16000, "#b4563f", "Heart"),
+    51: (16000, "#2f9e8f", "Heart"),
 }
 
 contours = ProcessContours(log_level=logging.WARNING)
@@ -79,14 +79,23 @@ def export_ct_planes(ct_file: Path, heart_bounds: np.ndarray) -> dict:
     array = itk.array_from_image(image).astype(np.float32)   # (z, y, x)
     size = np.array(itk.size(image))                         # (x, y, z)
 
-    # Through the middle of the heart. Anchoring a plane outside the organ only works from
-    # one viewing direction: orbit a quarter turn and the "backdrop" is in front, hiding the
-    # anatomy. A slice through the centre cuts the heart the way a reader sets it in a viewer,
-    # and reads as intentional from every angle.
+    # The vertical planes cut through the middle of the heart, the way a reader sets them in a
+    # viewer: anchoring them outside the organ only works from one viewing direction, and
+    # orbiting a quarter turn puts the "backdrop" in front of the subject.
+    #
+    # The axial plane is the exception. Dropped below the heart it becomes a floor, which never
+    # occludes the anatomy from an elevated camera and gives the model something to stand on.
     centre_mm = heart_bounds.mean(axis=0)
+    floor_mm = centre_mm.copy()
+    floor_mm[2] = heart_bounds[:, 2].min() - 8.0
+
     anchors = np.clip(
         np.array(image.TransformPhysicalPointToIndex([float(v) for v in centre_mm])),
         0, size - 1)
+    floor = np.clip(
+        np.array(image.TransformPhysicalPointToIndex([float(v) for v in floor_mm])),
+        0, size - 1)
+    anchors[2] = floor[2]
 
     def corners(axis: int, at: int) -> list[list[float]]:
         """Physical corners of the plane: (0,0), (max,0), (max,max), (0,max) in index space."""
@@ -104,32 +113,57 @@ def export_ct_planes(ct_file: Path, heart_bounds: np.ndarray) -> dict:
     level, width = 40.0, 400.0
     low_hu, high_hu = level - width / 2, level + width / 2
 
+    # A gated cardiac CT is noisy: a short exposure per phase leaves speckle everywhere.
+    # Averaging a few neighbouring slices quietens it honestly, since every slice averaged is
+    # measured data from the same phase rather than invented detail. The texture is then
+    # upsampled so the browser has pixels to work with when the plane is seen obliquely.
+    slab_mm = 2.0
+    upsample = 2
+
     planes = []
     for axis, name in ((2, "axial"), (1, "coronal"), (0, "sagittal")):
         at = int(anchors[axis])
-        if axis == 2:
-            plane = array[at, :, :]
-        elif axis == 1:
-            plane = array[:, at, :]
-        else:
-            plane = array[:, :, at]
+        spacing_axis = float(itk.spacing(image)[axis])
+        half = max(0, int(round((slab_mm / 2) / spacing_axis)))
+        lo, hi = max(0, at - half), min(int(size[axis]) - 1, at + half)
 
-        grey = np.clip((plane - low_hu) / (high_hu - low_hu), 0, 1)
-        alpha = np.clip((plane + 900.0) / 300.0, 0, 1)   # -1000 HU air out, soft tissue solid
+        if axis == 2:
+            slab = array[lo:hi + 1, :, :].mean(axis=0)
+        elif axis == 1:
+            slab = array[:, lo:hi + 1, :].mean(axis=1)
+        else:
+            slab = array[:, :, lo:hi + 1].mean(axis=2)
+
+        grey = np.clip((slab - low_hu) / (high_hu - low_hu), 0, 1)
+        # Blur the alpha only. A noisy mask cuts the plane edge into confetti; the greys stay
+        # as measured.
+        alpha = ndimage.gaussian_filter(np.clip((slab + 900.0) / 300.0, 0, 1), sigma=1.2)
+
         rgba = np.dstack([
             (grey * 255).astype(np.uint8),
             (grey * 255).astype(np.uint8),
             (grey * 255).astype(np.uint8),
             (alpha * 255).astype(np.uint8),
         ])
+        picture = Image.fromarray(rgba, mode="RGBA")
+        if upsample > 1:
+            picture = picture.resize(
+                (picture.width * upsample, picture.height * upsample), Image.LANCZOS)
+
         png = WEB_DIR / f"ct_{name}.png"
-        Image.fromarray(rgba, mode="RGBA").save(png)
+        picture.save(png)
         planes.append({"name": name, "axis": axis, "index": at,
                        "file": png.name, "corners": corners(axis, at),
-                       "default": name == "coronal",
+                       "default": name in ("axial", "coronal"),
+                       "slabMm": slab_mm, "slicesAveraged": hi - lo + 1,
                        "window": {"level": level, "width": width}})
-        print(f"  {name:<9} index {at:>4}  {plane.shape[1]}x{plane.shape[0]}  -> {png.name}")
-    return {"planes": planes, "window": {"level": level, "width": width}}
+        print(f"  {name:<9} index {at:>4}  {hi - lo + 1} slices averaged  "
+              f"{picture.width}x{picture.height}  -> {png.name}")
+
+    far = [int(size[0]) - 1, int(size[1]) - 1, int(size[2]) - 1]
+    return {"planes": planes, "window": {"level": level, "width": width},
+            "bounds": [[float(v) for v in image.TransformIndexToPhysicalPoint([0, 0, 0])],
+                       [float(v) for v in image.TransformIndexToPhysicalPoint(far)]]}
 
 
 def main() -> None:
