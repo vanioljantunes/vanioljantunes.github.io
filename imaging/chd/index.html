@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tetralogy of Fallot on CT | Vanio Antunes</title>
+  <meta name="description" content="A paediatric cardiac CT of a tetralogy of Fallot, read in the browser, with the seven cardiac structures outlined by the radiologists who published the dataset.">
+  <link rel="icon" href="/favicon.ico?v=2" sizes="48x48">
+  <link rel="icon" href="/favicon-32.png?v=2" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
+  <link rel="stylesheet" href="/site-bar.css">
+  <link rel="stylesheet" href="/site.css">
+</head>
+<body data-modality="CT">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-bar">
+    <div class="site-bar__inner">
+      <div class="site-bar__id">
+        <a class="site-bar__brand" href="/"><img src="/img/vanio-antunes.jpg" width="32" height="32" alt=""><span class="site-bar__name">Vanio Antunes</span></a>
+        <ul class="site-bar__social" aria-label="Profiles">
+          <li>
+          <a href="https://scholar.google.com/citations?user=JOZkTg0AAAAJ&amp;hl=en" target="_blank" rel="noopener noreferrer" aria-label="Google Scholar (opens in a new tab)">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269zM12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></svg>
+          </a>
+          </li>
+          <li>
+          <a href="https://www.linkedin.com/in/vanio-antunes/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn (opens in a new tab)">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.370 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </a>
+          </li>
+          <li>
+          <a href="https://x.com/VanioAntunes" target="_blank" rel="noopener noreferrer" aria-label="X (opens in a new tab)">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          </li>
+        </ul>
+      </div>
+      <nav aria-label="Main">
+        <ul class="site-bar__links">
+          <li><a href="/about/">Who am I</a></li>
+          <li><a href="/tools/">Tools</a></li>
+          <li><a href="/packages/">R packages</a></li>
+          <li><a href="/imaging/" aria-current="page">Imaging<span class="site-bar__long">&nbsp;projects</span></a></li>
+        </ul>
+      </nav>
+    </div>
+    <nav class="site-subnav" aria-label="Imaging projects">
+      <ul class="site-subnav__links">
+          <li><a href="/imaging/">All projects</a></li>
+          <li><a href="/imaging/viewers/">Imaging viewers</a></li>
+          <li><a href="/imaging/chd/" aria-current="page">Congenital heart</a></li>
+          <li><a href="/imaging/heart/">Heart clone</a></li>
+          <li><a href="/imaging/#alearrhythmia">aleArrhythmia</a></li>
+          <li><a href="/imaging/study-track/">Study track</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main" class="page-main wrap imaging-page">
+    <div class="page-head">
+      <h1>Tetralogy of Fallot on CT</h1>
+      <p>A cardiac CT angiogram of a child with a tetralogy of Fallot, beside one the dataset records no congenital defect for. Scrolling either moves the other to the same level, so the two can be read against each other. On both, the four chambers, the myocardium, the aorta and the pulmonary artery were outlined by the radiologists who published the dataset: draw a box round any of them and that side names it.</p>
+    </div>
+
+    <p class="dv-status" id="dv-status" data-kind="loading" role="status" aria-live="polite">Reading the study&hellip;</p>
+    <div class="dv-progress" id="dv-progress" hidden><span class="dv-progress__bar" id="dv-progress-bar"></span></div>
+
+    <div class="chd-pair">
+      <section class="chd-side" aria-labelledby="tof-title">
+        <h2 class="chd-side__title" id="tof-title">Tetralogy of Fallot</h2>
+        <p class="chd-side__note">ImageCHD case 1046</p>
+
+        <div class="dv-frame">
+          <div class="dv-stage" id="tof-stage" tabindex="0" role="img"
+               aria-label="Cardiac CT with a tetralogy of Fallot. Use the arrow keys to move through slices."></div>
+
+          <div class="dv-overlay" aria-hidden="true">
+            <div class="dv-overlay__tl">
+              <span class="dv-overlay__strong">Tetralogy of Fallot</span>
+              <span>0.24 mm in plane</span>
+            </div>
+            <div class="dv-overlay__bl">
+              <span>Slice <span id="tof-slice">-</span></span>
+            </div>
+            <div class="dv-overlay__br">
+              <span id="tof-window">-</span>
+              <span>Zoom <span id="tof-zoom">-</span></span>
+            </div>
+          </div>
+
+          <canvas class="dv-seg-canvas" id="tof-seg-canvas" aria-hidden="true"></canvas>
+
+          <!-- Only present while the identify tool is on. It sits above the image so a drag
+               draws a box instead of reaching Cornerstone underneath and windowing. -->
+          <div class="dv-seg-layer" id="tof-seg-layer" hidden>
+            <div class="dv-seg-box" id="tof-seg-box" hidden></div>
+          </div>
+        </div>
+
+        <div class="dv-controls dv-controls--static" role="toolbar" aria-label="Tetralogy viewer controls">
+          <div class="dv-group" role="group" aria-label="Window presets">
+            <span class="dv-group__label" id="tof-presets-label">Window</span>
+            <div class="dv-chips" id="tof-presets" aria-labelledby="tof-presets-label"></div>
+          </div>
+          <div class="dv-group" role="group" aria-label="View">
+            <span class="dv-group__label">View</span>
+            <div class="dv-chips">
+              <button type="button" class="dv-chip" id="tof-invert">Invert</button>
+              <button type="button" class="dv-chip" id="tof-reset">Reset</button>
+            </div>
+          </div>
+          <div class="dv-group" role="group" aria-label="Structures">
+            <span class="dv-group__label">Structures</span>
+            <div class="dv-chips">
+              <button type="button" class="dv-chip" id="tof-identify" aria-pressed="false">Identify</button>
+            </div>
+          </div>
+        </div>
+
+        <p class="dv-seg-hint" id="tof-hint"></p>
+
+        <aside class="dv-seg-panel" id="tof-panel" aria-live="polite" hidden>
+          <h3 class="dv-seg-panel__title">Structure</h3>
+          <div id="tof-body"></div>
+        </aside>
+      </section>
+
+      <section class="chd-side" aria-labelledby="ctl-title">
+        <h2 class="chd-side__title" id="ctl-title">Healthy control</h2>
+        <p class="chd-side__note">ImageCHD case 1080, which the dataset records no congenital defect for</p>
+
+        <div class="dv-frame">
+          <div class="dv-stage" id="ctl-stage" tabindex="0" role="img"
+               aria-label="Cardiac CT of the control. Use the arrow keys to move through slices."></div>
+
+          <div class="dv-overlay" aria-hidden="true">
+            <div class="dv-overlay__tl">
+              <span class="dv-overlay__strong">Healthy control</span>
+              <span>0.24 mm in plane</span>
+            </div>
+            <div class="dv-overlay__bl">
+              <span>Slice <span id="ctl-slice">-</span></span>
+            </div>
+            <div class="dv-overlay__br">
+              <span id="ctl-window">-</span>
+              <span>Zoom <span id="ctl-zoom">-</span></span>
+            </div>
+          </div>
+
+          <canvas class="dv-seg-canvas" id="ctl-seg-canvas" aria-hidden="true"></canvas>
+
+          <div class="dv-seg-layer" id="ctl-seg-layer" hidden>
+            <div class="dv-seg-box" id="ctl-seg-box" hidden></div>
+          </div>
+        </div>
+
+        <div class="dv-controls dv-controls--static" role="toolbar" aria-label="Control viewer controls">
+          <div class="dv-group" role="group" aria-label="Window presets">
+            <span class="dv-group__label" id="ctl-presets-label">Window</span>
+            <div class="dv-chips" id="ctl-presets" aria-labelledby="ctl-presets-label"></div>
+          </div>
+          <div class="dv-group" role="group" aria-label="View">
+            <span class="dv-group__label">View</span>
+            <div class="dv-chips">
+              <button type="button" class="dv-chip" id="ctl-invert">Invert</button>
+              <button type="button" class="dv-chip" id="ctl-reset">Reset</button>
+            </div>
+          </div>
+          <div class="dv-group" role="group" aria-label="Structures">
+            <span class="dv-group__label">Structures</span>
+            <div class="dv-chips">
+              <button type="button" class="dv-chip" id="ctl-identify" aria-pressed="false">Identify</button>
+            </div>
+          </div>
+        </div>
+
+        <p class="dv-seg-hint" id="ctl-hint"></p>
+
+        <aside class="dv-seg-panel" id="ctl-panel" aria-live="polite" hidden>
+          <h3 class="dv-seg-panel__title">Structure</h3>
+          <div id="ctl-body"></div>
+        </aside>
+      </section>
+    </div>
+
+    <p class="chd-link-note">Scrolling either study moves the other. The two children are different sizes and their scans start and stop at different levels, so the link maps between the outlined hearts rather than between slice numbers: it holds the level through the heart and drifts outside it. Window, zoom and pan stay separate.</p>
+
+    <section class="faq" data-faq aria-labelledby="faq-title">
+      <h2 id="faq-title">Questions</h2>
+      <p class="faq__lead">
+        Two published studies read side by side, to see whether the browser can hold a
+        comparison. Not a reading of these images and not for diagnostic use.
+      </p>
+
+      <details class="faq__item">
+        <summary>What is a tetralogy of Fallot?</summary>
+        <div class="faq__body">
+          <p>
+            Four things found together, and they follow from one another rather than arriving
+            separately. The wall between the ventricles is incomplete, so the two sides of the
+            heart are not kept apart. The aorta sits over that gap instead of over the left
+            ventricle alone, so it receives blood from both. The way out of the right ventricle
+            towards the lungs is narrowed. And the right ventricle, pushing against that
+            narrowing, thickens.
+          </p>
+          <p>
+            The outlines on this study name normal anatomy: a ventricle is a ventricle whatever
+            it is doing. What makes the case a tetralogy is how those structures sit relative to
+            one another, which is something to look for by scrolling rather than something any
+            single outline records.
+          </p>
+        </div>
+      </details>
+
+      <details class="faq__item">
+        <summary>How do I drive the viewer?</summary>
+        <div class="faq__body">
+          <p>
+            The wheel moves through the stack, and the arrow keys do the same once the image has
+            focus; the heart occupies the middle of the series. Dragging with the left button
+            changes the window, and the presets are true Hounsfield values, so Soft tissue and
+            Lung mean here what they mean on a workstation. The right button zooms, the middle
+            button pans, and Reset puts both back.
+          </p>
+          <p>
+            Identify is the one control that is not a view setting. Press it, drag a box round a
+            structure, and the structure is named beside the image with its outline drawn over
+            the anatomy.
+          </p>
+        </div>
+      </details>
+
+      <details class="faq__item">
+        <summary>Why does scrolling one study move the other?</summary>
+        <div class="faq__body">
+          <p>
+            Because the point of the page is the comparison. The two children are different
+            sizes and their scans start and stop at different levels, so the link maps between
+            the outlined hearts rather than between slice numbers: it holds the level through
+            the heart and drifts outside it. Window, zoom and pan stay separate, so each study
+            can be set up on its own.
+          </p>
+        </div>
+      </details>
+
+      <details class="faq__item">
+        <summary>What is the control, and in what sense is it healthy?</summary>
+        <div class="faq__body">
+          <p>
+            ImageCHD case 1080, one of the twenty cases the dataset lists no congenital defect
+            against. That is what the table records, not a reading of the images, and the child
+            was still scanned for some clinical reason. So it is a comparison rather than a
+            certificate of a normal heart.
+          </p>
+          <p>
+            The pair was chosen to match: the same scanner, the same 0.24 mm voxels and the same
+            0.75 mm slices, so a difference between them is a difference in the hearts rather
+            than in how they were scanned.
+          </p>
+        </div>
+      </details>
+
+      <details class="faq__item">
+        <summary>Where do the images and the outlines come from?</summary>
+        <div class="faq__body">
+          <p>
+            <a href="https://www.kaggle.com/datasets/xiaoweixumedicalai/imagechd">ImageCHD</a>,
+            a dataset of 110 congenital heart CT studies published by Xiaowei Xu and colleagues
+            and described in <a href="https://arxiv.org/abs/2101.10799">their MICCAI 2020
+            paper</a>. Released under Attribution-NonCommercial 4.0 International (CC BY-NC
+            4.0); this page is non-commercial and carries the attribution the licence asks for.
+          </p>
+          <p>
+            The seven outlines are the published ones, re-encoded rather than redrawn.
+          </p>
+        </div>
+      </details>
+
+      <details class="faq__item">
+        <summary>How did NIfTI volumes become something the viewer can read?</summary>
+        <div class="faq__body">
+          <p>
+            The dataset ships NIfTI. <code>scripts/nifti-to-dicom.py</code> converts each case
+            to a DICOM series: it restores the voxel spacing from the dataset's own spreadsheet,
+            settles the orientation from the anatomy, and shifts the stored values into
+            Hounsfield units so the window presets mean what they say. No patient dates are
+            carried over.
+          </p>
+          <p>
+            The page then runs the same Cornerstone3D engine as the other viewers, with its own
+            copy of the bundle and the codec binaries, because the Emscripten decoders resolve
+            their <code>.wasm</code> against the page that loads them.
+          </p>
+        </div>
+      </details>
+    </section>
+
+  </main>
+  <script type="module" src="/imaging/chd/app.js"></script>
+  <script type="module" src="/js/faq.js"></script>
+  <script type="module" src="/js/subnav.js"></script>
+</body>
+</html>

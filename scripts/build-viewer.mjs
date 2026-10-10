@@ -18,12 +18,13 @@
  */
 
 import * as esbuild from 'esbuild';
-import { cp, mkdir, readdir, stat } from 'node:fs/promises';
+import { cp, mkdir, readFile, readdir, stat, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const outDir = join(root, 'imaging', 'viewer');
+const chdDir = join(root, 'imaging', 'chd');
 const watch = process.argv.includes('--watch');
 
 /* The decode worker is a second entry point rather than part of the main bundle: it runs in
@@ -68,9 +69,44 @@ const stubNodeBuiltins = {
   },
 };
 
+/* The codecs locate their own .wasm with `new URL('@cornerstonejs/codec-charls/decodewasm',
+   import.meta.url)`. esbuild does not resolve a bare specifier inside new URL(), so it is
+   left verbatim and the browser resolves it against the page: a page at /imaging/chd/ asks
+   for /imaging/chd/@cornerstonejs/codec-charls/decodewasm and gets the 404 page, which then
+   fails to compile as WebAssembly with "expected magic word". Rewriting each specifier to
+   the plain filename makes it resolve next to the bundle, which is exactly where the binary
+   is copied. The viewer never hit this because the archive hands it transfer syntaxes these
+   three decoders are not asked for. */
+const CODEC_URLS = {
+  '@cornerstonejs/codec-charls/decodewasm': 'charlswasm_decode.wasm',
+  '@cornerstonejs/codec-openjpeg/decodewasm': 'openjpegwasm_decode.wasm',
+  '@cornerstonejs/codec-openjph/wasm': 'openjphjs.wasm',
+  '@cornerstonejs/codec-libjpeg-turbo-8bit/decodewasm': 'libjpegturbowasm_decode.wasm',
+};
+
+const pointCodecsAtNeighbours = {
+  name: 'codec-wasm-paths',
+  setup(build) {
+    build.onEnd(async () => {
+      const outfile = build.initialOptions.outfile;
+      if (!outfile) return;
+      let source = await readFile(outfile, 'utf8');
+      let changed = 0;
+      for (const [specifier, filename] of Object.entries(CODEC_URLS)) {
+        const parts = source.split(specifier);
+        if (parts.length > 1) {
+          changed += parts.length - 1;
+          source = parts.join(filename);
+        }
+      }
+      if (changed) await writeFile(outfile, source);
+    });
+  },
+};
+
 const shared = {
   bundle: true,
-  plugins: [stubNodeBuiltins],
+  plugins: [stubNodeBuiltins, pointCodecsAtNeighbours],
   format: 'esm',
   target: ['es2022'],
   /* Sourcemaps only while watching: the production map is 6.4 MB, far larger than the
@@ -82,7 +118,7 @@ const shared = {
   define: { 'process.env.NODE_ENV': watch ? '"development"' : '"production"' },
 };
 
-async function copyCodecs() {
+async function copyCodecs(target, label) {
   let copied = 0;
   for (const pkg of CODEC_PACKAGES) {
     const dist = join(root, 'node_modules', '@cornerstonejs', pkg, 'dist');
@@ -96,22 +132,42 @@ async function copyCodecs() {
       if (!name.endsWith('.wasm')) continue;
       const from = join(dist, name);
       if (!(await stat(from)).isFile()) continue;
-      await cp(from, join(outDir, name));
+      await cp(from, join(target, name));
       copied += 1;
     }
   }
   if (copied === 0) throw new Error('no codec .wasm files found - run npm install');
-  console.log(`copied ${copied} codec wasm files into imaging/viewer/`);
+  console.log(`copied ${copied} codec wasm files into ${label}`);
 }
 
 async function main() {
   await mkdir(outDir, { recursive: true });
-  await copyCodecs();
+  await mkdir(chdDir, { recursive: true });
+  await copyCodecs(outDir, 'imaging/viewer/');
+  await copyCodecs(chdDir, 'imaging/chd/');
 
   const app = {
     ...shared,
     entryPoints: [join(root, 'imaging', 'viewer', 'src', 'main.ts')],
     outfile: join(outDir, 'app.js'),
+  };
+
+  /* The congenital heart page is a second entry point, with its own copy of the bundle, the
+     decode worker and the codec binaries under its own folder. That duplicates 2.3 MB, and
+     it is deliberate: the Emscripten codecs resolve their .wasm against the page that loads
+     them, not against the worker, so a page at /imaging/chd/ asks for
+     /imaging/chd/charlswasm_decode.wasm no matter where the bundle came from. Sharing one
+     copy would mean every new page serving 404s for the decoders. */
+  const chd = {
+    ...shared,
+    entryPoints: [join(root, 'imaging', 'chd', 'src', 'main.ts')],
+    outfile: join(chdDir, 'app.js'),
+  };
+
+  const chdWorker = {
+    ...shared,
+    entryPoints: [WORKER_ENTRY],
+    outfile: join(chdDir, 'decodeImageFrameWorker.js'),
   };
 
   const worker = {
@@ -121,16 +177,21 @@ async function main() {
   };
 
   if (watch) {
-    for (const options of [app, worker]) {
+    for (const options of [app, chd, worker, chdWorker]) {
       const ctx = await esbuild.context(options);
       await ctx.watch();
     }
-    console.log('watching imaging/viewer/src for changes');
+    console.log('watching imaging/viewer/src and imaging/chd/src for changes');
     return;
   }
 
-  await Promise.all([esbuild.build(app), esbuild.build(worker)]);
-  console.log('built imaging/viewer/app.js and imaging/viewer/decodeImageFrameWorker.js');
+  await Promise.all([
+    esbuild.build(app),
+    esbuild.build(chd),
+    esbuild.build(worker),
+    esbuild.build(chdWorker),
+  ]);
+  console.log('built imaging/viewer/ and imaging/chd/, each with its bundle and worker');
 }
 
 main().catch((err) => {

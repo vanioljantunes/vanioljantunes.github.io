@@ -7,6 +7,16 @@
   "cleanUrls": true,
   "redirects": [
     {
+      "source": "/imaging/xvr",
+      "destination": "/imaging",
+      "permanent": true
+    },
+    {
+      "source": "/imaging/xvr/:path*",
+      "destination": "/imaging",
+      "permanent": true
+    },
+    {
       "source": "/3d",
       "destination": "/imaging",
       "permanent": true

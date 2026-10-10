@@ -6,8 +6,8 @@ Operating context for Claude Code sessions in the vanioAntunes website repositor
 
 Personal academic site of Vanio Antunes, live at https://vanioantunes.com (Vercel) and
 https://vanioljantunes.github.io (GitHub Pages). Four paths from the home page: Who am I
-(`about/`), Meta-analysis tools (`tools/`), R packages (`packages/`), Imaging projects (`imaging/`: the xvr demo, the study track, and three
-in-progress cards). [PRODUCT.md](PRODUCT.md)
+(`about/`), Meta-analysis tools (`tools/`), R packages (`packages/`), Imaging projects (`imaging/`: the tetralogy of Fallot CT, the heart clone, the
+viewers, the study track and one in-progress card). [PRODUCT.md](PRODUCT.md)
 holds users, brand and design principles and wins over taste; [README.md](README.md) lists pages.
 
 This folder is the working copy for the site as a whole. Tools and packages that the site shows
@@ -16,8 +16,8 @@ have their own repositories (table below); this repo only links to or proxies th
 ## Stack
 
 Static HTML + CSS + small vanilla JS. No framework, and no build step anywhere except
-`imaging/viewer/`, which is bundled from TypeScript by esbuild into committed output
-(`npm run build:viewer`); Vercel still builds nothing. `site.css` and
+`imaging/viewer/` and `imaging/chd/`, both bundled from TypeScript by esbuild into committed
+output (`npm run build:viewer` builds the two); Vercel still builds nothing. `site.css` and
 `site-bar.css` style the pages; the About page keeps inline styles. Motion 13.4 and anime.js 4.5
 load from jsDelivr. Design system: Warm Editorial (Georgia serif, warm paper, terracotta accent).
 
