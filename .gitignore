@@ -38,3 +38,4 @@ node_modules/
 
 # Pipeline scratch: dashboard events, preview images, local logs
 .tmp/
+__pycache__/

@@ -3992,6 +3992,24 @@ h3 {
   align-items: start;
 }
 
+/* Each modality is a section of its own, so the two pairs do not read as four viewers. */
+.chd-modality {
+  margin: 2.5rem 0 0.2rem;
+  font-size: 1.45rem;
+  letter-spacing: -0.015em;
+}
+
+.chd-modality:first-of-type {
+  margin-top: 0;
+}
+
+.chd-modality__note {
+  margin: 0 0 1.1rem;
+  max-width: 78ch;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
 .chd-side__title {
   font-size: 1.1rem;
 }

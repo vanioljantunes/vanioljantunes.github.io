@@ -1,8 +1,14 @@
-/* Page entry point for the congenital heart CT project.
+/* Page entry point for the congenital heart imaging project.
  *
- * Two studies side by side, held here rather than streamed: a child's cardiac CT with a
- * tetralogy of Fallot, and a second child the dataset records no congenital defect for. Both
- * carry the seven cardiac structures outlined by the radiologists who published them.
+ * Two pairs of studies, held here rather than streamed. The CT pair is ImageCHD: a child
+ * with a tetralogy of Fallot beside a child the dataset records no congenital defect for,
+ * carrying seven outlined structures. The MR pair is HVSMR-2.0: a child with septal defects
+ * beside a child with none, carrying eight, because that dataset labels the venae cavae and
+ * does not label myocardium.
+ *
+ * The two pairs never interact. Each links its own two studies, each has its own toolbar,
+ * and a structure identified in one says nothing about the other: they are different
+ * children on different scanners, and only the pair is a comparison.
  *
  * One toolbar drives the pair, and identifying a structure on either study names and
  * highlights the same structure on the other. A comparison is only a comparison if both
@@ -47,9 +53,30 @@ interface SideConfig {
   dir: string;
 }
 
-const SIDES: SideConfig[] = [
-  { key: 'tof', dir: '/imaging/chd/tof-1046' },
-  { key: 'ctl', dir: '/imaging/chd/control-1080' },
+interface PairConfig {
+  /* Prefixes this pair's own toolbar and hint in the markup. */
+  id: string;
+  modality: 'CT' | 'MR';
+  sides: SideConfig[];
+}
+
+const PAIRS: PairConfig[] = [
+  {
+    id: 'ct',
+    modality: 'CT',
+    sides: [
+      { key: 'tof', dir: '/imaging/chd/tof-1046' },
+      { key: 'ctl', dir: '/imaging/chd/control-1080' },
+    ],
+  },
+  {
+    id: 'mr',
+    modality: 'MR',
+    sides: [
+      { key: 'mrd', dir: '/imaging/chd/mr-septal-14' },
+      { key: 'mrc', dir: '/imaging/chd/mr-control-8' },
+    ],
+  },
 ];
 
 const el = <T extends HTMLElement = HTMLElement>(id: string): T | null =>
@@ -95,6 +122,12 @@ const EXPLANATIONS: Record<string, string> = {
     'The vessel carrying blood to the lungs, dividing into left and right branches under ' +
     'the arch. A tetralogy narrows this route, which is what forces the right ventricle to ' +
     'work against a resistance it was not built for.',
+  'Superior vena cava':
+    'The vein returning blood from the head and arms into the right atrium, running down ' +
+    'the right side of the mediastinum. Some children have two, one on each side.',
+  'Inferior vena cava':
+    'The vein returning blood from the abdomen and legs into the right atrium, entering ' +
+    'from below after passing through the diaphragm.',
 };
 
 function explain(segment: SegmentInfo): string {
@@ -111,7 +144,16 @@ function explain(segment: SegmentInfo): string {
    is what each side opens on; the ordinary presets follow it for comparison. */
 const HEART: Preset = { id: 'heart', label: 'Heart', kind: 'hu', center: 200, width: 700 };
 
-const pagePresets = (): readonly Preset[] => [HEART, ...(presetsFor('CT') as readonly Preset[])];
+/* MR signal has no scale shared between scanners, so there is no equivalent of a Hounsfield
+   preset to open on: the window each file was written with is the only sensible default. */
+const AS_ACQUIRED: Preset = { id: 'scan', label: 'As acquired', kind: 'scan' };
+
+const openingPreset = (modality: string): Preset => (modality === 'CT' ? HEART : AS_ACQUIRED);
+
+const pagePresets = (modality: string): readonly Preset[] =>
+  modality === 'CT'
+    ? [HEART, ...(presetsFor('CT') as readonly Preset[])]
+    : (presetsFor('MR') as readonly Preset[]);
 
 /* ---------- one viewer ---------- */
 
@@ -131,7 +173,7 @@ interface Viewer {
   refresh(): void;
 }
 
-async function createViewer(config: SideConfig): Promise<Viewer> {
+async function createViewer(config: SideConfig, pair: PairConfig): Promise<Viewer> {
   const id = (suffix: string): string => `${config.key}-${suffix}`;
 
   const response = await fetch(`${config.dir}/segmentation.json`);
@@ -154,7 +196,7 @@ async function createViewer(config: SideConfig): Promise<Viewer> {
 
   const viewport = mountStackViewport(stage, `chd-${config.key}`);
   await viewport.setStack(imageIds, Math.floor(imageIds.length / 2));
-  applyPreset(viewport, HEART);
+  applyPreset(viewport, openingPreset(pair.modality));
   viewport.render();
 
   let masks: SliceMasks | undefined;
@@ -368,7 +410,7 @@ async function createViewer(config: SideConfig): Promise<Viewer> {
     },
     reset() {
       viewport.resetCamera();
-      applyPreset(viewport, HEART);
+      applyPreset(viewport, openingPreset(pair.modality));
       viewport.render();
       paintReadout();
     },
@@ -428,8 +470,8 @@ function link(viewers: Viewer[]): void {
    sets it, and both studies then draw and name that structure on whatever slice each is
    showing. Scrolling keeps it: the outline follows the structure through the stack instead of
    vanishing the moment the slice changes. */
-function wireSelection(viewers: Viewer[]): { clear(): void } {
-  const hint = el('chd-hint');
+function wireSelection(pair: PairConfig, viewers: Viewer[]): { clear(): void } {
+  const hint = el(`${pair.id}-hint`);
   const IDLE =
     'Press Identify, then drag a box round a structure on either study. The other names the ' +
     'same structure on its own slice.';
@@ -485,11 +527,15 @@ function wireSelection(viewers: Viewer[]): { clear(): void } {
 
 /* ---------- one toolbar for the pair ---------- */
 
-function wireControls(viewers: Viewer[], selection: { clear(): void }): void {
-  const presetHost = el('shared-presets');
+function wireControls(
+  pair: PairConfig,
+  viewers: Viewer[],
+  selection: { clear(): void }
+): void {
+  const presetHost = el(`${pair.id}-presets`);
   if (presetHost) {
     presetHost.replaceChildren();
-    for (const preset of pagePresets()) {
+    for (const preset of pagePresets(pair.modality)) {
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'dv-chip';
@@ -501,16 +547,16 @@ function wireControls(viewers: Viewer[], selection: { clear(): void }): void {
     }
   }
 
-  el('shared-invert')?.addEventListener('click', () => {
+  el(`${pair.id}-invert`)?.addEventListener('click', () => {
     for (const viewer of viewers) viewer.toggleInvert();
   });
 
-  el('shared-reset')?.addEventListener('click', () => {
+  el(`${pair.id}-reset`)?.addEventListener('click', () => {
     for (const viewer of viewers) viewer.reset();
     selection.clear();
   });
 
-  const identify = el<HTMLButtonElement>('shared-identify');
+  const identify = el<HTMLButtonElement>(`${pair.id}-identify`);
   if (identify) {
     let on = false;
     identify.addEventListener('click', () => {
@@ -525,35 +571,41 @@ function wireControls(viewers: Viewer[], selection: { clear(): void }): void {
 
 /* ---------- start ---------- */
 
-async function start(): Promise<void> {
-  status('Reading both studies…', 'loading');
-
+async function startPair(pair: PairConfig): Promise<Viewer[]> {
   const viewers: Viewer[] = [];
-  try {
-    await initCornerstone();
-    /* One after the other: both mount into the same engine, and setting the second stack
-       while the first is still settling leaves the second sized wrongly. */
-    for (const side of SIDES) viewers.push(await createViewer(side));
-  } catch (err) {
-    console.error(err);
-    status('The studies could not be read. Reload the page.', 'error');
-    return;
-  }
+  /* One after the other: all four mount into the same engine, and setting a stack while
+     the previous one is still settling leaves it sized wrongly. */
+  for (const side of pair.sides) viewers.push(await createViewer(side, pair));
 
   link(viewers);
-  const selection = wireSelection(viewers);
-  wireControls(viewers, selection);
+  const selection = wireSelection(pair, viewers);
+  wireControls(pair, viewers, selection);
 
   /* Start both at the same level rather than each on its own middle slice. */
   const [first, second] = viewers as [Viewer, Viewer];
   void second.viewport.setImageIdIndex(
     mapIndex(first, second, first.viewport.getCurrentImageIdIndex())
   );
+  return viewers;
+}
+
+async function start(): Promise<void> {
+  status('Reading the studies…', 'loading');
+
+  const viewers: Viewer[] = [];
+  try {
+    await initCornerstone();
+    for (const pair of PAIRS) viewers.push(...(await startPair(pair)));
+  } catch (err) {
+    console.error(err);
+    status('The studies could not be read. Reload the page.', 'error');
+    return;
+  }
 
   status('', 'done');
 
-  /* One side is fetched before the other, so the two do not compete for the connection
-     while someone is already scrolling the first. */
+  /* One study is fetched before the next, so they do not compete for the connection while
+     someone is already scrolling the first. */
   const bar = el('dv-progress-bar');
   const wrap = el('dv-progress');
   const total = viewers.reduce((sum, viewer) => sum + viewer.imageIds.length, 0);

@@ -60,15 +60,18 @@
   <main id="main" class="page-main wrap imaging-page">
     <div class="page-head">
       <h1>CHD segmentation</h1>
-      <p>A cardiac CT angiogram of a child with a tetralogy of Fallot, beside one the dataset records no congenital defect for. Scrolling either moves the other to the same level, so the two can be read against each other. On both, the four chambers, the myocardium, the aorta and the pulmonary artery were outlined by the radiologists who published the dataset: draw a box round any of them on either study and both name it.</p>
+      <p>Two pairs of paediatric studies, each a heart with a congenital defect beside a heart without one, and each outlined by the people who published it. Scrolling either study moves its partner to the same level, so the two can be read against each other, and drawing a box round a structure on one names it on both. The CT pair is a tetralogy of Fallot. The MR pair comes from a dataset that records defects one at a time without naming syndromes, so it is a septal defect rather than a tetralogy.</p>
     </div>
 
     <p class="dv-status" id="dv-status" data-kind="loading" role="status" aria-live="polite">Reading the study&hellip;</p>
     <div class="dv-progress" id="dv-progress" hidden><span class="dv-progress__bar" id="dv-progress-bar"></span></div>
 
-    <div class="chd-pair">
+    <h2 class="chd-modality" id="ct-title">On CT</h2>
+    <p class="chd-modality__note">ImageCHD, two children scanned on the same scanner at the same 0.24 mm voxels, seven structures outlined.</p>
+
+    <div class="chd-pair" aria-labelledby="ct-title">
       <section class="chd-side" aria-labelledby="tof-title">
-        <h2 class="chd-side__title" id="tof-title">Tetralogy of Fallot <span class="chd-side__id">(ImageCHD case 1046)</span></h2>
+        <h3 class="chd-side__title" id="tof-title">Tetralogy of Fallot <span class="chd-side__id">(ImageCHD case 1046)</span></h3>
 
         <div class="dv-frame" id="tof-frame">
           <div class="dv-stage" id="tof-stage" tabindex="0" role="img"
@@ -103,7 +106,7 @@
       </section>
 
       <section class="chd-side" aria-labelledby="ctl-title">
-        <h2 class="chd-side__title" id="ctl-title">Healthy control <span class="chd-side__id">(ImageCHD case 1080)</span></h2>
+        <h3 class="chd-side__title" id="ctl-title">Healthy control <span class="chd-side__id">(ImageCHD case 1080)</span></h3>
 
         <div class="dv-frame" id="ctl-frame">
           <div class="dv-stage" id="ctl-stage" tabindex="0" role="img"
@@ -146,35 +149,130 @@
       <div class="dv-group" role="group" aria-label="Structures">
         <span class="dv-group__label">Structures</span>
         <div class="dv-chips">
-          <button type="button" class="dv-chip" id="shared-identify" aria-pressed="false">Identify</button>
+          <button type="button" class="dv-chip" id="ct-identify" aria-pressed="false">Identify</button>
         </div>
       </div>
     </div>
 
-    <p class="chd-hint" id="chd-hint">Press Identify, then drag a box round a structure on either study. The other names the same structure on its own slice.</p>
+    <p class="chd-hint" id="ct-hint">Press Identify, then drag a box round a structure on either study. The other names the same structure on its own slice.</p>
 
     <!-- One toolbar for the pair. Two sets of chips invited the two studies to drift apart,
          which is the one thing a comparison cannot afford. -->
     <div class="dv-controls dv-controls--static dv-controls--shared" role="toolbar" aria-label="Viewer controls">
       <div class="dv-group" role="group" aria-label="Window presets">
-        <span class="dv-group__label" id="shared-presets-label">Window</span>
-        <div class="dv-chips" id="shared-presets" aria-labelledby="shared-presets-label"></div>
+        <span class="dv-group__label" id="ct-presets-label">Window</span>
+        <div class="dv-chips" id="ct-presets" aria-labelledby="ct-presets-label"></div>
       </div>
       <div class="dv-group" role="group" aria-label="View">
         <span class="dv-group__label">View</span>
         <div class="dv-chips">
-          <button type="button" class="dv-chip" id="shared-invert">Invert</button>
-          <button type="button" class="dv-chip" id="shared-reset">Reset</button>
+          <button type="button" class="dv-chip" id="ct-invert">Invert</button>
+          <button type="button" class="dv-chip" id="ct-reset">Reset</button>
         </div>
       </div>
     </div>
 
 
+
+    <h2 class="chd-modality" id="mr-title">On MR</h2>
+    <p class="chd-modality__note">HVSMR-2.0, two children of thirteen and fourteen, eight structures outlined. This dataset records defects one by one and never names a syndrome, so neither does this pair: it is a septal defect beside a heart with none, not a tetralogy.</p>
+
+    <div class="chd-pair" aria-labelledby="mr-title">
+      <section class="chd-side" aria-labelledby="mrd-title">
+        <h3 class="chd-side__title" id="mrd-title">Septal defects <span class="chd-side__id">(HVSMR-2.0 case 14, age 13)</span></h3>
+
+        <div class="dv-frame" id="mrd-frame">
+          <div class="dv-stage" id="mrd-stage" tabindex="0" role="img"
+               aria-label="Cardiovascular MR of a child with ventricular and atrial septal defects. Use the arrow keys to move through slices."></div>
+
+          <div class="dv-overlay" aria-hidden="true">
+            <div class="dv-overlay__tl">
+              <span class="dv-overlay__strong">Septal defects</span>
+              <span>cardiovascular MR</span>
+            </div>
+            <div class="dv-overlay__bl">
+              <span>Slice <span id="mrd-slice">-</span></span>
+            </div>
+            <div class="dv-overlay__br">
+              <span id="mrd-window">-</span>
+              <span>Zoom <span id="mrd-zoom">-</span></span>
+            </div>
+          </div>
+
+          <canvas class="dv-seg-canvas" id="mrd-seg-canvas" aria-hidden="true"></canvas>
+
+          <div class="dv-seg-layer" id="mrd-seg-layer" hidden>
+            <div class="dv-seg-box" id="mrd-seg-box" hidden></div>
+          </div>
+
+          <div class="chd-readout" id="mrd-readout" aria-live="polite" hidden></div>
+        </div>
+      </section>
+
+      <section class="chd-side" aria-labelledby="mrc-title">
+        <h3 class="chd-side__title" id="mrc-title">No recorded defect <span class="chd-side__id">(HVSMR-2.0 case 8, age 14)</span></h3>
+
+        <div class="dv-frame" id="mrc-frame">
+          <div class="dv-stage" id="mrc-stage" tabindex="0" role="img"
+               aria-label="Cardiovascular MR of a child with no recorded defect. Use the arrow keys to move through slices."></div>
+
+          <div class="dv-overlay" aria-hidden="true">
+            <div class="dv-overlay__tl">
+              <span class="dv-overlay__strong">No recorded defect</span>
+              <span>cardiovascular MR</span>
+            </div>
+            <div class="dv-overlay__bl">
+              <span>Slice <span id="mrc-slice">-</span></span>
+            </div>
+            <div class="dv-overlay__br">
+              <span id="mrc-window">-</span>
+              <span>Zoom <span id="mrc-zoom">-</span></span>
+            </div>
+          </div>
+
+          <canvas class="dv-seg-canvas" id="mrc-seg-canvas" aria-hidden="true"></canvas>
+
+          <div class="dv-seg-layer" id="mrc-seg-layer" hidden>
+            <div class="dv-seg-box" id="mrc-seg-box" hidden></div>
+          </div>
+
+          <div class="chd-readout" id="mrc-readout" aria-live="polite" hidden></div>
+        </div>
+      </section>
+    </div>
+
+    <div class="dv-controls dv-controls--static dv-controls--shared" role="toolbar" aria-label="Structures, MR">
+      <div class="dv-group" role="group" aria-label="Structures">
+        <span class="dv-group__label">Structures</span>
+        <div class="dv-chips">
+          <button type="button" class="dv-chip" id="mr-identify" aria-pressed="false">Identify</button>
+        </div>
+      </div>
+    </div>
+
+    <p class="chd-hint" id="mr-hint">Press Identify, then drag a box round a structure on either study. The other names the same structure on its own slice.</p>
+
+    <!-- MR signal has no Hounsfield scale, so these are relative windows rather than named
+         tissue presets: what the file asked for, the whole range, and a narrow one. -->
+    <div class="dv-controls dv-controls--static dv-controls--shared" role="toolbar" aria-label="Viewer controls, MR">
+      <div class="dv-group" role="group" aria-label="Window presets">
+        <span class="dv-group__label" id="mr-presets-label">Window</span>
+        <div class="dv-chips" id="mr-presets" aria-labelledby="mr-presets-label"></div>
+      </div>
+      <div class="dv-group" role="group" aria-label="View">
+        <span class="dv-group__label">View</span>
+        <div class="dv-chips">
+          <button type="button" class="dv-chip" id="mr-invert">Invert</button>
+          <button type="button" class="dv-chip" id="mr-reset">Reset</button>
+        </div>
+      </div>
+    </div>
+
     <section class="faq" data-faq aria-labelledby="faq-title">
       <h2 id="faq-title">Questions</h2>
       <p class="faq__lead">
-        Two published studies read side by side, to see whether the browser can hold a
-        comparison. Not a reading of these images and not for diagnostic use.
+        Four published studies in two pairs, read side by side, to see whether the browser
+        can hold a comparison. Not a reading of these images and not for diagnostic use.
       </p>
 
       <details class="faq__item">
@@ -246,17 +344,63 @@
       </details>
 
       <details class="faq__item">
+        <summary>Why is the MR pair not a tetralogy?</summary>
+        <div class="faq__body">
+          <p>
+            Because its dataset does not say that any case is one. HVSMR-2.0 records defects
+            one at a time, as a ventricular septal defect, a double outlet right ventricle,
+            a transposition, an absent pulmonary artery, and it never groups them into a
+            named syndrome. A tetralogy is exactly such a grouping, so calling one of these
+            children a tetralogy would be a diagnosis made here rather than one published
+            there, which is not something a page like this should do.
+          </p>
+          <p>
+            What the MR pair does show is the septal defect a tetralogy shares, in a child of
+            thirteen, beside a heart of fourteen with nothing recorded against it. The two
+            were picked to be close in age for the same reason the CT pair was picked off one
+            scanner: so that a difference between them is more likely to be in the hearts.
+          </p>
+        </div>
+      </details>
+
+      <details class="faq__item">
+        <summary>Why do the two pairs have different controls and different structures?</summary>
+        <div class="faq__body">
+          <p>
+            Because the two modalities do not measure the same thing. A CT number is in
+            Hounsfield units, which mean the same on any scanner, so Soft tissue and Lung are
+            real presets with fixed values. MR signal has no such scale: the same tissue can
+            be any brightness on a different sequence, so the MR pair offers the window the
+            file was written with, the full range of the image, and a narrow one, and nothing
+            claims to be a tissue preset.
+          </p>
+          <p>
+            The outlines differ too. ImageCHD labels seven structures including myocardium;
+            HVSMR-2.0 labels eight, leaving out myocardium and adding the superior and
+            inferior venae cavae. Each pair names what its own annotators drew.
+          </p>
+        </div>
+      </details>
+
+      <details class="faq__item">
         <summary>Where do the images and the outlines come from?</summary>
         <div class="faq__body">
           <p>
-            <a href="https://www.kaggle.com/datasets/xiaoweixumedicalai/imagechd">ImageCHD</a>,
-            a dataset of 110 congenital heart CT studies published by Xiaowei Xu and colleagues
-            and described in <a href="https://arxiv.org/abs/2101.10799">their MICCAI 2020
+            The CT pair is <a href="https://www.kaggle.com/datasets/xiaoweixumedicalai/imagechd">ImageCHD</a>,
+            110 congenital heart CT studies published by Xiaowei Xu and colleagues and
+            described in <a href="https://arxiv.org/abs/2101.10799">their MICCAI 2020
             paper</a>. Released under Attribution-NonCommercial 4.0 International (CC BY-NC
             4.0); this page is non-commercial and carries the attribution the licence asks for.
           </p>
           <p>
-            The seven outlines are the published ones, re-encoded rather than redrawn.
+            The MR pair is <a href="https://doi.org/10.6084/m9.figshare.c.7074755.v2">HVSMR-2.0</a>,
+            60 cardiovascular MR scans of children with congenital heart disease from Boston
+            Children's Hospital, published by Danielle Pace and colleagues in
+            <a href="https://doi.org/10.1038/s41597-024-03469-9">Scientific Data</a> in 2024
+            under Attribution 4.0 International (CC BY 4.0).
+          </p>
+          <p>
+            Every outline on this page is the published one, re-encoded rather than redrawn.
           </p>
         </div>
       </details>
@@ -265,11 +409,14 @@
         <summary>How did NIfTI volumes become something the viewer can read?</summary>
         <div class="faq__body">
           <p>
-            The dataset ships NIfTI. <code>scripts/nifti-to-dicom.py</code> converts each case
-            to a DICOM series: it restores the voxel spacing from the dataset's own spreadsheet,
-            settles the orientation from the anatomy, and shifts the stored values into
-            Hounsfield units so the window presets mean what they say. No patient dates are
-            carried over.
+            Both datasets ship NIfTI, and each has its own converter because they do not
+            present the same problems. <code>scripts/nifti-to-dicom.py</code> handles
+            ImageCHD, whose affine is the identity: it restores the voxel spacing from the
+            dataset's own spreadsheet, settles the orientation from the anatomy, and shifts
+            the stored values into Hounsfield units so the CT presets mean what they say.
+            <code>scripts/hvsmr-to-dicom.py</code> handles HVSMR-2.0, which carries a real
+            affine, so the geometry is read from the file and nothing is rescaled, because
+            there is no scale to rescale onto. No patient dates are carried over by either.
           </p>
           <p>
             The page then runs the same Cornerstone3D engine as the other viewers, with its own
