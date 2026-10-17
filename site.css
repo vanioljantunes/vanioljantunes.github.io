@@ -891,51 +891,6 @@ a.tool:focus-visible {
   font-size: 0.75rem;
 }
 
-.tile-links {
-  position: relative;
-  z-index: 2;
-  display: grid;
-  gap: 0.15rem;
-  width: 100%;
-  margin: 1rem 0 0;
-  padding: 0.85rem 0 0;
-  border-top: 1px solid var(--border);
-  list-style: none;
-  text-align: left;
-}
-
-.tile-links a {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  min-height: 32px;
-  padding: 0.2rem 0.5rem;
-  border-radius: 6px;
-  color: var(--text);
-  font-size: 0.9375rem;
-  text-decoration: none;
-}
-
-.tile-links a::before {
-  content: "";
-  flex: none;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--accent);
-}
-
-.tile-links a:hover {
-  background: var(--accent-soft);
-  color: var(--accent-dark);
-}
-
-.tile-soon {
-  margin-left: auto;
-  color: var(--muted);
-  font-size: 0.75rem;
-}
-
 @media (max-width: 600px) {
   .tile-stats {
     gap: 1.1rem;
@@ -944,15 +899,6 @@ a.tool:focus-visible {
 
   .tile-stats dd {
     font-size: 1.125rem;
-  }
-
-  .tile-links {
-    margin-top: 0.6rem;
-    padding-top: 0.5rem;
-  }
-
-  .tile-links a {
-    font-size: 0.875rem;
   }
 }
 
@@ -1083,15 +1029,15 @@ a.tool:focus-visible {
 }
 
 @media (min-width: 861px) {
-  /* Subgrid rows line the badge, title, text, stats and links up across the three cards,
-     so every divider sits at the same height. */
+  /* Subgrid rows line the badge, title, text and stats up across the three cards,
+     so every card keeps the same inner rhythm. */
   .tiles {
     row-gap: 0;
   }
 
   .tiles > li {
     display: grid;
-    grid-row: span 5;
+    grid-row: span 4;
     grid-template-rows: subgrid;
   }
 
@@ -1109,68 +1055,15 @@ a.tool:focus-visible {
   .tile > p { grid-row: 3; }
   .tile-stats { grid-row: 4; }
 
-  .tile-links {
-    grid-row: 5;
-    align-self: start;
-  }
-
   /* Row gap between the two rows (the subgrid keeps row-gap at 0 for its own tracks). */
   .tiles > li:nth-child(-n + 2) .tile {
     margin-bottom: 1.25rem;
   }
 }
 
-.tile-links a {
-  white-space: nowrap;
-}
-
-.tile-soon {
-  font-size: 0.6875rem;
-}
 .tiles > li,
 .tile {
   min-width: 0;
-}
-
-/* Sub-items appear when the pointer rests on a card or a link in it has focus. Two-by-two
-   grid keeps the row height, so nothing shifts; touch screens show the lists always. */
-@media (hover: hover) and (min-width: 601px) {
-  .tile {
-    overflow: visible;
-  }
-
-  .tile-links {
-    position: absolute;
-    top: 100%;
-    right: -1px;
-    left: -1px;
-    z-index: 5;
-    margin: -1px 0 0;
-    padding: 0.85rem 1.1rem 1rem;
-    border: 1px solid var(--accent);
-    border-top: 1px solid var(--border);
-    border-radius: 0 0 var(--radius) var(--radius);
-    background: var(--surface);
-    box-shadow: var(--shadow-hover);
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-4px);
-    transition: opacity 0.2s var(--ease-out), transform 0.2s var(--ease-out), visibility 0s 0.2s;
-  }
-
-  .tile:hover,
-  .tile:focus-within {
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-  }
-
-  .tile:hover .tile-links,
-  .tile:focus-within .tile-links {
-    opacity: 1;
-    visibility: visible;
-    transform: none;
-    transition-delay: 0s;
-  }
 }
 
 /* The photo and text card stay above both screenshots. */
