@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Risk of bias visualiser | Vanio Antunes</title>
+  <meta name="description" content="Answer the RoB 2, ROBINS-I or QUADAS-2 signalling questions for your studies and get a Cochrane-style traffic light plot and a Word table.">
+  <link rel="icon" href="/favicon.ico?v=2" sizes="48x48">
+  <link rel="icon" href="/favicon-32.png?v=2" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
+  <link rel="stylesheet" href="/site-bar.css">
+  <link rel="stylesheet" href="/site.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-bar">
+    <div class="site-bar__inner">
+      <div class="site-bar__id">
+        <a class="site-bar__brand" href="/"><img src="/img/vanio-antunes.jpg" width="32" height="32" alt=""><span class="site-bar__name">Vanio Antunes</span></a>
+        <ul class="site-bar__social" aria-label="Profiles">
+          <li>
+          <a href="https://scholar.google.com/citations?user=JOZkTg0AAAAJ&amp;hl=en" target="_blank" rel="noopener noreferrer" aria-label="Google Scholar (opens in a new tab)">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269zM12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></svg>
+          </a>
+          </li>
+          <li>
+          <a href="https://www.linkedin.com/in/vanio-antunes/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn (opens in a new tab)">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.370 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </a>
+          </li>
+          <li>
+          <a href="https://x.com/VanioAntunes" target="_blank" rel="noopener noreferrer" aria-label="X (opens in a new tab)">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          </li>
+        </ul>
+      </div>
+      <nav aria-label="Main">
+        <ul class="site-bar__links">
+          <li><a href="/about/">Who am I</a></li>
+          <li><a href="/tools/" aria-current="page">Tools</a></li>
+          <li><a href="/packages/">R packages</a></li>
+          <li><a href="/imaging/">Imaging<span class="site-bar__long">&nbsp;projects</span></a></li>
+        </ul>
+      </nav>
+    </div>
+    <nav class="site-subnav" aria-label="Tools">
+      <ul class="site-subnav__links">
+          <li><a href="/tools/">All tools</a></li>
+          <li><a href="/tools/kmHelper/">kmHelper <span class="nav-beta">beta</span></a></li>
+          <li><a href="/tools/ssHelper/">ssHelper</a></li>
+          <li><a href="/tools/triageHelper/">triageHelper <span class="nav-beta">beta</span></a></li>
+          <li><a href="/tools/robvis/" aria-current="page">Risk of bias <span class="nav-beta">beta</span></a></li>
+          <li><a href="/tools/diagnostic/">Diagnostic calculator</a></li>
+          <li><a href="/tools/combine/">Combine means and SDs</a></li>
+          <li><a href="/tools/median/">Median to mean</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main" class="page-main wrap calc-page calc-page--wide">
+    <div class="page-head">
+      <h1>Risk of bias visualiser</h1>
+      <p>Pick an instrument, name the studies, answer each signalling question across all of them at once, and take away a Cochrane-style traffic light plot and a Word table. RoB 2, ROBINS-I and QUADAS-2. Nothing is uploaded.</p>
+    </div>
+
+    <div id="rv-app">
+      <div class="rv-resume" id="rv-resume" hidden>
+        <p>Unfinished work found: <span id="rv-resume-text"></span></p>
+        <div class="rv-resume__actions">
+          <button type="button" class="calc-button calc-button--primary" id="rv-resume-go">Carry on</button>
+          <button type="button" class="calc-button" data-action="reset">Start again</button>
+        </div>
+      </div>
+
+      <nav class="rv-stepper-wrap" aria-label="Steps">
+        <ol class="rv-stepper" id="rv-stepper"></ol>
+      </nav>
+
+      <p class="calc-status" id="rv-status" role="status" aria-live="polite"></p>
+
+      <section class="calc-panel" id="rv-step-1" aria-labelledby="rv-step-1-title">
+        <h2 id="rv-step-1-title" class="calc-h2">1. Which instrument?</h2>
+        <p class="calc-desc">The instrument follows the design of the studies you are appraising, not the question you are asking of them.</p>
+        <ul class="rv-instruments" id="rv-instruments"></ul>
+      </section>
+
+      <section class="calc-panel" id="rv-step-2" aria-labelledby="rv-step-2-title" hidden>
+        <h2 id="rv-step-2-title" class="calc-h2">2. Name the studies</h2>
+        <p class="calc-desc"><span id="rv-studies-for"></span> One line per study, written as it should read in the figure. Author and year is the usual form.</p>
+        <div class="rv-studies">
+          <div class="calc-table-wrap">
+            <table class="calc-table rv-studies__table">
+              <thead>
+                <tr>
+                  <th scope="col" class="rv-study-n">#</th>
+                  <th scope="col">Study</th>
+                  <th scope="col"><span class="visually-hidden">Remove</span></th>
+                </tr>
+              </thead>
+              <tbody id="rv-study-rows"></tbody>
+            </table>
+          </div>
+          <div class="rv-paste">
+            <label class="calc-label" for="rv-paste">Or paste a list, one study per line</label>
+            <textarea id="rv-paste" class="rv-textarea" rows="4" placeholder="Smith 2019&#10;Oliveira 2021&#10;Tanaka 2023"></textarea>
+            <button type="button" class="calc-button" data-action="paste-studies">Replace the list with this</button>
+          </div>
+        </div>
+        <div class="calc-actions rv-actions">
+          <button type="button" class="calc-button" data-action="back">Back</button>
+          <button type="button" class="calc-button" data-action="add-study">Add a study</button>
+          <span class="rv-count" id="rv-study-count"></span>
+          <button type="button" class="calc-button calc-button--primary" data-action="next">Go to the questions</button>
+        </div>
+      </section>
+
+      <section class="calc-panel" id="rv-step-3" aria-labelledby="rv-step-3-title" hidden>
+        <h2 id="rv-step-3-title" class="calc-h2">3. Answer the questions</h2>
+        <div class="rv-mode">
+          <label class="rv-switch">
+            <input type="checkbox" id="rv-domain-only">
+            <span>Skip the questions and type the domain judgements myself</span>
+          </label>
+          <span class="rv-count" id="rv-assessment-progress"></span>
+        </div>
+        <div id="rv-assessment"></div>
+        <div class="calc-actions rv-actions">
+          <button type="button" class="calc-button" data-action="back">Back to the studies</button>
+          <button type="button" class="calc-button calc-button--primary" data-action="next">Figure and table</button>
+        </div>
+      </section>
+
+      <section class="calc-panel" id="rv-step-4" aria-labelledby="rv-step-4-title" hidden>
+        <h2 id="rv-step-4-title" class="calc-h2">4. Figure and table</h2>
+
+        <div class="rv-options">
+          <div class="calc-field">
+            <label class="calc-label" for="rv-title">Figure title (optional)</label>
+            <input type="text" id="rv-title" class="rv-input" placeholder="Risk of bias, mortality at 30 days">
+          </div>
+          <label class="rv-switch"><input type="checkbox" id="rv-include-overall" checked><span>Include the overall column</span></label>
+          <label class="rv-switch"><input type="checkbox" id="rv-show-words"><span>Write the judgement in words in the Word table</span></label>
+        </div>
+
+        <h3 class="rv-h3">Traffic light plot</h3>
+        <div class="rv-figure" id="rv-figure"></div>
+        <p class="calc-note" id="rv-overall-note" hidden></p>
+        <div class="calc-actions rv-actions">
+          <button type="button" class="calc-button calc-button--primary" data-action="download-docx">Download the Word table</button>
+          <button type="button" class="calc-button" data-action="download-png">Download the plot as .png</button>
+          <button type="button" class="calc-button" data-action="download-svg">Download the plot as .svg</button>
+        </div>
+
+        <h3 class="rv-h3">The data behind it</h3>
+        <p class="calc-desc">These are the columns the robvis R package reads, with its own words for the judgements. Copy them into a spreadsheet, or into R.</p>
+        <div class="calc-table-wrap">
+          <table class="calc-table rv-data">
+            <thead id="rv-data-head"></thead>
+            <tbody id="rv-data-rows"></tbody>
+          </table>
+        </div>
+        <div class="calc-actions rv-actions">
+          <button type="button" class="calc-button" data-action="back">Back to the questions</button>
+          <button type="button" class="calc-button" data-action="copy-table">Copy the table</button>
+          <button type="button" class="calc-button" data-action="reset">Start again</button>
+        </div>
+      </section>
+    </div>
+
+    <section class="faq" data-faq aria-labelledby="faq-title">
+      <h2 id="faq-title">Questions</h2>
+      <p class="faq__lead">Judgements, not data. The work stays in your browser.</p>
+
+      <details class="faq__item">
+        <summary>Which instrument should I pick?</summary>
+        <div class="faq__body">
+          <p>The design of the included studies decides it. RoB 2 for randomized trials, ROBINS-I for non-randomised studies of an intervention, QUADAS-2 for diagnostic accuracy studies. RoB 2 is the tool people mean when they write ROBINS-II, and QUADAS-2 is what they mean by QUADAS; the cards carry the names the tools themselves use.</p>
+        </div>
+      </details>
+
+      <details class="faq__item">
+        <summary>Where does the suggested judgement come from?</summary>
+        <div class="faq__body">
+          <p>For RoB 2 it is the algorithm published with the tool, which maps the signalling answers onto low risk, some concerns or high risk. ROBINS-I and QUADAS-2 publish no such algorithm, so the suggestion there follows those tools' guidance as coded on this page, and the panel says so where you can see it. Every suggestion can be overridden, and a domain you overrode is marked.</p>
+        </div>
+      </details>
+
+      <details class="faq__item">
+        <summary>Can I skip the signalling questions?</summary>
+        <div class="faq__body">
+          <p>Yes. The switch at the top of step 3 replaces the question tables with one dropdown per domain per study, which is what you want when the judgements already exist in a spreadsheet or in RevMan. Leaving the overall cell blank takes it from the domains. Answers typed in either mode are kept when you switch, so nothing is lost by looking.</p>
+        </div>
+      </details>
+
+      <details class="faq__item">
+        <summary>What is in the Word file?</summary>
+        <div class="faq__body">
+          <p>A landscape page with the traffic light as a shaded table, one row per study and one column per domain, then the legend and the key to the domain codes. It is a real .docx written in the browser, so the cells are Word cells rather than a picture: restyle it, drop a column, paste it into a manuscript. The switch above the figure swaps the symbols for the judgement in words.</p>
+        </div>
+      </details>
+
+      <details class="faq__item">
+        <summary>Does my work leave the browser, and will it still be here tomorrow?</summary>
+        <div class="faq__body">
+          <p>Nothing is uploaded; there is no server to upload to. The page does keep the instrument, the studies and the judgements in this browser's local storage, so closing the tab by accident costs you nothing and the page offers to carry on when you come back. That copy stays on your machine and never reaches me. Start again clears it.</p>
+        </div>
+      </details>
+
+      <details class="faq__item">
+        <summary>How does this relate to the robvis R package?</summary>
+        <div class="faq__body">
+          <p>The table in step 4 is shaped like the input robvis expects, with its vocabulary for the judgements, so the copy button gives you something that goes straight into <code>rob_traffic_light()</code>. Use the R package when the figure belongs in a reproducible pipeline; use this page when you want the judgements made and the figure out in one sitting. The weighted summary barplot is the package's, not this page's.</p>
+        </div>
+      </details>
+
+    </section>
+  </main>
+
+  <script type="module" src="/js/faq.js"></script>
+  <script type="module" src="/js/tool-robvis.js"></script>
+  <script type="module" src="/js/subnav.js"></script>
+</body>
+</html>

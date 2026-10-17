@@ -4039,3 +4039,520 @@ h3 {
     height: min(58vh, 420px);
   }
 }
+
+
+/* ---------------------------------------------------------------------------
+   Risk of bias visualiser (/tools/robvis/). A four-step wizard, a matrix of
+   studies against signalling questions, and the traffic light figure.
+   --------------------------------------------------------------------------- */
+
+.rv-stepper-wrap {
+  margin-top: 1.25rem;
+}
+
+.rv-stepper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rv-step {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background var(--resp-fast) var(--ease-spring), color var(--resp-fast) var(--ease-spring);
+}
+
+.rv-step__n {
+  display: grid;
+  place-items: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 50%;
+  background: var(--bg);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.rv-step.is-current {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+}
+
+.rv-step.is-current .rv-step__n {
+  background: var(--accent);
+  color: #fff;
+}
+
+.rv-step.is-locked {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.rv-resume {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  padding: 0.85rem 1.1rem;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--accent-soft);
+}
+
+.rv-resume p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.rv-resume__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.rv-resume__actions .calc-button {
+  margin-top: 0;
+}
+
+/* Step 1: the instrument cards. */
+
+.rv-instruments {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 0.85rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rv-pick {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  width: 100%;
+  height: 100%;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color var(--resp-fast) var(--ease-spring), box-shadow var(--resp-fast) var(--ease-spring);
+}
+
+.rv-pick:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-hover);
+}
+
+.rv-pick.is-chosen {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.rv-pick__name {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.rv-pick__alias {
+  margin-left: 0.5rem;
+  color: var(--faint);
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.rv-pick__designs {
+  color: var(--accent-dark);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.rv-pick__blurb {
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.rv-pick__meta {
+  margin-top: auto;
+  padding-top: 0.5rem;
+  color: var(--faint);
+  font-size: 0.75rem;
+}
+
+/* Step 2: the study list. */
+
+.rv-studies {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  margin-top: 1rem;
+  align-items: start;
+}
+
+.rv-studies__table th,
+.rv-studies__table td {
+  text-align: left;
+}
+
+.rv-study-n {
+  width: 2.5rem;
+  color: var(--faint);
+  font-weight: 400;
+}
+
+.rv-study-remove {
+  width: 3rem;
+  text-align: center;
+}
+
+.rv-input,
+.rv-textarea {
+  width: 100%;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9rem;
+}
+
+.rv-textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.rv-input:focus-visible,
+.rv-textarea:focus-visible,
+.rv-select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.rv-paste .calc-button {
+  margin-top: 0.6rem;
+}
+
+.rv-count {
+  color: var(--faint);
+  font-size: 0.8125rem;
+}
+
+.rv-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.rv-actions .calc-button {
+  margin-top: 0;
+}
+
+/* Step 3: domain tabs and the question matrix. */
+
+.rv-mode {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 0.75rem 0 0;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+
+.rv-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.rv-switch input {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--accent);
+}
+
+.rv-domain-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 1rem;
+}
+
+.rv-domain-tab {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  font: inherit;
+  font-size: 0.8125rem;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.rv-domain-tab__id {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.rv-domain-tab__count {
+  color: var(--faint);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.rv-domain-tab__count.is-done {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.rv-domain-tab.is-open {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+}
+
+.rv-domain {
+  margin-top: 1rem;
+}
+
+.rv-domain__title {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+}
+
+.rv-questions th,
+.rv-questions td {
+  text-align: left;
+  vertical-align: top;
+}
+
+.rv-questions__q {
+  min-width: 20rem;
+  max-width: 34rem;
+  font-weight: 400;
+}
+
+.rv-questions__study {
+  min-width: 9rem;
+  white-space: nowrap;
+}
+
+.rv-q-id {
+  display: inline-block;
+  min-width: 2.4rem;
+  color: var(--faint);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.rv-q-text {
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.rv-select {
+  width: 100%;
+  min-width: 7.5rem;
+  padding: 0.35rem 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.8125rem;
+}
+
+.rv-select:disabled {
+  background: var(--bg);
+  color: var(--faint);
+}
+
+.rv-questions td.is-inactive {
+  background: repeating-linear-gradient(135deg, var(--bg), var(--bg) 6px, var(--surface) 6px, var(--surface) 12px);
+}
+
+.rv-questions__applicability {
+  background: var(--bg);
+}
+
+.rv-questions__judgement th,
+.rv-questions__judgement td {
+  border-top: 2px solid var(--border-strong);
+  background: var(--bg);
+}
+
+.rv-questions__judgement .rv-q-text {
+  font-weight: 600;
+}
+
+.rv-judge-cell .rv-select {
+  margin-top: 0.4rem;
+}
+
+.rv-judge-cell__partial {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--faint);
+  font-size: 0.75rem;
+}
+
+.rv-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.5rem 0.2rem 0.25rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 0.75rem;
+  line-height: 1.3;
+}
+
+.rv-pill__mark {
+  display: grid;
+  place-items: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.rv-pill__tag {
+  color: var(--faint);
+  font-size: 0.6875rem;
+  font-style: italic;
+}
+
+.rv-pill.is-empty {
+  padding-left: 0.5rem;
+  color: var(--faint);
+}
+
+.rv-pill.is-low .rv-pill__mark { background: #2e7d32; color: #fff; }
+.rv-pill.is-some .rv-pill__mark,
+.rv-pill.is-moderate .rv-pill__mark { background: #efc000; color: #1c2430; }
+.rv-pill.is-high .rv-pill__mark,
+.rv-pill.is-serious .rv-pill__mark { background: #c62828; color: #fff; }
+.rv-pill.is-critical .rv-pill__mark { background: #7f1d1d; color: #fff; }
+.rv-pill.is-unclear .rv-pill__mark,
+.rv-pill.is-ni .rv-pill__mark { background: #2b6cb0; color: #fff; }
+
+.rv-domain-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.rv-domain-nav .calc-button {
+  margin-top: 0;
+}
+
+/* The domain-only grid and the data table. */
+
+.rv-grid th,
+.rv-grid td,
+.rv-data th,
+.rv-data td {
+  text-align: left;
+}
+
+.rv-grid__study {
+  min-width: 10rem;
+  font-weight: 400;
+}
+
+.rv-data__cell {
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
+.rv-data__cell.is-low { background: rgba(46, 125, 50, 0.14); }
+.rv-data__cell.is-some,
+.rv-data__cell.is-moderate { background: rgba(239, 192, 0, 0.22); }
+.rv-data__cell.is-high,
+.rv-data__cell.is-serious { background: rgba(198, 40, 40, 0.14); }
+.rv-data__cell.is-critical { background: rgba(127, 29, 29, 0.18); }
+.rv-data__cell.is-unclear,
+.rv-data__cell.is-ni { background: rgba(43, 108, 176, 0.14); }
+
+/* Step 4: options and the figure. */
+
+.rv-options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 1rem 1.5rem;
+  margin: 0.75rem 0 1.25rem;
+}
+
+.rv-options .calc-field {
+  flex: 1 1 18rem;
+  min-width: 18rem;
+}
+
+.rv-h3 {
+  margin: 1.5rem 0 0.5rem;
+  font-size: 1rem;
+}
+
+.rv-figure {
+  overflow-x: auto;
+  padding: 0.75rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: #fff;
+}
+
+.rv-figure svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+@media (max-width: 860px) {
+  .rv-studies {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rv-step__label {
+    display: none;
+  }
+
+  .rv-step {
+    padding: 0.4rem 0.55rem;
+  }
+
+  .rv-questions__q {
+    min-width: 14rem;
+  }
+}
