@@ -4556,3 +4556,28 @@ h3 {
     min-width: 14rem;
   }
 }
+
+.calc-formula {
+  display: grid;
+  gap: 0.6rem;
+  justify-items: start;
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 1.05rem;
+  overflow-x: auto;
+}
+
+.calc-formula math {
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  .calc-formula {
+    font-size: 0.9rem;
+    padding: 0.75rem 0.8rem;
+  }
+}

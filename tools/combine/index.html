@@ -79,7 +79,18 @@
     </section>
 
     <section class="calc-panel" aria-labelledby="comb-results">
-      <h2 id="comb-results" class="calc-h2">Combined</h2>
+      <h2 id="comb-results" class="visually-hidden">Combined</h2>
+      <div class="calc-formula" tabindex="0" role="group" aria-label="Formula for combining two groups">
+        <math display="block">
+          <mrow><mi>N</mi><mo>=</mo><msub><mi>N</mi><mn>1</mn></msub><mo>+</mo><msub><mi>N</mi><mn>2</mn></msub></mrow>
+        </math>
+        <math display="block">
+          <mrow><mi>M</mi><mo>=</mo><mfrac><mrow><msub><mi>N</mi><mn>1</mn></msub><msub><mi>M</mi><mn>1</mn></msub><mo>+</mo><msub><mi>N</mi><mn>2</mn></msub><msub><mi>M</mi><mn>2</mn></msub></mrow><mrow><msub><mi>N</mi><mn>1</mn></msub><mo>+</mo><msub><mi>N</mi><mn>2</mn></msub></mrow></mfrac></mrow>
+        </math>
+        <math display="block">
+          <mrow><mi>SD</mi><mo>=</mo><msqrt><mfrac><mrow><mo>(</mo><msub><mi>N</mi><mn>1</mn></msub><mo>&#x2212;</mo><mn>1</mn><mo>)</mo><msubsup><mi>SD</mi><mn>1</mn><mn>2</mn></msubsup><mo>+</mo><mo>(</mo><msub><mi>N</mi><mn>2</mn></msub><mo>&#x2212;</mo><mn>1</mn><mo>)</mo><msubsup><mi>SD</mi><mn>2</mn><mn>2</mn></msubsup><mo>+</mo><mfrac displaystyle="true"><mrow><msub><mi>N</mi><mn>1</mn></msub><msub><mi>N</mi><mn>2</mn></msub></mrow><mrow><msub><mi>N</mi><mn>1</mn></msub><mo>+</mo><msub><mi>N</mi><mn>2</mn></msub></mrow></mfrac><mo>(</mo><msubsup><mi>M</mi><mn>1</mn><mn>2</mn></msubsup><mo>+</mo><msubsup><mi>M</mi><mn>2</mn><mn>2</mn></msubsup><mo>&#x2212;</mo><mn>2</mn><msub><mi>M</mi><mn>1</mn></msub><msub><mi>M</mi><mn>2</mn></msub><mo>)</mo></mrow><mrow><msub><mi>N</mi><mn>1</mn></msub><mo>+</mo><msub><mi>N</mi><mn>2</mn></msub><mo>&#x2212;</mo><mn>1</mn></mrow></mfrac></msqrt></mrow>
+        </math>
+      </div>
       <p class="calc-message" id="comb-message" aria-live="polite">Fill in at least one group.</p>
       <dl class="calc-stats calc-stats--big" id="comb-result" hidden>
         <div><dt>Sample size</dt><dd data-k="n"></dd></div>
@@ -93,7 +104,7 @@
           <tbody></tbody>
         </table>
       </div>
-      <p class="calc-note">Formula: Cochrane Handbook 5.1, <a href="https://handbook-5-1.cochrane.org/chapter_7/table_7_7_a_formulae_for_combining_groups.htm" target="_blank" rel="noopener noreferrer">table 7.7.a<span class="visually-hidden"> (opens in a new tab)</span></a>, applied to each pair in turn.</p>
+      <p class="calc-note">Source: Cochrane Handbook 6.5, section 6.5.2.10, <a href="https://www.cochrane.org/authors/handbooks-and-manuals/handbook/current/chapter-06#table-6-5-a" target="_blank" rel="noopener noreferrer">table 6.5.a<span class="visually-hidden"> (opens in a new tab)</span></a>. With three or more groups, the formula is applied to each pair in turn.</p>
     </section>
     <section class="faq" data-faq aria-labelledby="faq-title">
       <h2 id="faq-title">Questions</h2>
@@ -114,7 +125,7 @@
       <details class="faq__item">
         <summary>Which formula?</summary>
         <div class="faq__body">
-          <p>Cochrane Handbook 5.1, <a href="https://handbook-5-1.cochrane.org/chapter_7/table_7_7_a_formulae_for_combining_groups.htm">table 7.7.a</a>, applied to one pair at a time. The running table shows each intermediate result, so the arithmetic can be checked rather than taken on trust. Rows left empty are skipped.</p>
+          <p>Cochrane Handbook 6.5, section 6.5.2.10, <a href="https://www.cochrane.org/authors/handbooks-and-manuals/handbook/current/chapter-06#table-6-5-a">table 6.5.a</a> (table 7.7.a in the older version 5.1), applied to one pair at a time. The running table shows each intermediate result, so the arithmetic can be checked rather than taken on trust. Rows left empty are skipped.</p>
         </div>
       </details>
 
